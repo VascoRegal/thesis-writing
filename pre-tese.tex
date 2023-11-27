@@ -58,9 +58,9 @@
 
 \TitlePage
   \HEADER{\BAR\FIG{\begin{minipage}{50mm} % no more than 120mm
-          ``Observation is a dying art.''
+          ``An idiot admires complexity, a genius admires simplicity.''
            \begin{flushright}
-            --- Stanley Kubrick
+            --- Terry A. Davis
            \end{flushright}
           \end{minipage}}}
          {\ThesisYear}
@@ -147,6 +147,10 @@ In the \ac{iris} scenario, the management platform should provide operations to 
 
 Finally, all traffic must be encrypted and properly authenticated, to ensure the privacy of the communication.
 
+\section{Document Structure}
+
+This document presents an implementation proposal of such an overlay network manager. With this goal in mind, it is structured in two main chapters - State of The Art and Methodology. The former consists in an exploration of the current state of the art, providing an analysis not only of potential tools, protocols and frameworks suitable for the scope of the dissertation but also of published research conducted covering similar topics and scenarios while the latter establishes the work methodology to be taken for the development and results gathering process.
+
 
 \cleardoublepage
 
@@ -154,33 +158,22 @@ Finally, all traffic must be encrypted and properly authenticated, to ensure the
 \chapter{State of the Art}
 \label{chapter:sota}
 
-\begin{sota}
-This chapter covers the analysis and discussion not only of the motives and advantages behind the chosen tools and protocols to be used in this project but also but also of the common approaches and methodologies conducted in research in similar scenarios.
-
-At its core, the system requires three main dimensions:
-\begin{itemize}
-    \item{A protocol for encrypted, reliable and efficient \ac{p2p} communication}
-    \item{A control platform for management of clients and authentication tokens}
-    \item{A mechanism for scalibility, able to transform the many \ac{p2p} channels into one mesh network}
-\end{itemize}
-\end{sota}
-
-
 \section{Encrypted Peer to Peer Communications / VPNs}
 
 \subsection{Wireguard}
 
-~\cite{wgwhitepaper} ~\cite{rfc44}
+Wireguard ~\cite{wireguard-wp} is an open-source layer 3 network tunnel implemented as a kernel virtual network interface. Wireguard offers both a robust cryptographic suite and transparent session management, based on the fundamental principle of secure tunnels: peers in a Wireguard communication are registred as an association between a public key - analogous to the SSH-keys mechanism - and a tunnel source IP address.
+
+One of Wireguard's selling points is its simplicity. In fact, compared to similar protocols, which generally support a wide range of cryptographic suites, Wireguard settles for a singular suite. Although one may consider the lack of cipher agility as a disadvantage, this approach minimizes protocol complexity, increasing security robustness by avoiding SSL/TLS vulnerabilities commonly originated from such agility.
+
+\subsubsection{Encryption Suite}
+
+\subsubsection{Security}
+
+\subsubsection{Performance}
+
 
 \section{Control Platforms}
-
-\subsection{Tailscale}
-
-\subsection{Headscale}
-
-\section{Mesh Networks}
-
-\section{NAT Traversal}
 
 
 
@@ -204,6 +197,7 @@ At its core, the system requires three main dimensions:
   \bibitem{wireguard-wp}
   Jason A. Donenfeld.
   \newblock WireGuard: Next Generation Kernel Network Tunnel.
+  \newblock {\em NDSS}, 2017.
 
   \end{thebibliography}
 \fi
