@@ -16,6 +16,7 @@
 \usepackage{amsmath}
 \usepackage{amssymb}
 \usepackage{xspace}% used by \sigla
+\usepackage[acronym]{glossaries}
 
 
 % optional (comment to use default)s
@@ -44,6 +45,18 @@
 \def\Header#1#2{\setbox1=\hbox{#1}\setbox2=\hbox{#2}%
            \ifdim\wd1>\wd2\dimen0=\wd1\else\dimen0=\wd2\fi%
            \AddVMargin{\parbox{\dimen0}{\centering #1\\#2}}} % put #1 on top #2
+
+
+\makeglossaries
+
+%
+% Acronyms
+%
+\newacronym{ua}{UA}{University of Aveiro}
+\newacronym{vpn}{VPN}{Virtual Private Network}
+\newacronym{iris}{IRIS-Lab}{Intelligent Robotics and Systems Laboratory}
+\newacronym{p2p}{P2P}{Peer to Peer}
+\newacronym{ros}{ROS}{Robot Operating System}
 
 
 \begin{document}
@@ -123,6 +136,8 @@
 \cleardoublepage
 \listoftables
 
+\cleardoublepage
+\printglossary[type=\acronymtype]
 
 % The chapters (usually written using the isolatin font encoding ...)
 
@@ -132,18 +147,18 @@
 
 \section{Motivation}
 
-Network security has become a topic of evergrowing interest among any information system. Companies strive to ensure their communications follow principles of integrity and confidentially while minimizing attack vectors that could compromise services and data. With such goals in mind, network topologies are subjected to policies which apply rules and conditions to inbound and outbound traffic. One such mechanism is the use of \ac{vpn} .
+Network security has become a topic of evergrowing interest among any information system. Companies strive to ensure their communications follow principles of integrity and confidentially while minimizing attack vectors that could compromise services and data. With such goals in mind, network topologies are subjected to policies which apply rules and conditions to inbound and outbound traffic. One such mechanism is the use of \acrfull{vpn} .
 
-Traditional \ac{vpn} services consist in the establishment of a secure, encrypted channel between a client and a network, through an insecure communication medium.
+Traditional \acrshort{vpn} services consist in the establishment of a secure, encrypted channel between a client and a network, through an insecure communication medium.
 
 
-The \ac{ua}'s \ac{iris} conducts research projects using autonomous mobile robots, which communicate through a Wi-Fi network. Currently, this network is confined to the premises of the \ac{iris}, preventing the robots from operating in the remaining \ac{ua}'s buildings. Although the \ac{ua}'s Wi-Fi infrastructure covers most of its edifices, which can be used by the robots, due to security mechanisms, this network proves to be highly restraining, not allowing \ac{p2p} communications through the \ac{ros} - the operating system the robots run on - middleware without additional network equipments. Moreover, these constraints keep developers from being able to interact with the robots through their personal machines, which, if otherwise possible, would be of great interest.
+The \acrfull{ua}'s \acrfull{iris} conducts research projects using autonomous mobile robots, which communicate through a Wi-Fi network. Currently, this network is confined to the premises of the \acrshort{iris}, preventing the robots from operating in the remaining \acrshort{ua}'s buildings. Although the \acshort{ua}'s Wi-Fi infrastructure covers most of its edifices, which can be used by the robots, due to security mechanisms, this network proves to be highly restraining, not allowing \acrfull{p2p} communications through the \acrfull{ros} - the operating system the robots run on - middleware without additional network equipments. Moreover, these constraints keep developers from being able to interact with the robots through their personal machines, which, if otherwise possible, would be of great interest.
 
 \section{Objectives}
 
-The main goal of this dissertation is to implement a private overlay network manager to be used exclusively by \ac{ua}'s clients. The concept of a manager entails both the definition of a network's client universe (which nodes should be allowed to connect to a certain network) and its respective identification and authentication mechanisms.
+The main goal of this dissertation is to implement a private overlay network manager to be used exclusively by \acrshort{ua}'s clients. The concept of a manager entails both the definition of a network's client universe (which nodes should be allowed to connect to a certain network) and its respective identification and authentication mechanisms.
 
-In the \ac{iris} scenario, the management platform should provide operations to achieve communication between a team of robots, regardless of their physical location within the campus. Moreover, the authentication and connection to a desired overlay network by the robots must be a seemingless operation, requiring little to no manual configuration.
+In the \acrshort{iris} scenario, the management platform should provide operations to achieve communication between a team of robots, regardless of their physical location within the campus. Moreover, the authentication and connection to a desired overlay network by the robots must be a seemingless operation, requiring little to no manual configuration.
 
 Finally, all traffic must be encrypted and properly authenticated, to ensure the privacy of the communication.
 
@@ -162,11 +177,21 @@ This document presents an implementation proposal of such an overlay network man
 
 \subsection{Wireguard}
 
-Wireguard ~\cite{wireguard-wp} is an open-source layer 3 network tunnel implemented as a kernel virtual network interface. Wireguard offers both a robust cryptographic suite and transparent session management, based on the fundamental principle of secure tunnels: peers in a Wireguard communication are registred as an association between a public key - analogous to the SSH-keys mechanism - and a tunnel source IP address.
+Wireguard ~\cite{donenfeld2017wireguard} is an open-source layer 3 network tunnel implemented as a kernel virtual network interface. Wireguard offers both a robust cryptographic suite and transparent session management, based on the fundamental principle of secure tunnels: peers in a Wireguard communication are registred as an association between a public key - analogous to the OpenSSH keys mechanism - and a tunnel source IP address.
 
-One of Wireguard's selling points is its simplicity. In fact, compared to similar protocols, which generally support a wide range of cryptographic suites, Wireguard settles for a singular suite. Although one may consider the lack of cipher agility as a disadvantage, this approach minimizes protocol complexity, increasing security robustness by avoiding SSL/TLS vulnerabilities commonly originated from such agility.
+One of Wireguard's selling points is its simplicity. In fact, compared to similar protocols, which generally support a wide range of cryptographic suites, Wireguard settles for a singular one. Although one may consider the lack of cipher agility as a disadvantage, this approach minimizes protocol complexity, increasing security robustness by avoiding SSL/TLS vulnerabilities commonly originated from such agility.
 
-\subsubsection{Encryption Suite}
+\subsubsection{Routing}
+
+Peers in a Wireguard communication maintain a data structure containing its own identification - both the public and private keys - and interface listening port. Then, for each known peer, an entry is present containing an association between a public key and a set of allowed source ips.
+
+This structure is queried both for outgoing and incoming packets. To encrypt packets to be sent, the structure is consulted and, based on the destination address, the desired peer's public key is retrieved. As for receiving data, after decryption (with the peer's own keys), the structure is used to verify the validity of the packet's source address, which, in other words, means checking if there's a match between the source address and the allowed addresses present on the routing structure.
+
+Optionally, Wireguard peers can configure one aditional field, an internet endpoint, defining the listening address where packets should be sent. If not defined, the incoming packets' source address is used instead.
+
+\subsubsection{Cipher Suite}
+
+As aforementioned, Wireguard offers a single cipher suite for encryption mechanism in its ecosystem. The peer's pre-shared keys consist in  Curve25519 points ~\cite{bernstein2006curve25519}
 
 \subsubsection{Security}
 
@@ -187,20 +212,19 @@ One of Wireguard's selling points is its simplicity. In fact, compared to simila
   %  unsrt produces numbered entries, sorted by order of citation
   %  plain produces numbered entries, sorted alphabetically
   %  other styles are possible (I recommend the harvard package)
-  \bibliographystyle{unsrt}
   %\bibliographystyle{plain}
   \bibliography{my-bib-file}% replace by the name of name of your .bib file
 \else
   % An example (the contents of the .bbl file)
-  \begin{thebibliography}{10}
+  %\begin{thebibliography}{10}
 
-  \bibitem{wireguard-wp}
-  Jason A. Donenfeld.
-  \newblock WireGuard: Next Generation Kernel Network Tunnel.
-  \newblock {\em NDSS}, 2017.
 
-  \end{thebibliography}
-\fi
+
+  %\end{thebibliography}
+%\fi
+
+\bibliographystyle{plain}
+\bibliography{refs}
 \cleardoublepage
 
 \end{document}
