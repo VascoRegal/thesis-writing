@@ -57,6 +57,8 @@
 \newacronym{iris}{IRIS-Lab}{Intelligent Robotics and Systems Laboratory}
 \newacronym{p2p}{P2P}{Peer to Peer}
 \newacronym{ros}{ROS}{Robot Operating System}
+\newacronym{rtt}{RTT}{Round Trip Time}
+\newacronym{ddos}{DDOS}{Distributed Denial Of Service}
 
 
 \begin{document}
@@ -191,14 +193,34 @@ Optionally, Wireguard peers can configure one aditional field, an internet endpo
 
 \subsubsection{Cipher Suite}
 
-As aforementioned, Wireguard offers a single cipher suite for encryption mechanism in its ecosystem. The peer's pre-shared keys consist in  Curve25519 points ~\cite{bernstein2006curve25519}
+As aforementioned, Wireguard offers a single cipher suite for encryption and authentication mechanisms in its ecosystem. The peers' pre-shared keys consist in  Curve25519 points ~\cite{bernstein2006curve25519}, an implementation of an eliptic-curve-Diffie-Hellman function, characterized by its strong conjectured security level - presenting the same security standards as other algorithms in public key cryptography - while achieving record computational speeds.
+
+Regarding payload data cryptography, a Wireguard message's plain text is encrypted with the sender's public key and a nounce counter, using ChaCha20Poly1305, a Salsa20 variation ~\cite{bernstein2008chacha}. The ChaCha cryptographic family offers robust resistance to cryptoanalytic methods ~\cite{cryptoeprint:2014/613}, without sacrificing its state-of-the-art performance.
+
+Finally, before any encrypted message exchange actually happens, Wireguard enforces a 1-\acrshort{rtt} handshake for symmetric key exchange (one for sending, and one for receiving). The messages involved in this handshake process follow a variation of the Noise ~\cite{perrin2018noise} protocol - essentially a state machine controlled by a set of variables maintained by each party in the process.
 
 \subsubsection{Security}
 
+On top of its robust cryptographic specification, Wireguard includes in its design a set of mechanisms to further enhance protocol security and integrity.
+
+With such a scope in mind, Wireguard presents itself as a silent protocol. In other words, a Wireguard peer is essentially invisible when communication is attempted by an illegitimate party. Packets coming from an unknown source are just dropped, with no leaks of information to the sender.
+
+Additionally, a cookie system is implemented in an attempt to mitigate \acrshort{ddos} attacks. Since, to determine the authenticity of an handshake message, a Curve25519 multiplication must be computed,  an operation requiring considerable CPU usage, a CPU-exhaustion attack vector could be exploited. Cookies are introduced as a response to handshake initiation. These cookie messages are used as a peer response when under high CPU load, which is then in turn attached to the sender's message, allowing the requested handshake to proceed later.
+
+\subsubsection{Sessions and Key Rotation}
+
 \subsubsection{Performance}
+
+The concept of performance in \acshort{vpn} applications entails both protocol overhead on communication throughput and bandwidth usage minimization. These dimensions can be empirically measured, by calculating communication latency / ping time and throughput. The performance claims on ~\cite{donenfeld2017wireguard}, where, when compared to its alternatives like OpenVPN and IPsec, presents results in favor of Wireguard in both metrics. This conclusion is backed by more extensive research ~\cite{mackey2020performance}, ~\cite{osswald2020performance}, where communication is tested in a wide range of different environments and CPU architectures.
+
+Wireguard, due to its kernel implementation (compared to, for example, OpenVPN's user space implementation) and efficient multi-threading usage contribute greatly to such performance benchmarks. Moreover, its relatively small codebase (around 4000 lines) creates a very auditable, maintainable \acrshort{vpn} protocol.
 
 
 \section{Control Platforms}
+
+\subsubsection{TailScale}
+
+\subsubsection{HeadScale}
 
 
 
