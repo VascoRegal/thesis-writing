@@ -219,7 +219,7 @@ Wireguard, due to its kernel implementation (compared to, for example, OpenVPN's
 
 \section{Control Platforms}
 
-Although Wireguard proves itself as a robust, performant and maintainable protocol for encrypted communication, it still presents some complexity regarding administration agility and scalibility. New clients added to a standalone Wireguard network imply the manual reconfiguration of every other peer already present, a process with added complexity as more nodes join the system. With this in mind, this section explores applications and implementations of control platforms built, or with the pontential to be built, on top of Wireguard, aiming to create a seamless peer orchestration and configuration process, minimizing human intervention.
+Although Wireguard proves itself as a robust, performant and maintainable protocol for encrypted communication, it still presents some complexity regarding administration agility and scalibility. New clients added to a standalone Wireguard network imply the manual reconfiguration of every other peer already present, a process with added complexity and prone to errors, as more nodes join the system. With this in mind, this section explores applications and implementations of control platforms built, or with the pontential to be built, on top of Wireguard, aiming to create a seamless peer orchestration and configuration process, minimizing human intervention.
 
 First, it is mandatory to define what a control platform is. The main goal should be to overcome the limitations previously mentioned, by supporting:
 
@@ -229,7 +229,7 @@ First, it is mandatory to define what a control platform is. The main goal shoul
      \item On-demand retrieving of information regarding any peer in network.
 \end{itemize}
 
-\subsection{Map Server Implementation}
+\subsection{OOR Map Server Implementation}
 
 An implementation with said requirements is proposed in \cite{paillisse2021control}. The core architecture of this solution consists in a centralized \acrlong{oor} Map Server, containing peer identification data, which provides devices with on-demand information regarding any other peer in the network to setup a direct connection.  From a client prespective, a peer wanting to communicate with another should first establish a secure Wireguard connection to this server and request a connection with a destination node. The server, with the source IP and public key of the requesting client, redirects this data to the destination node, reaching a state where both peers contain all necessary information to begin the Wireguard tunnel.
 
@@ -239,6 +239,7 @@ Regarding performance, there is, as expected, an overhead compared to native OOR
 
 \subsection{TailScale}
 
+TailScale is an open-source \acrshort{vpn} service operating with a user-space Wireguard variant as its data plane ~\cite{tailscale2020online}. Unlike traditional \acrshort{vpn}s, which generally operate under variations of hub-and-spoke architectures, TailScale manages and establishes connections using a \acrshort{p2p} mesh network model. A mesh network is defined as a topology in which every node can connect to every other node in the network. As mentioned in previous sections, this implies that all peers must be configured to have an entry with a public key and IP address pair for each other device on the network. To make this process dynamic, TailScale provides a coordination server, which functions as the core of its control plane dimension.
 
 \subsubsection{HeadScale}
 
