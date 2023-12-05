@@ -59,6 +59,7 @@
 \newacronym{ros}{ROS}{Robot Operating System}
 \newacronym{rtt}{RTT}{Round Trip Time}
 \newacronym{ddos}{DDOS}{Distributed Denial Of Service}
+\newacronym{oor}{OOR}{Open Overlay Router}
 
 
 \begin{document}
@@ -154,7 +155,7 @@ Network security has become a topic of evergrowing interest among any informatio
 Traditional \acrshort{vpn} services consist in the establishment of a secure, encrypted channel between a client and a network, through an insecure communication medium.
 
 
-The \acrfull{ua}'s \acrfull{iris} conducts research projects using autonomous mobile robots, which communicate through a Wi-Fi network. Currently, this network is confined to the premises of the \acrshort{iris}, preventing the robots from operating in the remaining \acrshort{ua}'s buildings. Although the \acshort{ua}'s Wi-Fi infrastructure covers most of its edifices, which can be used by the robots, due to security mechanisms, this network proves to be highly restraining, not allowing \acrfull{p2p} communications through the \acrfull{ros} - the operating system the robots run on - middleware without additional network equipments. Moreover, these constraints keep developers from being able to interact with the robots through their personal machines, which, if otherwise possible, would be of great interest.
+The \acrfull{ua}'s \acrfull{iris} conducts research projects using autonomous mobile robots, which communicate through a Wi-Fi network. Currently, this network is confined to the premises of the \acrshort{iris}, preventing the robots from operating in the remaining \acrshort{ua}'s buildings. Although the \acshort{ua}'s Wi-Fi infrastructure covers most of its edifices, which can be used by the robots, due to security mechanisms, this network proves to be highly restraining, not allowing \acrfull{p2p} communications through the \acrfull{ros} ~\cite{quigley2009ros} - the operating system the robots run on - middleware without additional network equipments. Moreover, these constraints keep developers from being able to interact with the robots through their personal machines, which, if otherwise possible, would be of great interest.
 
 \section{Objectives}
 
@@ -172,7 +173,7 @@ This document presents an implementation proposal of such an overlay network man
 \cleardoublepage
 
 
-\chapter{Background and State of the Art}
+\chapter{State of the Art}
 \label{chapter:sota}
 
 \section{Encrypted Peer to Peer Communications / VPNs}
@@ -181,7 +182,7 @@ This document presents an implementation proposal of such an overlay network man
 
 Wireguard ~\cite{donenfeld2017wireguard} is an open-source layer 3 network tunnel implemented as a kernel virtual network interface. Wireguard offers both a robust cryptographic suite and transparent session management, based on the fundamental principle of secure tunnels: peers in a Wireguard communication are registred as an association between a public key - analogous to the OpenSSH keys mechanism - and a tunnel source IP address.
 
-One of Wireguard's selling points is its simplicity. In fact, compared to similar protocols, which generally support a wide range of cryptographic suites, Wireguard settles for a singular one. Although one may consider the lack of cipher agility as a disadvantage, this approach minimizes protocol complexity, increasing security robustness by avoiding SSL/TLS vulnerabilities commonly originated from such agility.
+One of Wireguard's selling points is its simplicity. In fact, compared to similar protocols, which generally support a wide range of cryptographic suites, Wireguard settles for a singular one. Although one may consider the lack of cipher agility as a disadvantage, this approach minimizes protocol complexity, increasing security robustness by avoiding SSL/TLS vulnerabilities commonly originated from such protocol negotiation.
 
 \subsubsection{Routing}
 
@@ -228,20 +229,24 @@ First, it is mandatory to define what a control platform is. The main goal shoul
      \item On-demand retrieving of information regarding any peer in network.
 \end{itemize}
 
-An implementation with said requrements is proposed on \cite{paillisse2021control}.
+\subsection{Map Server Implementation}
 
+An implementation with said requirements is proposed in \cite{paillisse2021control}. The core architecture of this solution consists in a centralized \acrlong{oor} Map Server, containing peer identification data, which provides devices with on-demand information regarding any other peer in the network to setup a direct connection.  From a client prespective, a peer wanting to communicate with another should first establish a secure Wireguard connection to this server and request a connection with a destination node. The server, with the source IP and public key of the requesting client, redirects this data to the destination node, reaching a state where both peers contain all necessary information to begin the Wireguard tunnel.
 
+This prototype successfully tackles one of the main limitations of Wireguard, offering a mechanism capable of dynamically configuring peers, without the need to reconfgiure every device everytime a new client joins the network. Also, it reduces routing table complexity, as peers are not required to keep all other peers' information locally. However, the addition of such a centralized entity also introduces a new attack vector. Efectively, if the private key of the central server, crucial in creating the first secure channel between a peer and the server, is compromised, a man-in-the-middle attack could be mounted, since an attacker could impersonate the centralized server.
+
+Regarding performance, there is, as expected, an overhead compared to native OOR benchmarks, as requests to \acrshort{oor} Map Server are themselves conducted through a Wireguard channel.
 
 \subsection{TailScale}
-
-\section{Automation and Configuration}
-
 
 
 \subsubsection{HeadScale}
 
+\section{Automation and Configuration}
 
 
+\chapter{Methodology}
+\label{chapter:method}
 
 
 
