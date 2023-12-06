@@ -239,7 +239,10 @@ Regarding performance, there is, as expected, an overhead compared to native OOR
 
 \subsection{TailScale}
 
-TailScale is an open-source \acrshort{vpn} service operating with a user-space Wireguard variant as its data plane ~\cite{tailscale2020online}. Unlike traditional \acrshort{vpn}s, which generally operate under variations of hub-and-spoke architectures, TailScale manages and establishes connections using a \acrshort{p2p} mesh network model. A mesh network is defined as a topology in which every node can connect to every other node in the network. As mentioned in previous sections, this implies that all peers must be configured to have an entry with a public key and IP address pair for each other device on the network. To make this process dynamic, TailScale provides a coordination server, which functions as the core of its control plane dimension.
+TailScale is an open-source \acrshort{vpn} service operating with a golang user-space Wireguard variant as its data plane ~\cite{tailscale2020online}. Traditional \acrshort{vpn} services operate under a hub-and-spoke architecture, a model composed by one or more \acrshort{vpn} Gateways - devices accepting incoming connections from client nodes and forwarding the traffic to their final destination. Hub-and-spoke architectures carry some limitations. First, it implies increased latency associated with geographical distance between a client to the nearest hub. Also, regarding scalibility and dynamic configuration, adding new clients to the network requires the distribution of its keys to all hubs. With these constraints in mind, TailScale offers an hybrid model. TailScale's central entity, refered to as a coordination server, functions as a shared repository of peer information, used by clients to retrieve information regarding other nodes and establishing on-demand \acrshort{p2p} connections among each other.
+
+This control plane approach differs from traditional hub-and-spoke since the coordination server carries nearly no traffic - it only serves encryption keys and peer information. TailScale's architecture can be perceived as an hybrid model, benefitting from the advantages of control plane centralization without bottlenecking its data plane performance.
+
 
 \subsubsection{HeadScale}
 
