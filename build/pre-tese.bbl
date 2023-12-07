@@ -1,0 +1,64 @@
+\begin{thebibliography}{10}
+
+\bibitem{bernstein2006curve25519}
+Daniel~J Bernstein.
+\newblock Curve25519: new diffie-hellman speed records.
+\newblock In {\em Public Key Cryptography-PKC 2006: 9th International
+  Conference on Theory and Practice in Public-Key Cryptography, New York, NY,
+  USA, April 24-26, 2006. Proceedings 9}, 2006.
+
+\bibitem{bernstein2008chacha}
+Daniel~J Bernstein et~al.
+\newblock Chacha, a variant of salsa20.
+\newblock In {\em Workshop record of SASC}, 2008.
+
+\bibitem{donenfeld2017wireguard}
+Jason~A Donenfeld.
+\newblock Wireguard: next generation kernel network tunnel.
+\newblock In {\em NDSS}, 2017.
+
+\bibitem{headscale2023online}
+Juan Font and Kritoffer Dalby.
+\newblock Headscale.
+\newblock \url{https://headscale.net/}, 2023.
+
+\bibitem{mackey2020performance}
+Steven Mackey, Ivan Mihov, Alex Nosenko, Francisco Vega, and Yuan Cheng.
+\newblock A performance comparison of wireguard and openvpn.
+\newblock In {\em Proceedings of the Tenth ACM Conference on data and
+  application security and privacy}, 2020.
+
+\bibitem{osswald2020performance}
+Lukas Osswald, Marco Haeberle, and Michael Menth.
+\newblock Performance comparison of vpn solutions.
+\newblock 2020.
+
+\bibitem{paillisse2021control}
+Jordi Paillisse, Alejandro Barcia, Albert Lopez, Alberto Rodriguez-Natal, Fabio
+  Maino, and Albert Cabellos.
+\newblock A control plane for wireguard.
+\newblock In {\em 2021 International Conference on Computer Communications and
+  Networks (ICCCN)}, 2021.
+
+\bibitem{tailscale2020online}
+Avery Pennarun.
+\newblock How tailscale works.
+\newblock \url{https://tailscale.com/blog/how-tailscale-works/}, 2020.
+
+\bibitem{perrin2018noise}
+Trevor Perrin.
+\newblock The noise protocol framework.
+\newblock 2018.
+
+\bibitem{cryptoeprint:2014/613}
+Gordon Procter.
+\newblock A security analysis of the composition of chacha20 and poly1305.
+\newblock 2014.
+
+\bibitem{quigley2009ros}
+Morgan Quigley, Ken Conley, Brian Gerkey, Josh Faust, Tully Foote, Jeremy
+  Leibs, Rob Wheeler, Andrew~Y Ng, et~al.
+\newblock Ros: an open-source robot operating system.
+\newblock In {\em ICRA workshop on open source software}, 2009.
+
+\end{thebibliography}
