@@ -247,6 +247,8 @@ In pratical terms, a TailScale client will store, in the coordination server, it
 
 \subsubsection{NAT Traversal}
 
+As stated before, the data plane in TailScale consists in many \acrshort{p2p} connections - essentially a mesh network. However, it is likely that peers reside behind both NAT mechanisms and Firewall rules, with no open ports. Also, believing nodes will consistently have a consistent static IP is a very naive assumption, specially when considering mobility aspects. To directly connect two peers, no matter what's standing between them, TailScale supports NAT Traversal, a mechanism that makes communication possible without the need for firewall configurations or public-facing open ports ~\cite{tailscalenat2020online}.
+
 \subsubsection{HeadScale}
 
 While TailScale's client is open source, its control server isn't. There is, however, an open-source, self-hosted alternative to TailScale's control server, HeadScale. HeadScale ~\cite{headscale2023online} provides a narrow scope implementation (with a single TailScale private network) of the aforementioned control server which, in the authors' words, mostly suitable for personal user and small organizations.
