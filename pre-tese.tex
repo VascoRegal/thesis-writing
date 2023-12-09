@@ -60,6 +60,7 @@
 \newacronym{rtt}{RTT}{Round Trip Time}
 \newacronym{ddos}{DDOS}{Distributed Denial Of Service}
 \newacronym{oor}{OOR}{Open Overlay Router}
+\newacronym{nat}{NAT}{Network Address Translator}
 
 
 \begin{document}
@@ -178,6 +179,18 @@ This document presents an implementation proposal of such an overlay network man
 
 \section{Encrypted Peer to Peer Communications / VPNs}
 
+\acrshort{vpn}s have become a mature technology, with widespread usage among the Internet. With such a wide range of products offering \acrshort{vpn} capabilities, this section aims to analyze some of its most notable providers, focusing on the processes involved on their respective data planes - which refers to the subsection of a network communication responsible for carrying data between devices. This implies not only the quality of its device identification, encryption suite and protocol security but also of its features regarding concepts such as mobility - how the service behaves when clients change their physical locations and IP adresses - and overcoming constraints associated with networks using \acrshort{nat} mechanisms and secured with firewall rules. Finally, since operations taken in the data plane are necessarily associated with a computation overhead, namely authentication, traffic encryption and session management, protocol performance is also perceived as a valued dimension.
+
+\subsubsection{NAT Traversal}
+
+It is very likely that devices on the internet reside in a network behind both NAT mechanisms and Firewall rules, with no open ports. Also, believing nodes will have a consistent static IP is a very naive assumption, specially when considering mobile devices. NAT Traversal is a networking technique that enables the establishing and maintaining of \acrshort{p2p} connections between two peers, no matter what's standing between them, making communication possible without the need for firewall configurations or public-facing open ports. There's no one solution to achieve this functionality. In fact, there are various developments effectively implementing a NAT Traversal solution, such as ICE ~\cite{rfc8445} and STUN ~\cite{rfc8489}. Hence, each \acrshort{vpn} service can have its own way of supporting NAT Traversal. Each case is explored seperatly in its own subsection.
+
+\subsection{IPSec}
+
+
+\subsection{OpenVPN}
+
+
 \subsection{Wireguard}
 
 Wireguard ~\cite{donenfeld2017wireguard} is an open-source layer 3 network tunnel implemented as a kernel virtual network interface. Wireguard offers both a robust cryptographic suite and transparent session management, based on the fundamental principle of secure tunnels: peers in a Wireguard communication are registred as an association between a public key - analogous to the OpenSSH keys mechanism - and a tunnel source IP address.
@@ -206,13 +219,13 @@ On top of its robust cryptographic specification, Wireguard includes in its desi
 
 With such a scope in mind, Wireguard presents itself as a silent protocol. In other words, a Wireguard peer is essentially invisible when communication is attempted by an illegitimate party. Packets coming from an unknown source are just dropped, with no leaks of information to the sender.
 
-Additionally, a cookie system is implemented in an attempt to mitigate \acrshort{ddos} attacks. Since, to determine the authenticity of an handshake message, a Curve25519 multiplication must be computed,  an operation requiring considerable CPU usage, a CPU-exhaustion attack vector could be exploited. Cookies are introduced as a response to handshake initiation. These cookie messages are used as a peer response when under high CPU load, which is then in turn attached to the sender's message, allowing the requested handshake to proceed later.
+Additionally, a cookie system is implemented in an attempt to mitigate \acrshort{ddos} attacks. Since, to determine the authenticity of an handshake message, a Curve25519 multiplication must be computed,  an operation requiring considerable CPU usage, a CPU-exhaustion attack vector could be exploited. Cookies are introduced as a response message to handshake initiation. These cookie messages are used as a peer response when under high CPU load, which is then in turn attached to the sender's message, allowing the requested handshake to proceed later.
 
 \subsubsection{Sessions and Key Rotation}
 
-\subsubsection{Performance}
+\subsection{Performance Comparison}
 
-The concept of performance in \acshort{vpn} applications entails both protocol overhead on communication throughput and bandwidth usage minimization. These dimensions can be empirically measured, by calculating communication latency / ping time and throughput. The performance claims on ~\cite{donenfeld2017wireguard}, where, when compared to its alternatives like OpenVPN and IPsec, presents results in favor of Wireguard in both metrics. This conclusion is backed by more extensive research ~\cite{mackey2020performance}, ~\cite{osswald2020performance}, where communication is tested in a wide range of different environments and CPU architectures.
+The concept of performance in \acrshort{vpn} applications entails both protocol overhead on communication throughput and bandwidth usage minimization. These dimensions can be empirically measured, by calculating communication latency / ping time and throughput. The performance claims on ~\cite{donenfeld2017wireguard}, where, when compairing Wireguard to its alternatives like OpenVPN and IPsec, presents results in favor of Wireguard in both metrics. This conclusion is backed by more extensive research ~\cite{mackey2020performance}, ~\cite{osswald2020performance}, where communication is tested in a wide range of different environments and CPU architectures.
 
 Wireguard, due to its kernel implementation (compared to, for example, OpenVPN's user space implementation) and efficient multi-threading usage contribute greatly to such performance benchmarks. Moreover, its relatively small codebase (around 4000 lines) creates a very auditable, maintainable \acrshort{vpn} protocol.
 
@@ -245,9 +258,6 @@ This control plane approach differs from traditional hub-and-spoke since the coo
 
 In pratical terms, a TailScale client will store, in the coordination server, its own public key and where it can currently be found. Then, it downloads a list of public keys and addresses that have been stored in the server previously by other clients. With this information, the client node is able to configure its Wireguard interface and start communicating with any other node in its domain.
 
-\subsubsection{NAT Traversal}
-
-As stated before, the data plane in TailScale consists in many \acrshort{p2p} connections - essentially a mesh network. However, it is likely that peers reside behind both NAT mechanisms and Firewall rules, with no open ports. Also, believing nodes will consistently have a consistent static IP is a very naive assumption, specially when considering mobility aspects. To directly connect two peers, no matter what's standing between them, TailScale supports NAT Traversal, a mechanism that makes communication possible without the need for firewall configurations or public-facing open ports ~\cite{tailscalenat2020online}.
 
 \subsubsection{HeadScale}
 
