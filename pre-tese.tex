@@ -61,6 +61,11 @@
 \newacronym{ddos}{DDOS}{Distributed Denial Of Service}
 \newacronym{oor}{OOR}{Open Overlay Router}
 \newacronym{nat}{NAT}{Network Address Translator}
+\newacronym{sa}{SA}{Security Association}
+\newacronym{ah}{AH}{Authentication Header}
+\newacronym{esp}{ESP}{Encapsulating Security Payload}
+\newacronym{spi}{SPI}{Security Parameter Index}
+\newacronym{ike}{IKE}{Internet Key Exchange}
 
 
 \begin{document}
@@ -179,7 +184,7 @@ This document presents an implementation proposal of such an overlay network man
 
 \section{Encrypted Peer to Peer Communications / VPNs}
 
-\acrshort{vpn}s have become a mature technology, with widespread usage among the Internet. With such a wide range of products offering \acrshort{vpn} capabilities, this section aims to analyze some of its most notable providers, focusing on the processes involved on their respective data planes - which refers to the subsection of a network communication responsible for carrying data between devices. This implies not only the quality of its device identification, encryption suite and protocol security but also of its features regarding concepts such as mobility - how the service behaves when clients change their physical locations and IP adresses - and overcoming constraints associated with networks using \acrshort{nat} mechanisms and secured with firewall rules. Finally, since operations taken in the data plane are necessarily associated with a computation overhead, namely authentication, traffic encryption and session management, protocol performance is also perceived as a valued dimension.
+\acrshort{vpn}s have become a mature technology, with widespread usage among the Internet. With such a wide range of products offering \acrshort{vpn} capabilities, this section aims to analyze some of its most notable providers, focusing on the processes involved on their respective data planes - which refers to the subsection of a network communication responsible for carrying data between devices. This implies not only the quality of its authentication methods, encryption suite and protocol security but also of its features regarding concepts such as mobility - how the service behaves when clients change their physical locations and IP adresses - and overcoming constraints associated with networks using \acrshort{nat} mechanisms and secured with firewall rules. Finally, since operations taken in the data plane are necessarily associated with a computation overhead, namely traffic encryption and session management, overall performance is also perceived as a valued dimension.
 
 \subsubsection{NAT Traversal}
 
@@ -187,6 +192,14 @@ It is very likely that devices on the internet reside in a network behind both N
 
 \subsection{IPSec}
 
+IPSec refers to an aggregation of layer 3 protocols that work together to create a security extension to the IP protocol by adding packet encryption and authentication. Conceptually, IPSec presents two main dimensions: the protocol defining the transmitted packets' format, when secuirty mechanisms are applied upon them, and the protocol defining how parties in a communication negotiate encryption parameters.
+
+Communication in an IPSec connection is managed according to \acrlong{sa}s (SA). A \acrshort{sa} is an unidirectional set of rules and parameters specifying the necessary information for a secure communication to take place ~\cite{rfc4301}. Here, unidirectional means a \acrshort{sa} can only be associated either inbound or outbound traffic, but never to both. Hence, an IPSec bidirectional association implies the establishment of two \acrshort{sa} - one for incoming packets and one for outgoing. \acrshort{sa}s specifies which which security mechanism to use - either \acrfull{ah} or \acrfull{esp} - and are identified by a numeric value, the \acrfull{spi}. Although \acrshort{sa}s can be manually installed in routers, gateways or machines, it becomes impractical as more clients appear. \acrfull{ike} ~\cite{rfc7296} is a negotation protocol which tackles the problems associated with manual \acrshort{sa} installation. In fact, \acrshort{ike} allows the negotation of \acrshort{sa} pairs between any two machines through the use of asymmetric keys or shared secrets.
+
+\subsubsection{Transport and Tunnel modes}
+
+IPsec support two distinct modes of functionality: transport and tunnel ~\cite{rfc4301}, which differ in the way traffic is dealt with applied. In the context of \acrshort{vpn}s, tunnel mode presents the
+most desirable characteristics. First, tunnel mode encapsulates the original IP packet, allowing the use of private IP addresses as source or destination. Moreover, this very same encapsulation adds confidentiality to the original addresses.
 
 \subsection{OpenVPN}
 
