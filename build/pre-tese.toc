@@ -1,0 +1,29 @@
+\babel@toc {english}{}\relax 
+\contentsline {chapter}{Contents}{i}{section.0.1}%
+\contentsline {chapter}{List of Figures}{iii}{section.0.2}%
+\contentsline {chapter}{List of Tables}{v}{section.0.3}%
+\contentsline {chapter}{\numberline {1}Introduction}{1}{chapter.1}%
+\contentsline {section}{\numberline {1.1}Motivation}{1}{section.1.1}%
+\contentsline {section}{\numberline {1.2}Objectives}{1}{section.1.2}%
+\contentsline {section}{\numberline {1.3}Document Structure}{2}{section.1.3}%
+\contentsline {chapter}{\numberline {2}State of the Art}{3}{chapter.2}%
+\contentsline {section}{\numberline {2.1}Encrypted Peer to Peer Communications / VPNs}{3}{section.2.1}%
+\contentsline {subsubsection}{NAT Traversal}{3}{section*.4}%
+\contentsline {subsection}{\numberline {2.1.1}IPSec}{3}{subsection.2.1.1}%
+\contentsline {subsubsection}{Transport and Tunnel modes}{4}{section*.5}%
+\contentsline {subsubsection}{Authentication Header}{4}{section*.6}%
+\contentsline {subsubsection}{Encapsulating Security Payload}{5}{section*.7}%
+\contentsline {subsection}{\numberline {2.1.2}OpenVPN}{5}{subsection.2.1.2}%
+\contentsline {subsection}{\numberline {2.1.3}Wireguard}{5}{subsection.2.1.3}%
+\contentsline {subsubsection}{Routing}{5}{section*.8}%
+\contentsline {subsubsection}{Cipher Suite}{6}{section*.9}%
+\contentsline {subsubsection}{Security}{6}{section*.10}%
+\contentsline {subsubsection}{Sessions and Key Rotation}{6}{section*.11}%
+\contentsline {subsection}{\numberline {2.1.4}Performance Comparison}{6}{subsection.2.1.4}%
+\contentsline {section}{\numberline {2.2}Control Platforms}{7}{section.2.2}%
+\contentsline {subsection}{\numberline {2.2.1}OOR Map Server Implementation}{7}{subsection.2.2.1}%
+\contentsline {subsection}{\numberline {2.2.2}TailScale}{8}{subsection.2.2.2}%
+\contentsline {subsubsection}{HeadScale}{8}{section*.12}%
+\contentsline {section}{\numberline {2.3}Automation and Configuration}{8}{section.2.3}%
+\contentsline {chapter}{\numberline {3}Methodology}{9}{chapter.3}%
+\contentsline {chapter}{Bibliography}{11}{section.3.1}%
