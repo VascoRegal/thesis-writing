@@ -66,6 +66,7 @@
 \newacronym{esp}{ESP}{Encapsulating Security Payload}
 \newacronym{spi}{SPI}{Security Parameter Index}
 \newacronym{ike}{IKE}{Internet Key Exchange}
+\newacronym{icv}{ICV}{Integrity Check Value}
 
 
 \begin{document}
@@ -184,7 +185,7 @@ This document presents an implementation proposal of such an overlay network man
 
 \section{Encrypted Peer to Peer Communications / VPNs}
 
-\acrshort{vpn}s have become a mature technology, with widespread usage among the Internet. With such a wide range of products offering \acrshort{vpn} capabilities, this section aims to analyze some of its most notable providers, focusing on the processes involved on their respective data planes - which refers to the subsection of a network communication responsible for carrying data between devices. This implies not only the quality of its authentication methods, encryption suite and protocol security but also of its features regarding concepts such as mobility - how the service behaves when clients change their physical locations and IP adresses - and overcoming constraints associated with networks using \acrshort{nat} mechanisms and secured with firewall rules. Finally, since operations taken in the data plane are necessarily associated with a computation overhead, namely traffic encryption and session management, overall performance is also perceived as a valued dimension.
+\acrshort{vpn}s have become a mature technology, with widespread usage among the Internet. With such a range of products offering \acrshort{vpn} capabilities, this section aims to analyze some of its most notable providers, focusing on the processes involved on their respective data planes - which refers to the subsection of a network communication responsible for carrying data between devices. This implies not only the quality of its authentication methods, encryption suite and protocol security but also of its features regarding concepts such as mobility - how the service behaves when clients change their physical locations and IP adresses - and overcoming constraints associated with networks using \acrshort{nat} mechanisms and secured with firewall rules. Finally, since operations taken in the data plane are necessarily associated with a computation overhead, namely traffic encryption and session management, overall performance is also perceived as a valued dimension.
 
 \subsubsection{NAT Traversal}
 
@@ -194,12 +195,30 @@ It is very likely that devices on the internet reside in a network behind both N
 
 IPSec refers to an aggregation of layer 3 protocols that work together to create a security extension to the IP protocol by adding packet encryption and authentication. Conceptually, IPSec presents two main dimensions: the protocol defining the transmitted packets' format, when secuirty mechanisms are applied upon them, and the protocol defining how parties in a communication negotiate encryption parameters.
 
-Communication in an IPSec connection is managed according to \acrlong{sa}s (SA). A \acrshort{sa} is an unidirectional set of rules and parameters specifying the necessary information for a secure communication to take place ~\cite{rfc4301}. Here, unidirectional means a \acrshort{sa} can only be associated either inbound or outbound traffic, but never to both. Hence, an IPSec bidirectional association implies the establishment of two \acrshort{sa} - one for incoming packets and one for outgoing. \acrshort{sa}s specifies which which security mechanism to use - either \acrfull{ah} or \acrfull{esp} - and are identified by a numeric value, the \acrfull{spi}. Although \acrshort{sa}s can be manually installed in routers, gateways or machines, it becomes impractical as more clients appear. \acrfull{ike} ~\cite{rfc7296} is a negotation protocol which tackles the problems associated with manual \acrshort{sa} installation. In fact, \acrshort{ike} allows the negotation of \acrshort{sa} pairs between any two machines through the use of asymmetric keys or shared secrets.
+Communication in an IPSec connection is managed according to \acrlong{sa}s (SA). A \acrshort{sa} is an unidirectional set of rules and parameters specifying the necessary information for a secure communication to take place ~\cite{rfc4301}. Here, unidirectional means a \acrshort{sa} can only be associated either inbound or outbound traffic, but never to both. Hence, an IPSec bidirectional association implies the establishment of two \acrshort{sa} - one for incoming packets and one for outgoing. \acrshort{sa}s specifies which security mechanism to use - either \acrfull{ah} or \acrfull{esp} - and are identified by a numeric value, the \acrfull{spi}. Although \acrshort{sa}s can be manually installed in routers, gateways or machines, it becomes impractical as more clients appear. \acrfull{ike} ~\cite{rfc7296} is a negotation protocol which tackles the problems associated with manual \acrshort{sa} installation. In fact, \acrshort{ike} allows the negotation of \acrshort{sa} pairs between any two machines through the use of asymmetric keys or shared secrets.
 
 \subsubsection{Transport and Tunnel modes}
 
-IPsec support two distinct modes of functionality: transport and tunnel ~\cite{rfc4301}, which differ in the way traffic is dealt with applied. In the context of \acrshort{vpn}s, tunnel mode presents the
-most desirable characteristics. First, tunnel mode encapsulates the original IP packet, allowing the use of private IP addresses as source or destination. Moreover, this very same encapsulation adds confidentiality to the original addresses.
+IPsec support two distinct modes of functionality: transport and tunnel ~\cite{rfc4301}, which differ in the way traffic is dealt with and processed. In the context of \acrshort{vpn}s, tunnel mode presents the
+most desirable characteristics. First, tunnel mode encapsulates the original IP packet, allowing the use of private IP addresses as source or destination. Tunnel mode creates the concept of an "outer" and "inner" IP header. The former contains the addresses of the IPSec peers, while the latter contains the real source and destination addresses. Moreover, this very same encapsulation adds confidentiality to the original addresses.
+
+Transport mode requires less computational resources and, consequently, carries less protocol overhead. It does not, however, provide much security compared to tunnel mode, so, in the context of \acrshort{vpn}s, tunnel mode's total protection and confidentiality of the encapsulated IP packet carries much more valuable functionalities.
+
+\subsubsection{Authentication Header}
+
+\acrfull{ah} is a protocol in the IPSec suite providing data origin validation and data integrity consisting in the generation of a checksum via a digest algorithm ~\cite{rfc4302}. Additionally, besides the actual message under integrity check, two other parameters are used under the \acrshort{ah} mechanism. First, to ensure the message was sent from a valid origin, \acrshort{ah} includes a secret shared key. Then, to ensure replay protection, it also includes a sequence number. This last feature consists in the increment, by the sender, of a sequence integer whenever an outgoing message is processed.
+
+\acrshort{ah}, as the name suggests, operates by attaching an header to the IP packets, containing the message's \acrshort{spi}, its sequence number, and the \acrfull{icv} value. This last field is then verified by receivers, which calculate the packet's \acrshort{icv} on their end. The packet is only considered valid if there's a match between the sender and receiver's \acrshort{icv}.
+
+Where this header is inserted depends on the mode IPSec is running. In transport mode, the \acrshort{ah} appears after the IP header and before any next layer protocol or other IPSec headers. As for tunnel mode, the \acrshort{ah} is injected right after the outer IP header.
+
+To calculate the \acrshort{icv}, the \acrshort{ah} requires the value of the source and destination addresses, which raises an incompatibility when faced with networks operating with \acrshort{nat} mechanisms ~\cite{frankel2005guide}.
+
+\subsubsection{Encapsulating Security Payload}
+
+The \acrshort{esp} protocol also offers authentication, integrity and replay protection mechanisms. It differs from \acrshort{ah} by also providing encryption functionalities, where peers in a communication use a shared key for cryptographic operations. Analogous to the previous protocol, the \acrshort{esp}'s header location differs in different IPSec modes. In transport mode, the header is inserted right after the IP header of the original packet. Also, in this mode, since the original IP header is not encrypted, endpoint addresses are visible and might be exposed. As for tunnel mode, a new IP header is created, followed by the \acrshort{esp} header.
+
+Tunnel mode \acrshort{esp} is the most commonly used IPSec mode. This setup not only offers original IP address encryption, concealing source and destination addresses but also supports the adding of padding to packets, difficulting cipher analysis techniques. Moreover, it can be made compatible with \acrshort{nat} and employ \acrshort{nat}-traversal techniques.
 
 \subsection{OpenVPN}
 
