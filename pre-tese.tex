@@ -188,9 +188,11 @@ This document presents an implementation proposal of such an overlay network man
 
 \acrshort{vpn}s have become a mature technology, with widespread usage among the Internet. With such a range of products offering \acrshort{vpn} capabilities, this section aims to analyze some of its most notable providers, focusing on the processes involved on their respective data planes - which refers to the subsection of a network communication responsible for carrying data between devices. This implies not only the quality of its authentication methods, encryption suite and protocol security but also of its features regarding concepts such as mobility - how the service behaves when clients change their physical locations and IP adresses - and overcoming constraints associated with networks using \acrshort{nat} mechanisms and secured with firewall rules. Finally, since operations taken in the data plane are necessarily associated with a computation overhead, namely traffic encryption and session management, overall performance is also perceived as a valued dimension.
 
-\subsubsection{NAT Traversal}
+\subsubsection{The problem with NAT}
 
-It is very likely that devices on the internet reside in a network behind both NAT mechanisms and Firewall rules, with no open ports. Also, believing nodes will have a consistent static IP is a very naive assumption, specially when considering mobile devices. NAT Traversal is a networking technique that enables the establishing and maintaining of \acrshort{p2p} connections between two peers, no matter what's standing between them, making communication possible without the need for firewall configurations or public-facing open ports. There's no one solution to achieve this functionality. In fact, there are various developments effectively implementing a NAT Traversal solution, such as ICE ~\cite{rfc8445} and STUN ~\cite{rfc8489}. Hence, each \acrshort{vpn} service can have its own way of supporting NAT Traversal. Each case is explored seperatly in its own subsection.
+\acrfull{nat} is a networking mechanism responsible for translating IP addresses in private networks into public addresses when packets sent from a private network are routed to the public Internet. In the context of \acrshort{vpn} communications, this process can prove to be a major constraint, not only due to \acrshort{nat}'s tampering of IP packets' fields - namely destination and source addresses - which could potentially compromise its integrity in the eyes of a \acrshort{vpn} protocol, but also regarding the dynamically changing public IP addresses which \acrshort{nat} decides to translate private addresses to.
+
+In fact, it is very likely that devices on the internet reside in a network behind both \acrshort{nat} mechanisms and Firewall rules, with no open ports. Also, believing nodes will have a consistent static IP is a very naive assumption, specially when considering mobile devices. NAT Traversal is a networking technique that enables the establishing and maintaining (by keeping \acrshort{nat} holes open) of \acrshort{p2p} connections between two peers, no matter what's standing between them, making communication possible without the need for firewall configurations or public-facing open ports. There's no one solution to achieve this functionality. In fact, there are various developments effectively implementing a NAT Traversal solution, such as ICE ~\cite{rfc8445} and STUN ~\cite{rfc8489}. Hence, each \acrshort{vpn} service can have its own way of supporting NAT Traversal. Each case is explored seperatly in its own subsection.
 
 \subsection{IPSec}
 
@@ -223,12 +225,19 @@ Tunnel mode \acrshort{esp} is the most commonly used IPSec mode. This setup not 
 
 \subsection{OpenVPN}
 
-OpenVPN ~\cite{ovpnwebsite} is yet another open-source \acrshort{vpn} provider, known for its portability among the most common operating systems, due to its user-space implementation. OpenVPN uses established technologies, such as \acrshort{ssl} and asymmetric keys for negotation and authentication and IPSec's \acrshort{esp} protocol, explored in the previous section, over UDP or TCP for data encryption.
+OpenVPN ~\cite{ovpnwebsite} is yet another open-source \acrshort{vpn} provider, known for its portability among the most common operating systems due to its user-space implementation. OpenVPN uses established technologies, such as \acrshort{ssl} and asymmetric keys for negotation and authentication and IPSec's \acrshort{esp} protocol, explored in the previous section, over UDP or TCP for data encryption.
 
 \subsubsection{TUN and TAP interfaces}
 
-OpenVPN's virtual interfaces, which process outgoing and incoming packets, have two distinct types: TUN and TAP.
+OpenVPN's virtual interfaces, which process outgoing and incoming packets, have two distinct types: TUN (short for internet TUNnel) and TAP (short for internet TAP). Both devices work quite similarly, as both simulate \acrshort{p2p} communications. They differ on the level of operation, as TAP operates at the Ethernet level. In short, TUN allows the instantiation of IP tunnels, while TAP instatiates Ethernet tunnels.
 
+\subsubsection{OpenVPN flow}
+
+When a client sends a packet through a TUN interface, it gets redirected to a local OpenVPN server. Here, the server performs an \acrshort{esp} transformation and routes the IP packet to the destination address, through the "real" network interfaces.
+
+Similarly, when receiving a packet, the OpenVPN server will perform decipherment and validation operations on it, and, if the IP packet proves to be valid, sent to the TUN interface.
+
+This process is analogous when dealing with TAP devices, differing, as mentioned before, at the protocolar level.
 
 \subsection{Wireguard}
 
@@ -261,6 +270,9 @@ With such a scope in mind, Wireguard presents itself as a silent protocol. In ot
 Additionally, a cookie system is implemented in an attempt to mitigate \acrshort{ddos} attacks. Since, to determine the authenticity of an handshake message, a Curve25519 multiplication must be computed,  an operation requiring considerable CPU usage, a CPU-exhaustion attack vector could be exploited. Cookies are introduced as a response message to handshake initiation. These cookie messages are used as a peer response when under high CPU load, which is then in turn attached to the sender's message, allowing the requested handshake to proceed later.
 
 \subsubsection{Sessions and Key Rotation}
+
+
+\subsubsection{Basic Wireguard Configuration}
 
 \subsection{Performance Comparison}
 
@@ -300,10 +312,10 @@ In pratical terms, a TailScale client will store, in the coordination server, it
 
 \subsubsection{HeadScale}
 
-While TailScale's client is open source, its control server isn't. There is, however, an open-source, self-hosted alternative to TailScale's control server, HeadScale. HeadScale ~\cite{headscale2023online} provides a narrow scope implementation (with a single TailScale private network) of the aforementioned control server which, in the authors' words, mostly suitable for personal user and small organizations.
+While TailScale's client is open source, its control server isn't. There is, however, an open-source, self-hosted alternative to TailScale's control server, HeadScale. HeadScale ~\cite{headscale2023online} provides a narrow scope implementation (with a single TailScale private network) of the aforementioned control server which, in the authors' words, is mostly suitable for personal use and small organizations.
 
-\section{Automation and Configuration}
 
+\section{University of Aveiro Network}
 
 \chapter{Methodology}
 \label{chapter:method}
