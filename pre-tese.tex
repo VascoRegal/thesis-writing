@@ -16,6 +16,8 @@
 \usepackage{amsmath}
 \usepackage{amssymb}
 \usepackage{xspace}% used by \sigla
+\usepackage{listings}
+\usepackage{multicol}
 \usepackage[acronym]{glossaries}
 
 
@@ -188,6 +190,8 @@ This document presents an implementation proposal of such an overlay network man
 
 \acrshort{vpn}s have become a mature technology, with widespread usage among the Internet. With such a range of products offering \acrshort{vpn} capabilities, this section aims to analyze some of its most notable providers, focusing on the processes involved on their respective data planes - which refers to the subsection of a network communication responsible for carrying data between devices. This implies not only the quality of its authentication methods, encryption suite and protocol security but also of its features regarding concepts such as mobility - how the service behaves when clients change their physical locations and IP adresses - and overcoming constraints associated with networks using \acrshort{nat} mechanisms and secured with firewall rules. Finally, since operations taken in the data plane are necessarily associated with a computation overhead, namely traffic encryption and session management, overall performance is also perceived as a valued dimension.
 
+\acrshort{vpn}s can be classified according to their topology in two main categories, client-to-site and site-to-site. A client-to-site \acrshort{vpn} is characterized by connections from a single user (client) to a private network (site), while site-to-site \acrshort{vpn}s offer a secured connection between two private networks. Thus, in site-to-site networks, users are not required to individually configure \acrshort{vpn} clients. The tunnel in this type of \acrshort{vpn} is made available to the entire network.
+
 \subsubsection{The problem with NAT}
 
 \acrfull{nat} is a networking mechanism responsible for translating IP addresses in private networks into public addresses when packets sent from a private network are routed to the public Internet. In the context of \acrshort{vpn} communications, this process can prove to be a major constraint, not only due to \acrshort{nat}'s tampering of IP packets' fields - namely destination and source addresses - which could potentially compromise its integrity in the eyes of a \acrshort{vpn} protocol, but also regarding the dynamically changing public IP addresses which \acrshort{nat} decides to translate private addresses to.
@@ -273,6 +277,30 @@ Additionally, a cookie system is implemented in an attempt to mitigate \acrshort
 
 
 \subsubsection{Basic Wireguard Configuration}
+
+Connecting two peers in a Wireguard communication can be done with minimal configuration. In fact, after the generation of an asymmetric key pair and setup of a Wireguard interface, it is only required to add the other peer to the routing table, with its public key, allowed ips and, optionally, its internet endpoint (where it can be currently found). After both peers configure each other, the tunnel is established and packets can be transmitted through the Wireguard interface. Figure \ref{fig:wgconf} presents the CLI steps of this process.
+
+\begin{figure}
+\begin{multicols}{2}
+\begin{lstlisting}[language=sh, frame=single, breaklines=true, breakatwhitespace=true, basicstyle=\small]
+# Peer A
+$ ip link add wg0 type wireguard
+$ ip addr add 10.0.0.1/24 dev wg0
+$ wg set wg0 private-key ./private
+$ ip link set wg0 up
+\end{lstlisting}
+\columnbreak
+\begin{lstlisting}[language=sh, frame=single, breaklines=true, breakatwhitespace=true, basicstyle=\small]
+# Peer B
+$ ip link add wg0 type wireguard
+$ ip addr add 10.0.0.2/24 dev wg0
+$ wg set wg0 private-key ./private
+$ ip link set wg0 up
+\end{lstlisting}
+\end{multicols}
+\label{fig:wgconf}
+\caption{Basic Wireguard Communication Between Two Peers}
+\end{figure}
 
 \subsection{Performance Comparison}
 
