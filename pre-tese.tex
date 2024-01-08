@@ -18,6 +18,7 @@
 \usepackage{xspace}% used by \sigla
 \usepackage{listings}
 \usepackage{multicol}
+\usepackage{graphicx}
 \usepackage[acronym]{glossaries}
 
 
@@ -186,6 +187,14 @@ This document presents an implementation proposal of such an overlay network man
 \chapter{State of the Art}
 \label{chapter:sota}
 
+\begin{minipage}{50mm}
+     \centering % no more than 120mm
+     ``Observation is a dying art''
+          \begin{flushright}
+          --- Stanley Kubrick
+          \end{flushright}
+     \end{minipage}
+
 \section{Encrypted Peer to Peer Communications / VPNs}
 
 \acrshort{vpn}s have become a mature technology, with widespread usage among the Internet. With such a range of products offering \acrshort{vpn} capabilities, this section aims to analyze some of its most notable providers, focusing on the processes involved on their respective data planes - which refers to the subsection of a network communication responsible for carrying data between devices. This implies not only the quality of its authentication methods, encryption suite and protocol security but also of its features regarding concepts such as mobility - how the service behaves when clients change their physical locations and IP adresses - and overcoming constraints associated with networks using \acrshort{nat} mechanisms and secured with firewall rules. Finally, since operations taken in the data plane are necessarily associated with a computation overhead, namely traffic encryption and session management, overall performance is also perceived as a valued dimension.
@@ -278,24 +287,50 @@ Additionally, a cookie system is implemented in an attempt to mitigate \acrshort
 
 \subsubsection{Basic Wireguard Configuration}
 
-Connecting two peers in a Wireguard communication can be done with minimal configuration. In fact, after the generation of an asymmetric key pair and setup of a Wireguard interface, it is only required to add the other peer to the routing table, with its public key, allowed ips and, optionally, its internet endpoint (where it can be currently found). After both peers configure each other, the tunnel is established and packets can be transmitted through the Wireguard interface. Figure \ref{fig:wgconf} presents the CLI steps of this process.
+Connecting two peers in a Wireguard communication can be done with minimal configuration. In fact, after the generation of an asymmetric key pair and setup of a Wireguard interface, it is only required to add the other peer to the routing table, with its public key, allowed ips and, optionally, its internet endpoint (where it can be currently found). After both peers configure each other, the tunnel is established and packets can be transmitted through the Wireguard interface.
+In a pratical scenario, given two peers, \emph{A} and \emph{B}, with pre-generated keys and internet interfaces, presented on table \ref{tab:wgconfpeers}. Figure \ref{fig:wgconf} presents the CLI steps to setup a minimal Wireguard communication, as specified in the official Wireguard documentation.
+
+
+\begin{table}[]
+\centering
+\begin{tabular}{c|l|l|}
+\cline{2-3}
+\multicolumn{1}{l|}{}                            & \multicolumn{1}{c|}{\textbf{Peer A}} & \multicolumn{1}{c|}{\textbf{Peer B}} \\ \hline
+\multicolumn{1}{|c|}{\textbf{Private Key}}       & gIb/+...+uF2Y=                       & aFov...G3l0=                         \\ \hline
+\multicolumn{1}{|c|}{\textbf{Public Key}}        & FeQI...jHgE=                         & sg0X...7kVA=                         \\ \hline
+\multicolumn{1}{|c|}{\textbf{Internet Endpoint}} & 192.168.100.4                        & 192.168.100.5                        \\ \hline
+\multicolumn{1}{|c|}{\textbf{Wireguard Port}}    & 51820                                & 51820                                \\ \hline
+\end{tabular}
+\label{tab:wgconfpeers}
+\caption{Nodes to be configured with a Wireguard tunnel}
+\end{table}
 
 \begin{figure}
 \begin{multicols}{2}
 \begin{lstlisting}[language=sh, frame=single, breaklines=true, breakatwhitespace=true, basicstyle=\small]
-# Peer A
+# Peer A - interface setup
 $ ip link add wg0 type wireguard
 $ ip addr add 10.0.0.1/24 dev wg0
 $ wg set wg0 private-key ./private
 $ ip link set wg0 up
+
+# Adding peer B to known peers
+$ wg set wg0 peer sg0X...7kVA= allowed-ips 10.0.0.2/32 endpoint 192.168.100.5:51820
+$
+
 \end{lstlisting}
 \columnbreak
 \begin{lstlisting}[language=sh, frame=single, breaklines=true, breakatwhitespace=true, basicstyle=\small]
-# Peer B
+# Peer B - interface setup
 $ ip link add wg0 type wireguard
 $ ip addr add 10.0.0.2/24 dev wg0
 $ wg set wg0 private-key ./private
 $ ip link set wg0 up
+
+# Adding peer A to known peers
+$ wg set wg0 peer FeQI...jHgE= allowed-ips 10.0.0.1/32 endpoint 192.168.100.4:51820
+$
+
 \end{lstlisting}
 \end{multicols}
 \label{fig:wgconf}
@@ -348,6 +383,18 @@ While TailScale's client is open source, its control server isn't. There is, how
 \chapter{Methodology}
 \label{chapter:method}
 
+Having outlined the relevant technologies for this solution, TailScale's implementation appears as the most appealing to produce a configurable overlay network manager with the leverage for configuration automation. Since, as mentioned in the previous section, TailScale uses Wireguard as its dataplane, this protocol also requires considerable attention. The methodology to be taken in this dissertation follows three main phases, which are described as follows:
+
+First, to better understand the mechanisms of said tools at a pratical level, a development environment, consisting in three LXLE (a lightweight, Ubuntu-based Linux environment) virtual machines will be setup as a sandbox for running experiments. In this environment, virtual machines are attached to a shared NAT network with enabled DHCP, so communication operations can be tested. This environment is managed using Oracle VM VirutalBox Manager. Figure \ref{fig:sandbox} depicts the proposed development architecture.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.5\textwidth]{dev.png}
+\caption{Development Enviornment Architecture}
+\label{fig:sandbox}
+\end{figure}
+
+Regarding Wireguard, virtual machines can be perceived as protocol peers. As the hosts can communicate between themselves, we have a scenario where Wireguard tunnels can be setup. Although in TailScale's scope Wireguard is considerably abstracted, this environment allows not only a better understanding of the underlying dataplane, but also to collect metrics associated with network performance, using open-source tools, such as iperf ~\cite{iperfws}.
 
 
 %
