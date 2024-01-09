@@ -122,10 +122,10 @@
 \TitlePage
   \vspace*{55mm}
   \TEXT{\textbf{agradecimentos~/\newline acknowledgements}}
-       {\'Agradecimento especial aos meus gatos\ldots}
+       {\'Agradecimento especial aos meus gatos}
   \TEXT{}
        {Desejo tamb\'em pedir desculpa a todos que tiveram de suportar o meu desinteresse pelas
-        tarefas mundanas do dia-a-dia, \ldots}
+        tarefas mundanas do dia-a-dia}
 \EndTitlePage
 \titlepage\ \endtitlepage % empty page
 
@@ -133,7 +133,7 @@
 \TitlePage
   \vspace*{55mm}
   \TEXT{\textbf{Abstract}}
-       {An overlay network is a group of computational nodes that communicate with each other through a virtual or logic channel, built on top of another network. Although there are already numerous services and protocols implementing this mechanic, scalibility and administration agility are among the most desired characteristics of such a network topology. Hence, this document presents a centralized solution for the creation and control of secure overlay networks for multiple nodes - from client management to operation auditing. In the University of Aveiro, namely the autonomous robot ecosystem residing in the IRIS lab, supporting such a networking architecture would prove to be particular interesting, both for development and project organization. Therefore, this context is used as a validation environment.  \ldots}
+       {An overlay network is a group of computational nodes that communicate with each other through a virtual or logic channel, built on top of another network. Although there are already numerous services and protocols implementing this mechanic, scalibility and administration agility are among the most desired characteristics of such a network topology. Hence, this document presents a centralized solution for the creation and control of secure overlay networks for multiple nodes - from client management to operation auditing, based on Wireguard, an open-source protocol for encrypted communication. In the University of Aveiro, namely the autonomous robot ecosystem residing in the IRIS lab, supporting such a networking architecture would prove to be particular interesting, both for development and project organization.}
 \EndTitlePage
 \titlepage\ \endtitlepage % empty page
 
@@ -282,8 +282,6 @@ With such a scope in mind, Wireguard presents itself as a silent protocol. In ot
 
 Additionally, a cookie system is implemented in an attempt to mitigate \acrshort{ddos} attacks. Since, to determine the authenticity of an handshake message, a Curve25519 multiplication must be computed,  an operation requiring considerable CPU usage, a CPU-exhaustion attack vector could be exploited. Cookies are introduced as a response message to handshake initiation. These cookie messages are used as a peer response when under high CPU load, which is then in turn attached to the sender's message, allowing the requested handshake to proceed later.
 
-\subsubsection{Sessions and Key Rotation}
-
 
 \subsubsection{Basic Wireguard Configuration}
 
@@ -383,7 +381,7 @@ While TailScale's client is open source, its control server isn't. There is, how
 \chapter{Methodology}
 \label{chapter:method}
 
-Having outlined the relevant technologies for this solution, TailScale's implementation appears as the most appealing to produce a configurable overlay network manager with the leverage for configuration automation. Since, as mentioned in the previous section, TailScale uses Wireguard as its dataplane, this protocol also requires considerable attention. The methodology to be taken in this dissertation follows three main phases, which are described as follows:
+Having outlined the relevant technologies for this solution, TailScale's implementation appears as the most appealing to produce a configurable overlay network manager with the leverage for configuration automation. Since, as mentioned in the previous section, TailScale uses Wireguard as its dataplane, this protocol also requires considerable attention. The methodology to be taken in this dissertation follows three main phases: Development and Experiments, Production Configuration and Congiguration Automation. Each is described as follows:
 
 First, to better understand the mechanisms of said tools at a pratical level, a development environment, consisting in three LXLE (a lightweight, Ubuntu-based Linux environment) virtual machines will be setup as a sandbox for running experiments. In this environment, virtual machines are attached to a shared NAT network with enabled DHCP, so communication operations can be tested. This environment is managed using Oracle VM VirutalBox Manager. Figure \ref{fig:sandbox} depicts the proposed development architecture.
 
@@ -394,8 +392,20 @@ First, to better understand the mechanisms of said tools at a pratical level, a 
 \label{fig:sandbox}
 \end{figure}
 
-Regarding Wireguard, virtual machines can be perceived as protocol peers. As the hosts can communicate between themselves, we have a scenario where Wireguard tunnels can be setup. Although in TailScale's scope Wireguard is considerably abstracted, this environment allows not only a better understanding of the underlying dataplane, but also to collect metrics associated with network performance, using open-source tools, such as iperf ~\cite{iperfws}.
+Regarding Wireguard, virtual machines can be perceived as protocol peers. As the hosts can communicate between themselves, we have a scenario where Wireguard tunnels can be setup. Although in TailScale's scope Wireguard is considerably abstracted, this environment allows not only a better understanding of the underlying dataplane at stake, but also to collect metrics associated with network performance, using open-source tools, such as iperf ~\cite{iperfws}. TailScale will then be introduced in the environment, with one machine serving as the control plane, or, by TailScale's terms, the coordination server. Here, devices, users and subnetting configurations will be done. The other two machines will function as TailScale clients and are orchestrated by the coordination server. Essentially, this first phase serves as an analysis on TailScale's concepts, configurations and features, which will aid in specifying and understanding the requirements for the TailScale instance to be deployed in the \acrshort{ua}'s premises. This environment can also eventually be used for the development of client automation mechanisms, which will be discussed further in the next phases.
 
+Once TailScale has been researched to its most adequated configuration, we proceed to the next phase, which, analogous to the previous one, consists in the setup of the coordination server in a host within the \acrshort{ua} network, followed by the configuration of the clients, either using the robots running \acrshort{ros} or, in a first stage, a sample of test hosts, which can virtually be any machine.
+
+The final phase consists in the automation of the processes taken in the previous ones, regarding installation, deployment and configuration of both the coordination server and client-side running on the robots. This automation is achieved with the use of shell scripts and, eventually, open-source automation tools such as Ansible ~\cite{ansiblews}. To configure the clients, a config-based script will be developed. This approach allows the use of the same script for all robots requiring access to an overlay network, with a degree of abstraction regarding operations such as key generations and service discovery. Ideally, this script would only require the configuration of the coordination server's address, the name of the network the robot wants to connect to and, optionally, an endpoint pointing to where the robot can be found. Another topic of great interest would be to ensure the robots automatically connect to their desired network on boot, which can be achieved with the use of, for example, crontabs.
+
+The tasks encompassing the aforementioned described phases can be summed up in a Gantt diagram, presented in figure \ref{fig:gantt}.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=1\textwidth]{gantt.png}
+\caption{Development planning proposal}
+\label{fig:gantt}
+\end{figure}
 
 %
 % The bibliography
