@@ -1,0 +1,52 @@
+This is BibTeX, Version 0.99d (TeX Live 2023/Arch Linux)
+Capacity: max_strings=200000, hash_size=200000, hash_prime=170003
+The top-level auxiliary file: pre-tese.aux
+The style file: plain.bst
+Database file #1: refs.bib
+Warning--I didn't find a database entry for ""
+Warning--empty journal in frankel2005guide
+Warning--empty journal in osswald2020performance
+Warning--empty booktitle in perrin2018noise
+Warning--empty booktitle in cryptoeprint:2014/613
+You've used 20 entries,
+            2118 wiz_defined-function locations,
+            588 strings with 6723 characters,
+and the built_in function-call counts, 5603 in all, are:
+= -- 480
+> -- 341
+< -- 0
++ -- 140
+- -- 116
+* -- 303
+:= -- 972
+add.period$ -- 60
+call.type$ -- 20
+change.case$ -- 116
+chr.to.int$ -- 0
+cite$ -- 24
+duplicate$ -- 200
+empty$ -- 475
+format.name$ -- 116
+if$ -- 1160
+int.to.chr$ -- 0
+int.to.str$ -- 20
+missing$ -- 10
+newline$ -- 103
+num.names$ -- 40
+pop$ -- 194
+preamble$ -- 1
+purify$ -- 96
+quote$ -- 0
+skip$ -- 147
+stack$ -- 0
+substring$ -- 104
+swap$ -- 24
+text.length$ -- 0
+text.prefix$ -- 0
+top$ -- 0
+type$ -- 80
+warning$ -- 4
+while$ -- 40
+width$ -- 22
+write$ -- 195
+(There were 5 warnings)

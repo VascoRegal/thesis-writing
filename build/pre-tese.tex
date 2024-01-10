@@ -408,7 +408,7 @@ Once Tailscale has been researched to its most adequated configuration, we proce
 
 The final phase consists in the automation of the processes taken in the previous ones, regarding installation, deployment and configuration of both the coordination server and client-side running on the robots. This automation is achieved with the use of shell scripts and, eventually, open-source automation tools such as Ansible ~\cite{ansiblews}. To configure the clients, a config-based script will be developed. This approach allows the use of the same script for all robots requiring access to an overlay network, with a degree of abstraction regarding operations such as key generations and service discovery. Ideally, this script would only require the configuration of the coordination server's address, the name of the network the robot wants to connect to and, optionally, an endpoint pointing to where the robot can be found. Another topic of great interest would be to ensure the robots automatically connect to their desired network on boot, which can be achieved with the use of, for example, crontabs.
 
-The tasks encompassing the phases described above can be summed up in a Gantt diagram, presented in figure \ref{fig:gantt}.
+The tasks encompassing the aforementioned described phases can be summed up in a Gantt diagram, presented in figure \ref{fig:gantt}.
 
 \begin{figure}[h]
 \centering
