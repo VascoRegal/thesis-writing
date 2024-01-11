@@ -156,7 +156,7 @@
 \listoftables
 
 \cleardoublepage
-\printglossary
+% \printglossary[type=\acronymtype]
 
 % The chapters (usually written using the isolatin font encoding ...)
 
@@ -241,7 +241,7 @@ To calculate the \acrshort{icv}, the \acrshort{ah} requires the value of the sou
 
 The \acrshort{esp} protocol also offers authentication, integrity and replay protection mechanisms. It differs from \acrshort{ah} by also providing encryption functionalities, where peers in a communication use a shared key for cryptographic operations. Analogous to the previous protocol, the \acrshort{esp}'s header location differs in different IPSec modes. In transport mode, the header is inserted right after the IP header of the original packet. Also, in this mode, since the original IP header is not encrypted, endpoint addresses are visible and might be exposed. As for tunnel mode, a new IP header is created, followed by the \acrshort{esp} header.
 
-Tunnel mode \acrshort{esp} is the most commonly used IPSec mode. This setup not only offers original IP address encryption, concealing source and destination addresses but also supports the adding of padding to packets, difficulting cipher analysis techniques. Moreover, it can be made compatible with \acrshort{nat} ~\cite{} and employ \acrshort{nat}-traversal techniques.
+Tunnel mode \acrshort{esp} is the most commonly used IPSec mode. This setup not only offers original IP address encryption, concealing source and destination addresses but also supports the adding of padding to packets, difficulting cipher analysis techniques. Moreover, it can be made compatible with \acrshort{nat} and employ \acrshort{nat}-traversal techniques ~\cite{nam2022high}, ~\cite{singh2012nat}.
 
 \subsection{OpenVPN}
 
@@ -373,7 +373,7 @@ Regarding performance, there is, as expected, an overhead compared to native OOR
 
 Tailscale is a \acrshort{vpn} service operating with a golang user-space Wireguard variant as its data plane ~\cite{tailscale2020online}. Traditional \acrshort{vpn} services operate under a hub-and-spoke architecture, a model composed by one or more \acrshort{vpn} Gateways - devices accepting incoming connections from client nodes and forwarding the traffic to their final destination. Hub-and-spoke architectures carry some limitations. First, it implies increased latency associated with geographical distance between a client to the nearest hub. Also, regarding scalibility and dynamic configuration, adding new clients to the network requires the distribution of its keys to all hubs. With these constraints in mind, Tailscale offers an hybrid model. Tailscale's central entity, refered to as a coordination server, functions as a shared repository of peer information, used by clients to retrieve information regarding other nodes and establishing on-demand \acrshort{p2p} connections among each other.
 
-This control plane approach differs from traditional hub-and-spoke since the coordination server carries nearly no traffic - it only serves encryption keys and peer information. Tailscale's architecture can be perceived as an hybrid model, benefitting from the advantages of control plane centralization without bottlenecking its data plane performance.
+This control plane approach differs from traditional hub-and-spoke since the coordination server carries nearly no traffic - it only serves encryption keys and peer information. Tailscale's architecture provides the best of both worlds, benefitting from the advantages of control plane centralization without bottlenecking its data plane performance.
 
 In pratical terms, a Tailscale client will store, in the coordination server, its own public key and where it can currently be found. Then, it downloads a list of public keys and addresses that have been stored in the server previously by other clients. With this information, the client node is able to configure its Wireguard interface and start communicating with any other node in its domain.
 
@@ -385,7 +385,7 @@ Although this procedure is quite effective, in networks with \acrshort{nat} mech
 
 There are however, some \acrshort{nat} devices that create a completly different public address mapping to each different destination a machine communicates with, which hinders the above address discovery process. Such devices are classified as \acrfull{edm} (in opposition to \acrfull{eim}) ~\cite{rfc4787}.
 
-Networks employing \acrshort{edm} devices and really strict firewall rules, such as blocking outgoing UDP entirely, render these traversal techniques useless. To enable \acrshort{p2p} communications in such scenarios, Tailscale also provides a network of \acrfull{DERP} servers, which are responsible to relay packets over \acrshort{http}. A Tailscale client is able to forward its encrypted packets to one of such \acrshort{DERP} servers. Since a client's private key never actually leaves its node, \acrshort{DERP} servers can't decrypt the traffic being relayed, performing only redirection of already encrypted packets. These relay servers are distributed geographically, however possibly carrying an increase in latency and loss of bandwidth, which isn't terrible, as the alternative is not being able to establish connections.
+Networks employing \acrshort{edm} devices and/or really strict firewall rules, such as blocking outgoing UDP entirely, render these traversal techniques useless. To enable \acrshort{p2p} communications in such scenarios, Tailscale also provides a network of \acrfull{DERP} servers, which are responsible to relay packets over \acrshort{http}. A Tailscale client is able to forward its encrypted packets to one of such \acrshort{DERP} servers. Since a client's private key never actually leaves its node, \acrshort{DERP} servers can't decrypt the traffic being relayed, performing only redirection of already encrypted packets. These relay servers are distributed geographically, there is however the possibility of carrying an increase in latency and loss of bandwidth, which isn't terrible, as the alternative is not being able to establish connections at all.
 
 As such, Tailscale's design provides a set of directives and infrastructure that work together to ensure Wireguard tunnels can be set up between any two peers, regardless of what policies the network inbetween them employs.
 
