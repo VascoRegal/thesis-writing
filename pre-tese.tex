@@ -72,6 +72,10 @@
 \newacronym{icv}{ICV}{Integrity Check Value}
 \newacronym{ssl}{SSL}{Secure Sockets Layer}
 \newacronym{DERP}{DERP}{Designated Encrypted Relay for Packets}
+\newacronym{stun}{STUN}{Session Traversal Utilities for NAT}
+\newacronym{edm}{EDM}{Endpoint-Dependent Mapping}
+\newacronym{eim}{EIM}{Endpoint-Independent Mapping}
+\newacronym{http}{HTTP}{Hyper-Text Transfer Protocol}
 
 
 \begin{document}
@@ -375,9 +379,13 @@ In pratical terms, a Tailscale client will store, in the coordination server, it
 
 \subsubsection{Overcoming network constraints}
 
-Tailscale also successfully supports procedures to overcome the problems described in the introduction of this section. Regarding \acrshort{nat}, Tailscale uses ICE and STUN based techniques [TODO: describe NAT-traversal on tailscale].
+Tailscale also successfully supports procedures to overcome the problems described in the introduction of this section. Regarding stateful firewalls, where, generally, inbound traffic for a given source address on a non-open port is only accepted if the firewall has recently seen an outgoing packet with such \emph{ip:port} as destination (essentially assuming that, if outbound traffic flowed to a destination, the source expects to receive an answer from that same destination), Tailscale keeps, in its coordination server, the \emph{ip:port} of each node in its network. With this information, if both peers send an outgoing packet to each other at approximately the same time (a time delta inferior to the firewall's cache expiration), then the firewalls at each end will be expecting the reception of packets from the opposite peer, hence pakcets can flow bidirectionally and a \acrshort{p2p} communication is established. To ensure this synchronism of attempting communication at approximate times, Tailscale uses its coordination server and \acrshort{DERP} servers (explored further in the following paragraphs) as a side channel.
 
-Additionally, and since some networks block UDP entirely, which renders these traversal techniques useless, Tailscale also provides a network of \acrfull{DERP} servers, which are responsible to relay packets over TCP. A Tailscale client is able to forward its encrypted packets to one of such \acrshort{DERP} servers. Since a client's private key never actually leaves its node, \acrshort{DERP} servers can't decrypt the traffic being relayed, performing only redirection of already encrypted packets. These relay servers are distributed geographically in a topology in which the added latency is nearly unnoticed.
+Although this procedure is quite effective, in networks with \acrshort{nat} mechanisms, where source and destination addresses are tampered with, this process is not as straightforward, since peers dont't know the public addresses \acrshort{nat} will translate their private addresses to. The \acrshort{stun} protocol offers aid in performing \acrshort{nat}-traversal operations ~\cite{rfc8489} and can solve this problem. For a peer to discover and store in the coordination server its own public \emph{ip:port}, it first sends a packet to a \acrshort{stun} server. Upon receiving this packet, the \acrshort{stun} server can see which source address was used (the address \acrshort{nat} translated to) and replies this value to the peer.
+
+There are however, some \acrshort{nat} devices that create a completly different public address mapping to each different destination a machine communicates with, which hinders the above address discovery process. Such devices are classified as \acrfull{edm} (in opposition to \acrfull{eim}) ~\cite{rfc4787}.
+
+Networks employing \acrshort{edm} devices and really strict firewall rules, such as blocking outgoing UDP entirely, render these traversal techniques useless. To enable \acrshort{p2p} communications in such scenarios, Tailscale also provides a network of \acrfull{DERP} servers, which are responsible to relay packets over \acrshort{http}. A Tailscale client is able to forward its encrypted packets to one of such \acrshort{DERP} servers. Since a client's private key never actually leaves its node, \acrshort{DERP} servers can't decrypt the traffic being relayed, performing only redirection of already encrypted packets. These relay servers are distributed geographically, however possibly carrying an increase in latency and loss of bandwidth, which isn't terrible, as the alternative is not being able to establish connections.
 
 As such, Tailscale's design provides a set of directives and infrastructure that work together to ensure Wireguard tunnels can be set up between any two peers, regardless of what policies the network inbetween them employs.
 
