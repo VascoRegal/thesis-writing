@@ -403,9 +403,6 @@ As such, Tailscale's design provides a set of directives and infrastructure that
 
 While Tailscale's client is open source, its control server isn't. There is, however, an open-source, self-hosted alternative to Tailscale's control server, Headscale. Headscale ~\cite{headscale2023online} provides a narrow-scope implementation (with a single Tailscale private network) of the aforementioned control server, which, in the authors' words, is mostly suitable for personal use and small organizations. Nodes running tailscale clients can opt to specify the location of the control server, which can be the address of a running self-hosted Headscale instance.
 
-Headscale
-
-
 \section{University of Aveiro Network}
 
 Due to security and privacy concerns, the specification of the \ac{ua}'s network topology is not publicly available nor is it made available for this dissertation. As such, it is perceived as a black box. There are, however, a few reachable conclusions derived from observing its behavior.
@@ -428,9 +425,9 @@ First, to better understand the mechanisms of said tools at a practical level, a
 
 The virtual machines can also be perceived as standalone Wireguard peers for development. As \textbf{VM1} can communicate with \textbf{VM3}, we have a scenario where Wireguard tunnels can be set up. Although in Tailscale's scope Wireguard is considerably abstracted, this environment allows not only a better understanding of the underlying dataplane at stake, but also to collect metrics associated with network performance, using open-source tools, such as iperf ~\cite{iperfws}.
 
-Headscale will then be introduced in the environment, with \textbf{VM3} serving as the control plane, or, by Tailscale's terms, the coordination server. Here, devices, users and subnetting configurations will be tampered with. The other two machines will function as Tailscale clients and are orchestrated by the coordination server. Essentially, this first phase serves as an analysis of Tailscale's and Headscale's concepts, configurations and features, which will aid in specifying and understanding the requirements for the Headscale instance to be deployed on the \ac{ua}'s premises. This environment can also eventually be used for the development of client automation mechanisms, which will be discussed further in the next phases.
+Headscale will then be introduced in the environment, with \textbf{VM3} serving as the control plane, or, by Tailscale's terms, the coordination server. Here, devices, users and subnetting configurations will be explored. The other two machines will function as Tailscale clients and are orchestrated by the coordination server. Essentially, this first phase serves as an analysis of Tailscale's and Headscale's concepts, configurations and features, which will aid in specifying and understanding the requirements for the Headscale instance to be deployed on the \ac{ua}'s premises. This environment can also eventually be used for the development of client automation mechanisms, which will be discussed further in the next phases.
 
-It would also be interesting to either remove Tailscale's encryption layer or create a small-scale proof-of-concept implementing the protocol to establish communication between the two machines. This would allow packet inspection and a better insight into the mechanisms of the process, as messages being sent and received are transmitted as plain text.
+It would also be interesting to either remove Tailscale's encryption layer or create a small-scale proof-of-concept implementing the protocol to establish communication between the two machines. This would allow packet inspection and a better insight into the mechanisms of the process, as messages being sent and received would be transmitted as plain text.
 
 Once the environment has been researched to its most adequate configuration, we proceed to the next phase, which, analogous to the previous one, consists in the setup of the coordination server in a host within the \ac{ua}'s public network segment, followed by the configuration of the clients, either using the robots running \ac{ros} or, in a first stage, a sample of test hosts, which can virtually be any machine.
 
