@@ -83,6 +83,7 @@
 \acrodef{ap}[AP]{Access Point}
 \acrodef{vlan}[VLAN]{Virtual Local Area Network}
 \acrodef{ttl}[TTL]{Time To Live}
+\acrodef{ssh}[SSH]{Secure Shell}
 
 \begin{document}
 
@@ -450,6 +451,48 @@ The tasks encompassing the phases described above can be summed up in a Gantt di
 \caption{Development planning proposal}
 \label{fig:gantt}
 \end{figure}
+
+\chapter{Prototype Development}
+
+This chapter details the configuration of the development environment, as proposed in figure \ref{fig:sandbox}, and its use for the implementation of a functional prototype. This environment is managed with Oracle Virtual Box. The goal for this prototype is the setup of a self-hosted Tailscale coordination server, which is achieved using Headscale, hosted on \textbf{VM3} and the deployment, on the client machines, of a small \ac{ros} demo application in which \textbf{VM1} and \textbf{VM2} communicate directly through a Tailscale interface.
+
+\section{Environment}
+
+\subsubsection{Virtual Machines}
+
+The three virtual machines composing the environment use \emph{Ubuntu Server 22.04} as their operating system. Each machine is configured with the following resources:
+
+\begin{itemize}
+     \item{1024 MB Base Memory}
+     \item{1 CPU}
+     \item{10 GB Storage (Virtual Disk)}
+\end{itemize}
+
+Regarding networking, \textbf{VM3} is attached to a bridge network on the ethernet interface of the host machine. As for \textbf{VM1} and \textbf{VM2}, each respective network adapter is attached to a \ac{nat}, isolating each client on its own private network, unaccessible from the outside. All machines can access the internet through the access point, explored in the following section.
+
+Table \ref{table:vmspecs} summarizes said specification. \textbf{VM1} and \textbf{VM2} are assigned the same private \ac{ip} address since they are residing in distinct private networks. For convenience, the Virtual Machines are also configured to allow \ac{ssh} connections, which means port 22 is open on all machines. Moreover, for machines \textbf{VM1} and \textbf{VM2}, which are confined to their private networks, this was achieved with port forwarding rules, forwarding \textbf{VM1}'s port 22 to the host machine's port 2222 and \textbf{VM2}'s port 22 to the host machine's port 2223.
+
+\begin{table}[]
+\centering
+\begin{tabular}{c|c|c|c|}
+\cline{2-4}
+\multicolumn{1}{l|}{}                           & \textbf{VM1}        & \textbf{VM2}        & \textbf{VM3}        \\ \hline
+\multicolumn{1}{|c|}{\textbf{Operating System}} & Ubuntu Server 22.04 & Ubuntu Server 22.04 & Ubuntu Server 22.04 \\ \hline
+\multicolumn{1}{|c|}{\textbf{Memory (Mb)}}      & 1024                & 1024                & 1024                \\ \hline
+\multicolumn{1}{|c|}{\textbf{Storage (Gb)}}     & 10                  & 10                  & 10                  \\ \hline
+\multicolumn{1}{|c|}{\textbf{CPUs}}             & 1                   & 1                   & 1                   \\ \hline
+\multicolumn{1}{|c|}{\textbf{Network Adapter}}  & NAT                 & NAT                 & Bridged (ethernet)  \\ \hline
+\multicolumn{1}{|c|}{\textbf{Address}}          & 10.0.2.15           & 10.0.2.15           & 192.168.10.214      \\ \hline
+\end{tabular}
+\caption{Development Virtual Machines specification}
+\label{table:vmspecs}
+\end{table}
+
+\subsubsection{Access Point}
+
+The access point used in this environment is a N600 Wireless Dual Band Gigabit router. The host machine is connected to the access point via ethernet. With this setup, when one of the client machines wants to communicate with \textbf{VM3}, the traffic will be routed from the client to the \ac{ap}'s WiFi interface. Then the router will forward the packet through its ethernet interface, reaching the host machine and, consequently, reaching \textbf{VM3}, as its network adapter is bridged to the host's ethernet interface, as described above.
+
+This effectively simulates, within the host machine, a scenario very similar to the one present in the \ac{iris}'s use case.
 
 %
 % The bibliography
