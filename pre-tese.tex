@@ -84,6 +84,7 @@
 \acrodef{vlan}[VLAN]{Virtual Local Area Network}
 \acrodef{ttl}[TTL]{Time To Live}
 \acrodef{ssh}[SSH]{Secure Shell}
+\acrodef{cli}[CLI]{Command Line Interface}
 
 \begin{document}
 
@@ -435,9 +436,12 @@ Finally, to validate goal (iii), a simple \ac{ros} application should be deploye
 \end{figure}
 
 
-\section{Prdouction Deployment}
+\section{Deployment}
 
 After achieving and configuring the prototype previously developed, the next phase focuses on the deployment within \ac{ua}'s premises.
+(i) Deploy headscale server in public domain
+(ii) Configure robots
+(iii) validate
 
 
 \section{Automation}
@@ -465,17 +469,17 @@ The tasks encompassing the phases described above can be summed up in a Gantt di
 
 \chapter{Prototype Development}
 
-This chapter details the configuration of the development environment, as proposed in figure \ref{fig:sandbox}, and its use for the implementation of a functional prototype. This environment is managed with Oracle Virtual Box. The goal for this prototype is the setup of a self-hosted Tailscale coordination server, which is achieved using Headscale, hosted on \textbf{VM3} and the deployment, on the client machines, of a small \ac{ros} demo application in which \textbf{VM1} and \textbf{VM2} communicate directly through a Tailscale interface.
+This chapter details the configuration of the development environment, as proposed in figure \ref{fig:sandbox}, and its use for the implementation of a functional prototype. This environment is managed with Oracle Virtual Box. Having defined the goals for this experiment in the aforestated work porposal, this prototype requires the deployment of the Headscale control server, which is hosted in \textbf{VM-3}, followed by the configuration, and respective login, of both clients, \textbf{VM1} and \textbf{VM2}, using the tailscale \ac{cli}. With the clients configured with Tailscale addresses, these can be used to run tests on containerized \ac{ros} applications.
 
-\section{Environment}
+\section{Development Environment}
 
 \subsubsection{Virtual Machines}
 
-The three virtual machines composing the environment use \emph{Ubuntu Server 22.04} as their operating system. Each machine is configured with the following resources:
+The three virtual machines composing the environment use \emph{Ubuntu Server 22.04} as their operating system. Due to the nature of the goals to be achieved in this phase, which focus on a very small scope, the machines require very little resources. Regarding networking, \textbf{VM3} is attached to a bridge network on the ethernet interface of the host machine. As for \textbf{VM1} and \textbf{VM2}, each respective network adapter is attached to a \ac{nat}, isolating each client on its own private network, unaccessible from the outside. All machines can access the internet through the access point, explored in the following section.
 
-Regarding networking, \textbf{VM3} is attached to a bridge network on the ethernet interface of the host machine. As for \textbf{VM1} and \textbf{VM2}, each respective network adapter is attached to a \ac{nat}, isolating each client on its own private network, unaccessible from the outside. All machines can access the internet through the access point, explored in the following section.
+Both \textbf{VM1} and \textbf{VM2} are assigned the same private \ac{ip} address since they are residing in distinct private networks. For convenience, the Virtual Machines are also configured to allow \ac{ssh} connections, which means port 22 is open on all machines. Moreover, for machines \textbf{VM1} and \textbf{VM2}, which are confined to their private networks, this was achieved with port forwarding rules, forwarding \textbf{VM1}'s port 22 to the host machine's port 2222 and \textbf{VM2}'s port 22 to the host machine's port 2223.
 
-Table \ref{table:vmspecs} summarizes said specification. \textbf{VM1} and \textbf{VM2} are assigned the same private \ac{ip} address since they are residing in distinct private networks. For convenience, the Virtual Machines are also configured to allow \ac{ssh} connections, which means port 22 is open on all machines. Moreover, for machines \textbf{VM1} and \textbf{VM2}, which are confined to their private networks, this was achieved with port forwarding rules, forwarding \textbf{VM1}'s port 22 to the host machine's port 2222 and \textbf{VM2}'s port 22 to the host machine's port 2223.
+Table \ref{table:vmspecs} summarizes said specification.
 
 \begin{table}[]
 \centering
@@ -498,6 +502,22 @@ Table \ref{table:vmspecs} summarizes said specification. \textbf{VM1} and \textb
 The access point used in this environment is a N600 Wireless Dual Band Gigabit router. The host machine is connected to the access point via ethernet. With this setup, when one of the client machines wants to communicate with \textbf{VM3}, the traffic will be routed from the client to the \ac{ap}'s WiFi interface. Then the router will forward the packet through its ethernet interface, reaching the host machine and, consequently, reaching \textbf{VM3}, as its network adapter is bridged to the host's ethernet interface, as described above.
 
 This effectively simulates, within the host machine, a scenario very similar to the one present in the \ac{iris}'s use case.
+
+
+\section{Headscale Instance Deployment}
+
+\section{Client Configuration}
+
+\section{Communication with ROS}
+
+\chapter{Production Deployment}
+
+\chapter{Automation}
+
+\chapter{Validation and Results}
+
+\chapter{Conclusion}
+
 
 %
 % The bibliography
