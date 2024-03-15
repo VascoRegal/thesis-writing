@@ -400,7 +400,7 @@ Networks employing \ac{edm} devices and/or really strict firewall rules, such as
 As such, Tailscale's design provides a set of directives and infrastructure that work together to ensure Wireguard tunnels can be set up between any two peers, regardless of what policies the network between them employs.
 
 \subsubsection{Headscale}
-\label{sec:ts}
+\label{sec:hs}
 
 While Tailscale's client is open source, its control server isn't. There is, however, an open-source, self-hosted alternative to Tailscale's control server, Headscale. Headscale ~\cite{headscale2023online} provides a narrow-scope implementation (with a single Tailscale private network) of the aforementioned control server, which, in the authors' words, is mostly suitable for personal use and small organizations. Nodes running tailscale clients can opt to specify the location of the control server, which can be the address of a running self-hosted Headscale instance.
 
@@ -413,7 +413,20 @@ First, the network is highly segmented, where clients are grouped according to t
 \chapter{Methodology}
 \label{chapter:method}
 
-Having outlined the relevant technologies for this solution, Tailscale's implementation appears to be the most appealing to produce a configurable overlay network manager with the leverage for configuration automation. Instead of using Tailscale's coordination server, which is not open-source, Headscale's self-hosted coordination server implementation will be used. Since, as mentioned in the previous section, Tailscale uses Wireguard as its data plane, this protocol also requires considerable attention. The methodology to be used in this dissertation follows three main phases: development, deployment and automation. Each is described as follows:
+
+Having outlined the relevant technologies for this dissertation's context, this chapter aims to present a work proposal for the solution implementation. The approach to be taken is segmented in three main stages: Prototype Development, Production Deployment and, finally, Automation.
+
+\section{Prototype Development}
+
+This first phase aims to build a small-scale prototype in a virtual development environment. Regarding networking, this environment should be identical to the scenario of clients within \ac{ua}'s campus. This prototype should, using Headscale and Tailscale, be able to establish a \ac{p2p} connection between two sample clients, which couldn't communicate beforehand. Hence, this phsase's three main goals are to (i) create a virtual environment which replicates the scenario being tackled, to (ii) establish \ac{p2p} connections between clients in isolated private networks and to (iii) Validate the communication through the \ac{ros} middleware.
+
+This virtual environment must be composed of three entities: a public server and two clients in their own private networks. As mentioned in section \ref{sec:hs}, Headscale is an open-source implementation of Tailscale's control server. Thus, the control server in this environment is a self-hosted Headscale instance deployed in the public server. Both clients, which can reach the public server, but not each other, should then auhtenticate in this control server and configure their Tailscale interfaces and assigned Tailscale addresses, allowing for a direct communication to take place.
+
+Using virtualization software, this environment could be established with three linux virtual machines with minimum resources, in a single host. To achieve the networking requirements, as stated in goal (i), the client machines should be attached to individual private \ac{nat} Networks and connected via Wi-Fi to an \ac{ap}, while the server machine should be attached to a bridge on the host's ethernet interface. Figure \ref{fig:sandbox} depicts this architecture.
+
+
+
+Having outlined the relevant technologies for this solution, Tailscale's implementation proves to be the most appealing to produce a configurable overlay network manager with the leverage for configuration automation. Instead of using Tailscale's coordination server, which is not open-source, Headscale's self-hosted coordination server implementation will be used. Since, as mentioned in the previous section, Tailscale uses Wireguard as its data plane, this protocol also requires considerable attention. The methodology to be used in this dissertation follows three main phases: development, deployment and automation. Each is described as follows:
 
 First, to better understand the mechanisms of said tools at a practical level, a development environment, composed by three lightweight Linux virtual machines and an \ac{ap}, will be set up as a sandbox for running experiments. Figure \ref{fig:sandbox} depicts the proposed development architecture. In this environment, managed with virtualization software such as Oracle VirtualBox ~\cite{virtualbox}, \textbf{VM1} and \textbf{VM2} are attached to isolated NAT networks, which means they can't communicate with each other as the host machine can't forward traffic to the virtual machines without any port forwarding configuration. They can, however, reach the Internet via WiFi through the host interface using an access point. \textbf{VM3} is configured with a bridge network, and connected via Ethernet to the access point. As \textbf{VM3} is connected directly to the physical network, it behaves just like any other connected device, with its own \ac{ip} address. So, \textbf{VM1} and \textbf{VM2} can reach \textbf{VM3} but can't reach each other. This effectively creates a scenario very similar to the one being tackled, as our goal is to establish a \ac{p2p} connection between two machines, when they can't immediately communicate but there's a third machine both can communicate with.
 
@@ -461,12 +474,6 @@ This chapter details the configuration of the development environment, as propos
 \subsubsection{Virtual Machines}
 
 The three virtual machines composing the environment use \emph{Ubuntu Server 22.04} as their operating system. Each machine is configured with the following resources:
-
-\begin{itemize}
-     \item{1024 MB Base Memory}
-     \item{1 CPU}
-     \item{10 GB Storage (Virtual Disk)}
-\end{itemize}
 
 Regarding networking, \textbf{VM3} is attached to a bridge network on the ethernet interface of the host machine. As for \textbf{VM1} and \textbf{VM2}, each respective network adapter is attached to a \ac{nat}, isolating each client on its own private network, unaccessible from the outside. All machines can access the internet through the access point, explored in the following section.
 
