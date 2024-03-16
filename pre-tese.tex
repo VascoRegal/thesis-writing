@@ -508,12 +508,11 @@ This effectively simulates, within the host machine, a scenario very similar to 
 
 \section{Headscale Instance Deployment}
 
-Headscale provides an highly configurable open-source implementation of a control server, allowing the configuration of \ac{DERP} relays and \ac{stun} servers, which must also be hosted in this server. At the time of writing, the latest stable Headscale release is \emph{v0.22.3}, which is the version of the software refered to in the rest of this chapter.
+Headscale provides an highly configurable open-source implementation of a control server, allowing the configuration of \ac{DERP} relays and \ac{stun} servers, which must also be hosted in this server. At the time of writing, the latest stable Headscale release is \emph{v0.22.3} \footnote{Headscale's official releases, hosted in GitHub. https://github.com/juanfont/headscale/releases.}, which is the version of the software refered to in the rest of this chapter.
 
-The instance was configured to run with an embedded \ac{DERP} server in the default region, which additionally provides \ac{stun} functionalities to make \ac{nat} traversal possible within the environment. These configurations were achieved through Headscale's configuration file, a yaml provided in the package. With the service running, \textbf{VM-3} is now listening for Tailscale clients to connect and start using the protocol. For development purposes, an Headscale user, \textbf{dev}, was registred in instance and shall be the user the clients will register as.
+The instance was configured to run with an embedded \ac{DERP} server in the default region, which additionally provides \ac{stun} functionalities to make \ac{nat} traversal possible within the environment. These configurations were achieved through Headscale's configuration file, a yaml provided in the package. With the service running, \textbf{VM-3} is now listening for Tailscale clients to connect and start using the protocol. For development purposes, an Headscale user, \textbf{dev}, was registred in the instance and shall be the user the clients will register themselves with. Finally, regarding Tailscale \ac{ip} assignments, the instance uses the default subnet prefixes, 100.64.0.0/10 for ipv4 and fd7a:115c:a1e0::/48 for ipv6. Registered clients will be assigned \ac{ip} addresses in these ranges.
 
-Table \ref{table:hstest} presents the available services and their respective listening configuration produced by the running Headscale instance. Besides the metrics and gRPC services, which are not required by clients to use Tailscale,
-are listening privately, on the server's localhost interface. The remaining services are exposed in the defined ports, reachable by the clients.
+Table \ref{table:hstest} presents the available services and their respective listening configuration produced by the running Headscale instance. Besides the metrics and gRPC services, which are not required by clients to use the Tailscale protocol, are listening privately, on the server's localhost interface. The remaining services are exposed in the defined ports, reachable by the clients.
 
 \begin{table}[]
 \centering
@@ -534,6 +533,16 @@ are listening privately, on the server's localhost interface. The remaining serv
 
 
 \section{Client Configuration}
+
+Intially, clients can't really establish a direct connection in a traditional way. In fact, neither client is assigned a public address which could be used as a communication's endpoint. They can, however, reach the outside internet, which consequently implies the translation of their private addresses into public ones, a process carried by the adapter attached to the host machine's \ac{nat}.
+
+Using Tailscale's, \ac{cli}, a client is able to authenticate in the Headscale instance previously deployed, which in turn configures its Tailscale interface with a respective Tailscale \ac{ip}, in the range previously configured in the control server. This will allow a state where \ac{p2p} WireGuard tunnels can be established freely between the registered clients.
+
+Hence, the Tailscale binaries were installed in each client, using the install shell script provided \footnote{Tailscale's install script, publicly available online. https://tailscale.com/install.sh}.
+
+At this point, clients are ready to perform authentication in the control server and start communicating, a process described in the next section.
+
+\section{Authentication}
 
 \section{Communication with ROS}
 
