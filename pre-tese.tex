@@ -420,11 +420,11 @@ Having outlined the relevant technologies for this dissertation's context, this 
 
 \section{Prototype Development}
 
-This first phase aims to build a small-scale prototype in a virtual development environment. The prototype should, using Headscale and Tailscale, be able to establish a \ac{p2p} connection between two sample clients, which couldn't communicate beforehand. Hence, this phase's main goals are to (i) create a virtual environment which simulates the scenario being tackled, (ii) establish \ac{p2p} connections between clients in isolated private networks and (iii) validate the communication through the \ac{ros} middleware. Obviously, for goal (i), the simulation of the networking conditions won't be precise, since, as referenced in section \ref{sec:uanet}, details regarding \ac{ua}'s network mechanisms are vastly unknown. It is possible, however, to create an analogous situation, where clients can't form \ac{p2p} commmunications with each other but can all communicate with an external, public server. Moreover, as stated in previous sections, Tailscale's protocol effictevly deals with most costraints preventing communication. In other words, it is only known clients can't communicate, the reeason they can't is abstracted by Tailscale.
+This first phase aims to build a small-scale prototype in a virtual development environment. The prototype should, using Headscale and Tailscale, be able to establish a \ac{p2p} connection between two sample clients, which couldn't communicate beforehand. Hence, this phase's main goals are to (i) create a virtual environment which simulates the scenario being tackled, (ii) establish \ac{p2p} connections between clients in isolated private networks and (iii) validate the communication through the \ac{ros} middleware. Obviously, for goal (i), the simulation of the networking conditions won't be precise, since, as referenced in section \ref{sec:uanet}, details regarding \ac{ua}'s network mechanisms are vastly unknown. It is possible, however, to create an analogous situation, where clients can't form \ac{p2p} commmunications with each other but can all communicate with an external, public server. Moreover, as stated in previous sections, Tailscale's protocol effictevly deals with most costraints preventing communication. In other words, it is only known clients can't communicate, the reason they can't is abstracted by Tailscale.
 
 This virtual environment must be composed of three entities: a public server and two clients in their own private networks. As mentioned in section \ref{sec:hs}, Headscale is an open-source implementation of Tailscale's control server. Thus, the control server in this environment is a self-hosted Headscale instance deployed in the public server. Both clients, which can reach the public server, but not each other, should then auhtenticate in this control server and configure their Tailscale interfaces and addresses, allowing for a direct communication to take place.
 
-Using virtualization software, this environment could be established with three linux virtual machines with minimum resources, in a single host. To achieve the networking requirements, as stated in goal (i), the client machines should be attached to individual private \ac{nat} Networks and connected via Wi-Fi to an \ac{ap}, while the server machine should be attached to a bridge on the host's ethernet interface. Figure \ref{fig:sandbox} depicts this architecture.
+Using virtualization software, this environment could be established with three linux virtual machines with minimum resources, in a single host machine. To achieve the networking requirements, as stated in goal (i), the client machines should be attached to individual private \ac{nat} Networks and connected via Wi-Fi to an \ac{ap}, while the server machine should be attached to a bridge on the host's ethernet interface. Figure \ref{fig:sandbox} depicts this architecture.
 
 Finally, to validate goal (iii), a simple \ac{ros} application should be deployed and tested in the clients, in which communication is done through the Tailscale interfaces.
 
@@ -475,7 +475,7 @@ This chapter details the configuration of the development environment, as propos
 
 \subsubsection{Virtual Machines}
 
-The three virtual machines composing the environment use \emph{Ubuntu Server 22.04} as their operating system. Due to the nature of the goals to be achieved in this phase, which focus on a very small scope, the machines require very little resources. Regarding networking, \textbf{VM3} is attached to a bridge network on the ethernet interface of the host machine. As for \textbf{VM1} and \textbf{VM2}, each respective network adapter is attached to a \ac{nat}, isolating each client on its own private network, unaccessible from the outside. All machines can access the internet through the access point, explored in the following section.
+The three virtual machines composing the environment use \emph{Ubuntu Server 22.04} as their operating system. Due to the nature of the goals to be achieved in this phase, which focus on a very small scope, the machines require very little resources. Regarding networking, \textbf{VM3} is attached to a bridge network on the ethernet interface of the host machine. As for \textbf{VM1} and \textbf{VM2}, each respective network adapter is attached to a \ac{nat}, isolating each client on its own private network, unaccessible from the outside. All machines can access the internet through the access point, explored in the following subsection.
 
 Both \textbf{VM1} and \textbf{VM2} are assigned the same private \ac{ip} address since they are residing in distinct private networks. For convenience, the Virtual Machines are also configured to allow \ac{ssh} connections, which means port 22 is open on all machines. Moreover, for machines \textbf{VM1} and \textbf{VM2}, which are confined to their private networks, this was achieved with port forwarding rules, forwarding \textbf{VM1}'s port 22 to the host machine's port 2222 and \textbf{VM2}'s port 22 to the host machine's port 2223.
 
@@ -483,16 +483,18 @@ Table \ref{table:vmspecs} summarizes said specification.
 
 \begin{table}[]
 \centering
-\begin{tabular}{c|c|c|c|}
-\cline{2-4}
-\multicolumn{1}{l|}{}                           & \textbf{VM1}        & \textbf{VM2}        & \textbf{VM3}        \\ \hline
-\multicolumn{1}{|c|}{\textbf{Operating System}} & Ubuntu Server 22.04 & Ubuntu Server 22.04 & Ubuntu Server 22.04 \\ \hline
-\multicolumn{1}{|c|}{\textbf{Memory (Mb)}}      & 1024                & 1024                & 1024                \\ \hline
-\multicolumn{1}{|c|}{\textbf{Storage (Gb)}}     & 10                  & 10                  & 10                  \\ \hline
-\multicolumn{1}{|c|}{\textbf{CPUs}}             & 1                   & 1                   & 1                   \\ \hline
-\multicolumn{1}{|c|}{\textbf{Network Adapter}}  & NAT                 & NAT                 & Bridged (ethernet)  \\ \hline
-\multicolumn{1}{|c|}{\textbf{Address}}          & 10.0.2.15           & 10.0.2.15           & 192.168.10.214      \\ \hline
-\end{tabular}
+\resizebox{\textwidth}{!}{
+     \begin{tabular}{c|c|c|c|}
+     \cline{2-4}
+     \multicolumn{1}{l|}{}                           & \textbf{VM1}        & \textbf{VM2}        & \textbf{VM3}        \\ \hline
+     \multicolumn{1}{|c|}{\textbf{Operating System}} & Ubuntu Server 22.04 & Ubuntu Server 22.04 & Ubuntu Server 22.04 \\ \hline
+     \multicolumn{1}{|c|}{\textbf{Memory (Mb)}}      & 1024                & 1024                & 1024                \\ \hline
+     \multicolumn{1}{|c|}{\textbf{Storage (Gb)}}     & 10                  & 10                  & 10                  \\ \hline
+     \multicolumn{1}{|c|}{\textbf{CPUs}}             & 1                   & 1                   & 1                   \\ \hline
+     \multicolumn{1}{|c|}{\textbf{Network Adapter}}  & NAT                 & NAT                 & Bridged (ethernet)  \\ \hline
+     \multicolumn{1}{|c|}{\textbf{Address}}          & 10.0.2.15           & 10.0.2.15           & 192.168.10.214      \\ \hline
+     \end{tabular}
+}
 \caption{Development Virtual Machines specification}
 \label{table:vmspecs}
 \end{table}
@@ -505,6 +507,31 @@ This effectively simulates, within the host machine, a scenario very similar to 
 
 
 \section{Headscale Instance Deployment}
+
+Headscale provides an highly configurable open-source implementation of a control server, allowing the configuration of \ac{DERP} relays and \ac{stun} servers, which must also be hosted in this server. At the time of writing, the latest stable Headscale release is \emph{v0.22.3}, which is the version of the software refered to in the rest of this chapter.
+
+The instance was configured to run with an embedded \ac{DERP} server in the default region, which additionally provides \ac{stun} functionalities to make \ac{nat} traversal possible within the environment. These configurations were achieved through Headscale's configuration file, a yaml provided in the package. With the service running, \textbf{VM-3} is now listening for Tailscale clients to connect and start using the protocol. For development purposes, an Headscale user, \textbf{dev}, was registred in instance and shall be the user the clients will register as.
+
+Table \ref{table:hstest} presents the available services and their respective listening configuration produced by the running Headscale instance. Besides the metrics and gRPC services, which are not required by clients to use Tailscale,
+are listening privately, on the server's localhost interface. The remaining services are exposed in the defined ports, reachable by the clients.
+
+\begin{table}[]
+\centering
+\resizebox{\textwidth}{!}{
+     \begin{tabular}{|c|c|c|c|}
+     \hline
+     \textbf{Service}                                                 & \textbf{Listen Address} & \textbf{Port} & \textbf{Description}                                         \\ \hline
+     Control Server                                                   & 192.168.10.214          & 8080          & Main service implementing Tailscale's control plane protocol \\ \hline
+     Metrics                                                          & 127.0.0.1               & 9090          & Exposes the /metrics endpoints, for monitoring               \\ \hline
+     gRPC                                                             & 127.0.0.1               & 50443         & Allows remote Headscale control via CLI                      \\ \hline
+     STUN Server                                                      & 192.168.10.214          & 3478          & Exposes NAT-Traversal functionalities                        \\ \hline
+     \begin{tabular}[c]{@{}c@{}}DERP Server\\ (embedded)\end{tabular} & 192.168.10.214          & 8080          & Mandatory when not using Tailscale's own DERPs               \\ \hline
+     \end{tabular}
+}
+\caption{Services running in the Headscale instance}
+\label{table:hstest}
+\end{table}
+
 
 \section{Client Configuration}
 
