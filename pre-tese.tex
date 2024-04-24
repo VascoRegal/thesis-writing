@@ -523,7 +523,6 @@ Table \ref{table:hstest} presents the available services and their respective li
      \textbf{Service}                                                 & \textbf{Listen Address} & \textbf{Port} & \textbf{Description}                                         \\ \hline
      Control Server                                                   & 192.168.10.214          & 8080          & Main service implementing Tailscale's control plane \\ \hline
      Metrics                                                          & 127.0.0.1               & 9090          & Exposes the /metrics endpoints, for monitoring               \\ \hline
-     gRPC                                                             & 127.0.0.1               & 50443         & Allows remote Headscale control via CLI                      \\ \hline
      STUN Server                                                      & 192.168.10.214          & 3478          & Exposes NAT-Traversal functionalities                        \\ \hline
      \begin{tabular}[c]{@{}c@{}}DERP Server\\ (embedded)\end{tabular} & 192.168.10.214          & 8080          & Mandatory when not using Tailscale's own DERPs               \\ \hline
      \end{tabular}
@@ -590,7 +589,11 @@ At this point, clients connected to \ac{ua}'s network are able to successfully p
 
 \subsection{Self-Hosting DERP Infrastructure}
 
-Upon testing this scenario using the two development virtual machines as clients, the established communication is of realy type, which means \ac{DERP} servers are being used to redirect the traffic over \ac{http}, as no other process was able to establish a \ac{p2p} \ac{udp} connection. As the Headscale instance was initially configured to use Tailscale's \ac{DERP} server fleet, which implied the redirection of traffic to a \ac{DERP} server in Germany, the tunnels were achieving an average latency of 452ms, a value unacceptable for the scope of this dissertation. Moreover, as this solution is meant to be used exclusevly by \ac{ua}'s clients, Tailscale's \ac{DERP} fleet was discarded, opting for a self-hosted alternative.
+Upon testing this scenario using the two development virtual machines as clients, the established communication is of realy type, which means \ac{DERP} servers are being used to redirect traffic over \ac{http}, as no other process was able to establish a \ac{p2p} \ac{udp} connection. As the Headscale instance was initially configured to use Tailscale's \ac{DERP} server fleet, which implied the redirection of traffic to a \ac{DERP} server in Germany, the tunnels were achieving an average latency of 452ms, a value unacceptable for the scope of this dissertation. Moreover, as this solution is meant to be used exclusevly by \ac{ua}'s clients, Tailscale's \ac{DERP} fleet was discarded, opting for a self-hosted alternative, as packets should have no necessity of leaving \ac{ua}'s network.
+
+Headscale allows the use of an embedded \ac{DERP} server, which also exposes \ac{stun} functionalities for \ac{nat}-Traversal. This server can be enabled through Headscale's configuration file, and runs alongside Headscale's main service, on the same address and port. As for the \ac{stun} endpoints, these are also configured to run in the same address, on port 3478.
+
+Using the embedded self-hosted \ac{DERP} allows communication between clients to be much more efficient, with an average latency of 1ms, for the VM clients. Moreover, as clients can now perform \ac{nat} traversal due to the now accessible local \ac{stun} endpoints, this scenario can now establish direct, non relayed, connections.
 
 \section{Sample Clients}
 
