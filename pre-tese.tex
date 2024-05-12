@@ -557,7 +557,7 @@ With the clients authenticated, both devices are respectively assigned a Tailsca
 \textbf{}                                         & \textbf{VM-1} & \textbf{VM-2} \\ \hline
 \multicolumn{1}{|c|}{\textbf{Tailscale Hostname}} & dev-1         & dev-2         \\ \hline
 \multicolumn{1}{|c|}{\textbf{Tailscale IP (v4)}}  & 100.64.0.1    & 100.64.0.2    \\ \hline
-\multicolumn{1}{|c|}{\textbf{Tailscale IP (v6)}}  & TODO     & TODO         \\ \hline
+\multicolumn{1}{|c|}{\textbf{Tailscale IP (v6)}}  & fd7a:115c:a1e0::1     & fd7a:115c:a1e0::2         \\ \hline
 \end{tabular}
 \caption{Clients Tailscale configuration after authentication}
 \label{tab:tsips}
@@ -579,27 +579,28 @@ This chapter details a successful implementation of a minimal configuration prot
 
 The following chapter presents the configuration and deployment of a solution capable of being used by any client in the campus. As such, and as mentioned in previous sections, this implies that the Headscale instance must be available regardless of a client's physical location within the campus.
 
-\section{Control Server}
+In this solution, the Headscale instance is hosted within \ac{iris}'s network. This, however, only allows communications from clients residing in the \ac{iris}'s network. For clients to be able to reach the instance from any location in the campus, port forwarding rules were created on an exposed server in \ac{iris}'s network, accessible within \ac{ua}'s network, which redirects traffic on ports 8080 (the main Headscale service and the embedded \ac{DERP}) and 3478 (\ac{stun} interface) to the Headscale server. With this configuration, clients within the campus, which can directly reach the public facing proxy machine, can perform authentication. Figure \ref{fig:prodsolution} presents such architecture.
 
-In this environment, the Headscale instance is hosted within \ac{iris}'s network. This, however, only allows communications from clients residing in the \ac{iris}'s network. For clients to be able to reach the instance from any location in the campus, port forwarding rules were created on a public facing server, which redirects traffic on the Headscale and \ac{stun} ports to the Headscale server. With this configuration, clients within the campus, which can directly reach the public facing proxy machine and can perform authentication.
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.5\textwidth]{prod.png}
+\caption{Production Deployment Architecture}
+\label{fig:prodsolution}
+\end{figure}
 
-Since Headscale's host is also an Ubuntu linux environment, installation of this service followed the process described in the development environment (see Section \ref{sec:devhs}). Regarding configuration, however, the \textbf{server\_url} parameter, which points to the endpoint clients should use to authenticate, is now the address of the proxy server.
+Since Headscale's host is also an Ubuntu linux environment, installation of this service followed the process described in the development environment (see Section \ref{sec:devhs}). Regarding configuration, however, the \textbf{server\_url} parameter, which points to the endpoint clients should use to authenticate, is now the FQDN of the proxy server, \emph{iris-lab.ua.pt}.
 
 At this point, clients connected to \ac{ua}'s network are able to successfully perform authenticaton and, consequently, start establishing \ac{p2p} WireGuard tunnels.
 
 \subsection{Self-Hosting DERP Infrastructure}
 
-Upon testing this scenario using the two development virtual machines as clients, the established communication is of realy type, which means \ac{DERP} servers are being used to redirect traffic over \ac{http}, as no other process was able to establish a \ac{p2p} \ac{udp} connection. As the Headscale instance was initially configured to use Tailscale's \ac{DERP} server fleet, which implied the redirection of traffic to a \ac{DERP} server in Germany, the tunnels were achieving an average latency of 452ms, a value unacceptable for the scope of this dissertation. Moreover, as this solution is meant to be used exclusevly by \ac{ua}'s clients, Tailscale's \ac{DERP} fleet was discarded, opting for a self-hosted alternative, as packets should have no necessity of leaving \ac{ua}'s network.
+Initially, Headscale was configured to use Tailscale's \ac{DERP} server fleet, however, upon testing this scenario using the two development virtual machines as clients, the established communication is relayed, which means \ac{DERP} servers are being used to redirect traffic over \ac{http}, as no other process was able to establish a \ac{p2p} \ac{udp} connection. Using Tailscale's \ac{DERP}s implied the redirection of traffic to a \ac{DERP} server in Germany, resulting in tunnels with an average latency of 452ms, a value unacceptable for the scope of this dissertation. Moreover, as this solution is meant to be used exclusevly by \ac{ua}'s clients, Tailscale's \ac{DERP} fleet was discarded, opting for a self-hosted alternative, as packets should have no necessity of leaving \ac{ua}'s network.
 
-Headscale allows the use of an embedded \ac{DERP} server, which also exposes \ac{stun} functionalities for \ac{nat}-Traversal. This server can be enabled through Headscale's configuration file, and runs alongside Headscale's main service, on the same address and port. As for the \ac{stun} endpoints, these are also configured to run in the same address, on port 3478.
+Headscale allows the use of an embedded \ac{DERP} server, which also exposes \ac{stun} functionalities for \ac{nat}-Traversal. This server can be enabled through Headscale's configuration file, and runs alongside Headscale's main service, on the same address and port. As for the \ac{stun} endpoints, these are also configured to run in the same address, on \ac{udp} port 3478.
 
 Using the embedded self-hosted \ac{DERP} allows communication between clients to be much more efficient, with an average latency of 1ms, for the VM clients. Moreover, as clients can now perform \ac{nat} traversal due to the now accessible local \ac{stun} endpoints, this scenario can now establish direct, non relayed, connections.
 
 \section{Sample Clients}
-
-\section{UA's Premises Deployment}
-
-\subsection{Public Domain Network Segment}
 
 \subsection{Configuring Clients}
 
