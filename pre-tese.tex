@@ -87,6 +87,10 @@
 \acrodef{cli}[CLI]{Command Line Interface}
 \acrodef{uri}[URI]{Uniform Resource Identifier}
 \acrodef{udp}[UDP]{User Datagram Protocol}
+\acrodef{cdn}[CDN]{Content Distribution Network}
+\acrodefplural{cdn}[CDNs]{Content Distribution Networks}
+\acrodef{sdwan}[SD-WAN]{Software-Defined WAN}
+\acrodef{ron}[RON]{Resilient Overlay Networks}
 
 \begin{document}
 
@@ -216,10 +220,13 @@ This document presents an implementation of such an overlay network manager. Hen
 
 \section{Overlay Networks}
 
-For the last two decades, the Internet has been subjected to an exponential growth, both in the number of users and connected devices. To answer such an high demand and support aspects such as mobility and scalibility, Internet applications have diverged from classic distributed systems to more complex network topologies, creating an extremly volatile, heterogeneous environment. In such a scenario, \ac{p2p} overlay networks have emerged as a topic of growing interest, as conducted research on the matter attempts to create networking solutions capable of addressing the adversities imposed by the modern day Internet. ~\cite{MALATRAS20151}. This section explores the fundamental principles of overlay networks and how its abstraction layer is able to produce a topology capable of adapting to the limitations of today's Internet.
+In the last few decades, the Internet has been subjected to an exponential growth, both in the number of users and connected devices. To answer the increasing demand and support aspects such as mobility and scalibility, Internet applications have diverged from classic distributed systems to more complex network topologies, creating an extremly heterogeneous environment. In such a non-patternized landscape, \ac{p2p} overlay networks have emerged as a topic of growing interest, as conducted research on the matter attempts to create networking solutions capable of addressing the adversities imposed by the modern day Internet ~\cite{MALATRAS20151}. This section explores the fundamental principles of overlay networks and how its abstraction layer is able to produce a topology capable of adapting to the limitations of today's Internet.
 
-By definition, an overlay network is a logical network implemented on top of the links of another, already existing, underlay network. In other words, nodes in an overlay network (which also exist in the underlay network) implement its own application-defined routing and datagram processing behaviour. ~\cite{netbook}
+By definition, an overlay network is a logical network implemented on top of the links of another, already existing, underlay network. In other words, nodes in an overlay network (which also exist in the underlay network) implement its own application-defined routing and datagram processing behaviour.
 
+Overlay networks can be applied to applications to achieve numerous functionalities, such as finding alternate routes for unicast applications, explored by \ac{ron} ~\cite{ron}, which measures peers' average latencies in order to discover routes optimizing network end-to-end reliability and performance. This idea is also the principle of \ac{sdwan} services. Another common example of the use of overlay networks are object sharing applications such as BitTorrent, where peers are the nodes which possess parts of the desired file ~\cite{netbook}.
+
+Some topologies applying overlay concepts have a degree of centralization, generally serving information regarding active peers in the network. Although a central entity can cause bottlenecks, on-demand peer information is able to make a system easier to scale and configure.
 
 \chapter{State of the Art}
 \label{chapter:sota2}
