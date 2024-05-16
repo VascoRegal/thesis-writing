@@ -91,6 +91,7 @@
 \acrodefplural{cdn}[CDNs]{Content Distribution Networks}
 \acrodef{sdwan}[SD-WAN]{Software-Defined WAN}
 \acrodef{ron}[RON]{Resilient Overlay Networks}
+\acrodef{iot}[IoT]{Internet of Things}
 
 \begin{document}
 
@@ -220,26 +221,50 @@ This document presents an implementation of such an overlay network manager. Hen
 
 \section{Overlay Networks}
 
-In the last few decades, the Internet has been subjected to an exponential growth, both in the number of users and connected devices. To answer the increasing demand and support aspects such as mobility and scalibility, Internet applications have diverged from classic distributed systems to more complex network topologies, creating an extremly heterogeneous environment. In such a non-patternized landscape, \ac{p2p} overlay networks have emerged as a topic of growing interest, as conducted research on the matter attempts to create networking solutions capable of addressing the adversities imposed by the modern day Internet ~\cite{MALATRAS20151}. This section explores the fundamental principles of overlay networks and how its abstraction layer is able to produce a topology capable of adapting to the limitations of today's Internet.
+In the last few decades, the Internet has been subjected to an exponential growth, both in the number of users and connected devices. To answer the increasing demand and support aspects such as mobility and scalibility, Internet applications have diverged from classic distributed systems to more complex network topologies, creating an extremly heterogeneous environment. In such a non-patternized landscape, \ac{p2p} overlay networks have emerged as a topic of growing interest, as conducted research on the matter attempts to create networking solutions capable of addressing the adversities imposed by the modern day Internet ~\cite{MALATRAS20151}. This section explores the fundamental principles of overlay networks and how its abstraction layer is able to produce a topology with the potential to adapt to the limitations of today's Internet.
 
-By definition, an overlay network is a logical network implemented on top of the links of another, already existing, underlay network. In other words, nodes in an overlay network (which also exist in the underlay network) implement its own application-defined routing and datagram processing behaviour.
+By definition, an overlay network is a logical network implemented on top of the links of another, already established, underlay network ~\cite{netbook}. In other words, nodes (also called peers) in an overlay network (which also exist in the underlay network) implement its own application-defined routing and datagram processing behaviour. Hence, the Internet application running in the nodes is responsible for the creation and management of the \ac{p2p} logical links that form the overlay network. Figure \ref{fig:overlay} illustrates this concept.
 
-Overlay networks can be applied to applications to achieve numerous functionalities, such as finding alternate routes for unicast applications, explored by \ac{ron} ~\cite{ron}, which measures peers' average latencies in order to discover routes optimizing network end-to-end reliability and performance. This idea is also the principle of \ac{sdwan} services. Another common example of the use of overlay networks are object sharing applications such as BitTorrent, where peers are the nodes which possess parts of the desired file ~\cite{netbook}.
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.5\textwidth]{overlays.png}
+\caption{Concept of a very basic overlay network. Nodes A, C and E create logical links with each other, forming an overlay network}
+\label{fig:overlay}
+\end{figure}
 
-Some topologies applying overlay concepts have a degree of centralization, generally serving information regarding active peers in the network. Although a central entity can cause bottlenecks, on-demand peer information is able to make a system easier to scale and configure.
+Overlay networks can be applied to applications to achieve numerous functionalities, such as finding alternate routes for unicast applications, explored by \ac{ron} ~\cite{ron}, which measures peers' average latencies in order to discover routes optimizing network end-to-end reliability and performance. This idea is also the principle of \ac{sdwan} services. Another common example of the use of overlay networks are object sharing applications such as BitTorrent, where the overlay network is formed by the nodes which possessing parts of the desired file. When a peer want to download a file, it establishes \ac{p2p} connections to the other overlay peers and retrieves the part of the data until the file is complete.
 
-\chapter{State of the Art}
-\label{chapter:sota2}
+While decentralized by design, some topologies applying overlay concepts have a degree of centralization, generally serving information regarding active peers in the network. Although a central point can cause bottlenecks, on-demand peer information is able to make a system easier to scale and reconfigure. BitTorrent is an example of this, where a new peer queries a central server, called a tracker, retrieving the addresses and identification of the peers it should connect to. Such centralization can, however, be discarded by implementing a peer finding algorithm which relies solely on the other peers already in the network.
 
-\begin{minipage}{50mm}
-     \centering % no more than 120mm
-     ``Observation is a dying art''
-          \begin{flushright}
-          --- Stanley Kubrick
-          \end{flushright}
-     \end{minipage}
+As the nodes in an overlay network are systems running Internet applications, they are generally capable of performing more computational demanding operations than simply forwarding traffic, which is the case when dealing with devices in the underlay network, like routers or switches. Routing traffic through a node allows any application-defined manipulation to be applied to the datagrams, namely cryptographic operations. This idea is explored in further sections, as it serves as the backbone in several encrypted \ac{p2p} communication protocols.
 
-\section{Encrypted Peer to Peer Communications / VPNs}
+Conclusively, the use of overlay networks provides an efficient and reliable way to create a logical structure between a set of nodes residing in an otherwise unstructured topology. Additionally, as overlay nodes are essentially end systems, there's great leverage for applications to freely manipulate and route traffic. By relying on \ac{p2p} communications, overlay networks' decentralized nature provides a very scalable and reconfigurable design.
+
+\section{Virtual Private Networks and Encrypted Peer to Peer Protocols}
+
+As mentioned in the previous section, the Internet's general topology proves to be highly unpredictable and unstructured. Effectively, traffic traveling through the Internet is forwarded across multiple devices and links, which an user generally can't control. This reality raises questions regarding privacy and confidentiality of a communication, as sensitive data could easily be compromised. To secure packets and ensure only trusted entities can access the data, mechanisms have been employed to encrypt and authenticate datagrams. One such mechanism is the use of \acp{vpn}. The following section first presents an analysis on how \acp{vpn} offer a security layer to communications, followed by an exploration of prominent implementations of such solutions, regarding not only their cryptographic and authentication methods but also protocol performance and reliability when faced with network constraints.
+
+\ac{vpn}s have become a mature technology. With such a range of products offering \ac{vpn} capabilities, this section aims to analyze some of its most notable providers, focusing on the processes involved on their respective data planes, which refers to the subsection of network communications responsible for carrying data between devices. This implies not only the robustness of its authentication methods, encryption suite and protocol security but also its features regarding concepts such as mobility - how the service behaves when clients change their physical locations and \ac{ip} addresses - and overcoming constraints associated with networks using \ac{nat} mechanisms and secured with firewall rules. Finally, since operations taken in the data plane are necessarily associated with computational overheads, namely traffic encryption and session management, overall performance is also perceived as a valued dimension.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\section{Virtual Private Networks and Encrypted Peer to Peer Protocols}
 
 \ac{vpn}s have become a mature technology, with widespread usage on the Internet. With such a range of products offering \ac{vpn} capabilities, this section aims to analyze some of its most notable providers, focusing on the processes involved on their respective data planes, which refers to the subsection of network communications responsible for carrying data between devices. This implies not only the robustness of its authentication methods, encryption suite and protocol security but also its features regarding concepts such as mobility - how the service behaves when clients change their physical locations and \ac{ip} addresses - and overcoming constraints associated with networks using \ac{nat} mechanisms and secured with firewall rules. Finally, since operations taken in the data plane are necessarily associated with computational overheads, namely traffic encryption and session management, overall performance is also perceived as a valued dimension.
 
