@@ -113,7 +113,7 @@
           \end{minipage}}}
          {\ThesisYear}
   \TITLE{Vasco Regal Sousa}
-        {Multiple Client Wireguard Based Private and Secure Overlay Network}
+        {Multiple Client WireGuard Based Private and Secure Overlay Network}
 \EndTitlePage
 \titlepage\ \endtitlepage % empty page
 
@@ -154,7 +154,7 @@
 \TitlePage
   \vspace*{55mm}
   \TEXT{\textbf{Abstract}}
-       {An overlay network is a group of computational nodes that communicate with each other through a virtual or logic channel, built on top of another network. Although there are already numerous services and protocols implementing this mechanic, scalability and administration agility are among the most desired characteristics of such a network topology. Hence, this document presents a centralized solution for the creation and control of secure overlay networks for multiple nodes - from client management to operation auditing, based on Wireguard, an open-source protocol for encrypted communication. In the University of Aveiro, namely the autonomous robot ecosystem residing in the IRIS lab, supporting such a networking architecture would prove to be particularly interesting, both for development and project organization.}
+       {An overlay network is a group of computational nodes that communicate with each other through a virtual or logic channel, built on top of another network. Although there are already numerous services and protocols implementing this mechanic, scalability and administration agility are among the most desired characteristics of such a network topology. Hence, this document presents a centralized solution for the creation and control of secure overlay networks for multiple nodes - from client management to operation auditing, based on WireGuard, an open-source protocol for encrypted communication. In the University of Aveiro, namely the autonomous robot ecosystem residing in the IRIS lab, supporting such a networking architecture would prove to be particularly interesting, both for development and project organization.}
 \EndTitlePage
 \titlepage\ \endtitlepage % empty page
 
@@ -222,7 +222,7 @@ This document presents an implementation of such an overlay network manager. Hen
 \section{Overlay Networks}
 \label{sec:on}
 
-In the last few decades, the Internet has been subjected to an exponential growth, both in the number of users and connected devices. To answer the increasing demand and support aspects such as mobility and scalibility, Internet applications have diverged from classic distributed systems to more complex network topologies, creating an extremly heterogeneous environment. In such a non-patternized landscape, \ac{p2p} overlay networks have emerged as a topic of growing interest, as conducted research on the matter attempts to create networking solutions capable of addressing the adversities imposed by the modern day Internet. This section explores the fundamental principles of overlay networks and how its abstraction layer is able to produce a topology with the potential to overcome the architectural limitations of the Internet's chaotic nature.
+In the last few decades, the Internet has been subjected to an exponential growth, both in the number of users and connected devices. To answer the increasing demand and support aspects such as mobility and scalibility, Internet applications have diverged from classic distributed systems to more complex network topologies, creating an extremly heterogeneous environment. In such a non-patternized landscape, \ac{p2p} overlay networks have emerged as a topic of growing interest, as conducted research on the matter attempts to create networking solutions capable of addressing the adversities imposed by the modern day Internet. This section explores the fundamental principles of overlay networks and how its abstraction layer is able to produce a topology with the potential to bring a logical order to  the chaotic network architecture of the Internet.
 
 By definition, an overlay network is a logical network implemented on top of the links of another, already established, underlay network ~\cite{netbook}. In other words, nodes (also called peers) in an overlay network (which also exist in the underlay network) implement its own application-defined routing and datagram processing behaviour. Hence, the Internet application running in the nodes is responsible for the creation and management of the \ac{p2p} logical links that form the overlay network. Figure \ref{fig:overlay} illustrates this concept.
 
@@ -243,17 +243,15 @@ Summarizing, the use of overlay networks provides an efficient and reliable way 
 
 \section{Virtual Private Networks}
 
-Public networks are built on infrastructure users generally have no control over. Public routers, relay nodes, servers and even physical links carry the risk of network traffic eavesdropping by untrusted entities. Therefore, to ensure the confidentiality, privacy and integrity of connections established through an insecure medium, data should be subjected to mechanisms of cryptography and authentication. One such mechanism is the use of \acp{vpn}.
+Public networks are built on infrastructure users generally have no control over. Public routers, relay nodes, servers and even physical links carry the risk of traffic eavesdropping and tampering by untrusted entities. Therefore, to ensure the confidentiality, privacy and integrity of connections established through an insecure medium, data should be properly encrypted and authenticated. One such mechanism is the use of \acp{vpn}.
 
-Conceptually, a \ac{vpn} is any virtual network that provides functionalities that secure the transmission of data between any two endpoints ~\cite{HARMENING2017843}. This section aims to review the evolution of \acp{vpn}, from its inception to more recent paradigms, which implement on overlay concepts, discussed in Section \ref{sec:on}. Then, it presents an overview on notable \ac{vpn} protocols and their respective pros, cons and suitability for modern day Internet. This state of the art survey aims to pickup on similar exercises, namely ~\cite{zuqueteseguranca}, while additionally reviewing emerging technologies.
+Conceptually, a \ac{vpn} is any virtual network that provides functionalities that secure the transmission of data between any two endpoints ~\cite{HARMENING2017843}. This section aims to review the evolution of \acp{vpn}, from its inception to more recent paradigms, which follow overlay concepts, discussed in Section \ref{sec:on}. Then, it presents an overview on notable \ac{vpn} protocols and their respective pros, cons and suitability for the scope of this solution. This state of the art survey aims to pickup on similar works, namely ~\cite{zuqueteseguranca}, while additionally reviewing emerging protocols.
 
 \subsection{Types of VPNs}
 
 Traditionally,
 
 \ac{vpn}s can be classified according to their topology in two main categories: client-to-site and site-to-site. A client-to-site \ac{vpn} is characterized by connections from a single user (client) to a private network (site), while site-to-site \ac{vpn}s offer a secured connection between two private networks. Thus, in site-to-site networks, users are not required to individually configure \ac{vpn} clients. The tunnel in this type of \ac{vpn} is made available to the entire network.
-
-This section aims to explore some of the most popular and widely used \ac{vpn} protocols, regarding features, cryptography and performance. The structure of some of the following paragraphs is loosely inspired by similar research and publications, namely ~\cite{zuqueteseguranca}.
 
 \subsection{VPNs and NAT Networks}
 
@@ -306,41 +304,41 @@ Similarly, when receiving a packet, the OpenVPN server will perform decipherment
 
 This process is analogous when dealing with TAP devices, differing, as mentioned before, at the protocol level.
 
-\subsection{Wireguard}
+\subsection{WireGuard}
 
-Wireguard ~\cite{donenfeld2017wireguard} is an open-source UDP-only layer 3 network tunnel implemented as a kernel virtual network interface. Wireguard offers both a robust cryptographic suite and transparent session management, based on the fundamental principle of secure tunnels: peers in a Wireguard communication are registered as an association between a public key (analogous to the OpenSSH keys mechanism) and a tunnel source \ac{ip} address.
+WireGuard ~\cite{donenfeld2017wireguard} is an open-source UDP-only layer 3 network tunnel implemented as a kernel virtual network interface. WireGuard offers both a robust cryptographic suite and transparent session management, based on the fundamental principle of secure tunnels: peers in a WireGuard communication are registered as an association between a public key (analogous to the OpenSSH keys mechanism) and a tunnel source \ac{ip} address.
 
-One of Wireguard's selling points is its simplicity. In fact, compared to similar protocols, which generally support a wide range of cryptographic suites, Wireguard settles for a singular one. Although one may consider the lack of cipher agility as a disadvantage, this approach minimizes protocol complexity, increasing security robustness by avoiding SSL/TLS vulnerabilities commonly originating from such protocol negotiation.
+One of WireGuard's selling points is its simplicity. In fact, compared to similar protocols, which generally support a wide range of cryptographic suites, WireGuard settles for a singular one. Although one may consider the lack of cipher agility as a disadvantage, this approach minimizes protocol complexity, increasing security robustness by avoiding vulnerabilities commonly originating from such protocol negotiation.
 
 \subsubsection{Routing}
 
-Peers in a Wireguard communication maintain a data structure containing their own identification (both the public and private keys) and interface listening port. Then, for each known peer, an entry is present containing an association between a public key and a set of allowed source ips.
+Peers in a WireGuard communication maintain a data structure containing their own identification (both the public and private keys) and interface listening port. Then, for each known peer, an entry is present containing an association between a public key and a set of allowed source ips.
 
 This structure is queried both for outgoing and incoming packets. To encrypt packets to be sent, the structure is consulted, and, based on the destination address, the desired peer's public key is retrieved. As for receiving data, after decryption (with the peer's own keys), the structure is used to verify the validity of the packet's source address, which, in other words, means checking if there's a match between the source address and the allowed addresses present on the routing structure.
 
-Optionally, Wireguard peers can configure one additional field, an internet endpoint, defining the listening address where packets should be sent. If not defined, the incoming packet's source address is used instead.
+Optionally, WireGuard peers can configure one additional field, an internet endpoint, defining the listening address where packets should be sent. If not defined, the incoming packet's source address is used.
 
 \subsubsection{Cipher Suite}
 
-As aforementioned, Wireguard offers a single cipher suite for encryption and authentication mechanisms in its ecosystem. The peers' pre-shared keys are Curve25519 points ~\cite{bernstein2006curve25519}, an implementation of an elliptic-curve-Diffie-Hellman function, characterized by its strong conjectured security level - presenting the same security standards as other algorithms in public key cryptography - while achieving record computational speeds.
+As mentioned before, WireGuard offers a single cipher suite for encryption and authentication mechanisms in its ecosystem. The peers' pre-shared keys are Curve25519 points, an implementation of an elliptic-curve-Diffie-Hellman function, characterized by its strong conjectured security level - presenting the same security standards as other algorithms in public key cryptography - while achieving record computational speeds ~\cite{bernstein2006curve25519}.
 
-Regarding payload data cryptography, a Wireguard message's plain text is encrypted with the sender's public key and a nonce counter, using ChaCha20Poly1305, a Salsa20 variation ~\cite{bernstein2008chacha}. The ChaCha cryptographic family offers robust resistance to cryptoanalytic methods ~\cite{cryptoeprint:2014/613}, without sacrificing its state-of-the-art performance.
+Regarding payload data cryptography, a WireGuard message's plain text is encrypted with the sender's public key and a nonce counter, using ChaCha20Poly1305, a Salsa20 variation ~\cite{bernstein2008chacha}. The ChaCha cryptographic family offers robust resistance to cryptoanalytic methods ~\cite{cryptoeprint:2014/613}, without sacrificing its state-of-the-art performance.
 
-Finally, before any encrypted message exchange actually happens, Wireguard enforces a 1-\ac{rtt} handshake for symmetric key exchange (one for sending, and one for receiving). The messages involved in this handshake process follow a variation of the Noise ~\cite{perrin2018noise} protocol, which is essentially a state machine controlled by a set of variables maintained by each party in the process.
+Finally, before any encrypted message exchange actually happens, WireGuard enforces a 1-\ac{rtt} handshake for symmetric key exchange (one for sending, and one for receiving). The messages involved in this handshake process follow a variation of the Noise ~\cite{perrin2018noise} protocol, which is essentially a state machine controlled by a set of variables maintained by each party in the process.
 
 \subsubsection{Security}
 
-On top of its robust cryptographic specification, Wireguard includes in its design a set of mechanisms to further enhance protocol security and integrity.
+On top of its robust cryptographic specification, WireGuard includes in its design a set of mechanisms to further enhance protocol security and integrity.
 
-With such a scope in mind, Wireguard presents itself as a silent protocol. In other words, a Wireguard peer is essentially invisible when communication is attempted by an illegitimate party. Packets coming from an unknown source are just dropped, with no leak of information to the sender.
+In fact, WireGuard presents itself as a silent protocol. In other words, a WireGuard peer is essentially invisible when communication is attempted by an illegitimate party. Packets coming from an unknown source are just dropped, with no leak of information to the sender.
 
-Additionally, a cookie system is implemented in an attempt to mitigate \ac{ddos} attacks. Since, to determine the authenticity of a handshake message, a Curve25519 multiplication must be computed,  an operation requiring considerable CPU usage, a CPU-exhaustion attack vector could be exploited. Cookies are introduced as a response message to handshake initiation. These cookie messages are used as a peer response when under high CPU load, which is then in turn attached to the sender's message, allowing the requested handshake to proceed later.
+Additionally, a cookie system is implemented in an attempt to mitigate \ac{ddos} attacks. Since, to determine the authenticity of a handshake message, a Curve25519 multiplication must be computed, a CPU intensive operation, a CPU-exhaustion attack vector could be exploited. Cookies are introduced as a response message to handshake initiation. These cookie messages are used as a peer response when under high CPU load, which is then in turn attached to the sender's following messages, allowing the requested handshake to proceed when the overloaded peer has available resources to continue.
 
 
-\subsubsection{Basic Wireguard Configuration}
+\subsubsection{Basic WireGuard Configuration}
 
-Connecting two peers in a Wireguard communication can be done with minimal configuration. In fact, after the generation of an asymmetric key pair and the setup of a Wireguard interface, it is only required to add the other peer to the routing table with its public key, allowed \ac{ip}s and, optionally, its internet endpoint (where it can be currently found). After both peers configure each other, the tunnel is established and packets can be transmitted through the Wireguard interface.
-In a practical scenario, given two peers, \emph{A} and \emph{B}, with pre-generated keys and internet interfaces, presented on table \ref{tab:wgconfpeers}, the CLI steps to setup a minimal Wireguard communication, as specified in the official Wireguard documentation are presented in figure \ref{fig:wgconf}.
+Connecting two peers in a WireGuard communication can be done with minimal configuration. After the generation of an asymmetric key pair and the setup of a WireGuard interface, it is only required to add the other peer to the routing table with its public key, allowed \ac{ip}s and, optionally, its internet endpoint (where it can be currently found). After both peers configure each other, the tunnel is established and packets can be transmitted through the WireGuard interface.
+In a practical scenario, given two peers, \emph{A} and \emph{B}, with pre-generated keys and internet interfaces, presented on table \ref{tab:wgconfpeers}, the CLI steps to setup a minimal WireGuard communication, as specified in the official WireGuard documentation are presented in figure \ref{fig:wgconf}.
 
 
 \begin{table}[]
@@ -351,9 +349,9 @@ In a practical scenario, given two peers, \emph{A} and \emph{B}, with pre-genera
 \multicolumn{1}{|c|}{\textbf{Private Key}}       & gIb/+...+uF2Y=                       & aFov...G3l0=                         \\ \hline
 \multicolumn{1}{|c|}{\textbf{Public Key}}        & FeQI...jHgE=                         & sg0X...7kVA=                         \\ \hline
 \multicolumn{1}{|c|}{\textbf{Internet Endpoint}} & 192.168.100.4                        & 192.168.100.5                        \\ \hline
-\multicolumn{1}{|c|}{\textbf{Wireguard Port}}    & 51820                                & 51820                                \\ \hline
+\multicolumn{1}{|c|}{\textbf{WireGuard Port}}    & 51820                                & 51820                                \\ \hline
 \end{tabular}
-\caption{Nodes to be configured with a Wireguard tunnel}
+\caption{Nodes to be configured with a WireGuard tunnel}
 \label{tab:wgconfpeers}
 \end{table}
 
@@ -361,7 +359,7 @@ In a practical scenario, given two peers, \emph{A} and \emph{B}, with pre-genera
 \begin{multicols}{2}
 \begin{lstlisting}[language=sh, frame=single, breaklines=true, breakatwhitespace=true, basicstyle=\small]
 # Peer A - interface setup
-$ ip link add wg0 type wireguard
+$ ip link add wg0 type WireGuard
 $ ip addr add 10.0.0.1/24 dev wg0
 $ wg set wg0 private-key ./private
 $ ip link set wg0 up
@@ -374,7 +372,7 @@ $
 \columnbreak
 \begin{lstlisting}[language=sh, frame=single, breaklines=true, breakatwhitespace=true, basicstyle=\small]
 # Peer B - interface setup
-$ ip link add wg0 type wireguard
+$ ip link add wg0 type WireGuard
 $ ip addr add 10.0.0.2/24 dev wg0
 $ wg set wg0 private-key ./private
 $ ip link set wg0 up
@@ -385,20 +383,34 @@ $
 
 \end{lstlisting}
 \end{multicols}
-\caption{Basic Wireguard Communication Between Two Peers}
+\caption{Basic WireGuard Communication Between Two Peers}
 \label{fig:wgconf}
 \end{figure}
 
+\subsubsection{WireGuard Topologies}
+
+
+
+\subsubsection{Limitations}
+
+Although WireGuard proves itself to be a robust, performant and maintainable protocol for encrypted communication, it still presents some complexity regarding administration agility and scalability, since it (intentionally) lacks a coordination entity. New clients added to a standalone WireGuard network imply the manual reconfiguration of every other peer already present, a process with added complexity that is prone to errors, as more nodes join the system.
+
+There are however, several software products implementing such an orchestrator, which manage WireGuard tunnels' creation and configuration, such as Tailscale, Netbird or Netmaker. These solutions will be explored in further sections.
+
+
 \subsection{Performance Comparison}
 
-The concept of performance in \ac{vpn} applications entails both protocol overhead on communication throughput and bandwidth usage minimization. These dimensions can be empirically measured, by calculating communication latency / ping time and throughput. The performance claims on ~\cite{donenfeld2017wireguard}, where, when comparing Wireguard to its alternatives like OpenVPN and IPsec, present results in favor of Wireguard in both metrics. This conclusion is backed by more extensive research ~\cite{mackey2020performance}, ~\cite{osswald2020performance}, where communication is tested in a wide range of different environments and CPU architectures.
+The concept of performance in \ac{vpn} applications entails both protocol overhead on communication throughput and bandwidth usage minimization. These dimensions can be empirically measured, by calculating communication latency / ping time and throughput. The performance claims on ~\cite{donenfeld2017wireguard}, where, when comparing WireGuard to other discussed technologies like OpenVPN and IPsec, present results in favor of WireGuard in both metrics. This conclusion is backed by more extensive research ~\cite{mackey2020performance}, ~\cite{osswald2020performance}, where communication is tested in a wide range of different environments and CPU architectures.
 
-Wireguard, due to its kernel implementation (compared to, for example, OpenVPN's user space implementation) and efficient multi-threading usage, contribute greatly to such performance benchmarks. Moreover, its relatively small codebase (around 4000 lines) creates a very auditable, maintainable \ac{vpn} protocol.
+WireGuard, due to its kernel implementation (compared to, for example, OpenVPN's user space implementation) and efficient multi-threading usage, contribute greatly to such performance benchmarks. Moreover, its relatively small codebase (around 4000 lines) creates a very auditable, maintainable \ac{vpn} protocol.
+
+Hence, WireGuard proves to be
 
 
 \section{Control Platforms}
+\label{sec:coordination}
 
-Although Wireguard proves itself to be a robust, performant and maintainable protocol for encrypted communication, it still presents some complexity regarding administration agility and scalability. New clients added to a standalone Wireguard network imply the manual reconfiguration of every other peer already present, a process with added complexity that is prone to errors, as more nodes join the system. With this in mind, this section explores applications and implementations of control platforms built, or with the potential to be built, on top of Wireguard, aiming to create a seamless peer orchestration and configuration process, minimizing human intervention.
+With this in mind, this section explores applications and implementations of control platforms built, or with the potential to be built, on top of WireGuard, aiming to create a seamless peer orchestration and configuration process, minimizing human intervention.
 
 First, it is mandatory to define what a control platform is. The main goal should be to overcome the limitations previously mentioned, by supporting:
 
@@ -410,19 +422,19 @@ First, it is mandatory to define what a control platform is. The main goal shoul
 
 \subsection{OOR Map Server Implementation}
 
-An implementation with said requirements is proposed in \cite{paillisse2021control}. The core architecture of this solution is composed by a centralized \ac{oor} Map Server, containing peer identification data, which provides devices with on-demand information regarding any other peer in the network to setup a direct connection.  From a client perspective, a peer wanting to communicate with another should first establish a secure Wireguard connection to this server and request a connection with a destination node. The server, with the source \ac{ip} and public key of the requesting client, redirects this data to the destination node, reaching a state where both peers contain all necessary information to begin the Wireguard tunnel.
+An implementation with said requirements is proposed in \cite{paillisse2021control}. The core architecture of this solution is composed by a centralized \ac{oor} Map Server, containing peer identification data, which provides devices with on-demand information regarding any other peer in the network to setup a direct connection.  From a client perspective, a peer wanting to communicate with another should first establish a secure WireGuard connection to this server and request a connection with a destination node. The server, with the source \ac{ip} and public key of the requesting client, redirects this data to the destination node, reaching a state where both peers contain all necessary information to begin the WireGuard tunnel.
 
-This prototype successfully tackles one of the main limitations of Wireguard, offering a mechanism capable of dynamically configuring peers, without the need to reconfigure every device every time a new client joins the network. Also, it reduces routing table complexity, as peers are not required to keep all other peers' information locally. However, the addition of such a centralized entity also introduces a new attack vector. Effectively, if the private key of the central server, crucial in creating the first secure channel between a peer and the server, is compromised, a man-in-the-middle attack could be mounted, since an attacker could impersonate the centralized server.
+This prototype successfully tackles one of the main limitations of WireGuard, offering a mechanism capable of dynamically configuring peers, without the need to reconfigure every device every time a new client joins the network. Also, it reduces routing table complexity, as peers are not required to keep all other peers' information locally. However, the addition of such a centralized entity also introduces a new attack vector. Effectively, if the private key of the central server, crucial in creating the first secure channel between a peer and the server, is compromised, a man-in-the-middle attack could be mounted, since an attacker could impersonate the centralized server.
 
-Regarding performance, there is, as expected, an overhead compared to native OOR benchmarks, as requests to \ac{oor} Map Server are themselves conducted through a Wireguard channel.
+Regarding performance, there is, as expected, an overhead compared to native OOR benchmarks, as requests to \ac{oor} Map Server are themselves conducted through a WireGuard channel.
 
 \subsection{Tailscale}
 
-Tailscale is a \ac{vpn} service operating with a golang user-space Wireguard variant as its data plane ~\cite{tailscale2020online}. Traditional \ac{vpn} services operate under a hub-and-spoke architecture, a model composed of one or more \ac{vpn} Gateways - devices accepting incoming connections from client nodes and forwarding the traffic to their final destination. Hub-and-spoke architectures carry some limitations. First, it implies increased latency associated with the geographical distance between a client and the nearest hub. Also, regarding scalability and dynamic configuration, adding new clients to the network requires the distribution of its keys to all hubs. With these constraints in mind, Tailscale offers a hybrid model. Tailscale's central entity, referred to as a coordination server, functions as a shared repository of peer information, used by clients to retrieve information regarding other nodes and establish on-demand \ac{p2p} connections among each other.
+Tailscale is a \ac{vpn} service operating with a golang user-space WireGuard variant as its data plane ~\cite{tailscale2020online}. Traditional \ac{vpn} services operate under a hub-and-spoke architecture, a model composed of one or more \ac{vpn} Gateways - devices accepting incoming connections from client nodes and forwarding the traffic to their final destination. Hub-and-spoke architectures carry some limitations. First, it implies increased latency associated with the geographical distance between a client and the nearest hub. Also, regarding scalability and dynamic configuration, adding new clients to the network requires the distribution of its keys to all hubs. With these constraints in mind, Tailscale offers a hybrid model. Tailscale's central entity, referred to as a coordination server, functions as a shared repository of peer information, used by clients to retrieve information regarding other nodes and establish on-demand \ac{p2p} connections among each other.
 
 This control plane approach differs from traditional hub-and-spoke since the coordination server carries nearly no trafic - it only serves encryption keys and peer information. Tailscale's architecture provides the best of both worlds, benefiting from the advantages of control plane centralization without bottlenecking its data plane performance.
 
-In practical terms, a Tailscale client will store, on the coordination server, its own public key and where it can currently be found. Then, it downloads a list of public keys and addresses that have been stored on the server previously by other clients. With this information, the client node is able to configure its Wireguard interface and start communicating with any other node in its domain.
+In practical terms, a Tailscale client will store, on the coordination server, its own public key and where it can currently be found. Then, it downloads a list of public keys and addresses that have been stored on the server previously by other clients. With this information, the client node is able to configure its WireGuard interface and start communicating with any other node in its domain.
 
 \subsubsection{Overcoming network constraints}
 
@@ -434,7 +446,7 @@ There are, however, some \ac{nat} devices that create a completely different pub
 
 Networks employing \ac{edm} devices and/or really strict firewall rules, such as blocking outgoing UDP entirely, render these traversal techniques useless. To enable \ac{p2p} communications in such scenarios, Tailscale also provides a network of \ac{DERP} servers, which are responsible for relaying packets over \ac{http}. A Tailscale client is able to forward its encrypted packets to one of such \ac{DERP} servers. Since a client's private key never actually leaves its node, \ac{DERP} servers can't decrypt the traffic being relayed, performing only redirection of already encrypted packets. These relay servers are distributed geographically. However, there is the possibility of an increase in latency and loss of bandwidth, which isn't terrible, as the alternative is not being able to establish connections at all.
 
-As such, Tailscale's design provides a set of directives and infrastructure that work together to ensure Wireguard tunnels can be set up between any two peers, regardless of what policies the network between them employs.
+As such, Tailscale's design provides a set of directives and infrastructure that work together to ensure WireGuard tunnels can be set up between any two peers, regardless of what policies the network between them employs.
 
 \subsubsection{Headscale}
 \label{sec:hs}
