@@ -207,7 +207,7 @@ This document presents an implementation of such an overlay network manager. Hen
 
 \cleardoublepage
 
-\chapter{State of the Art}
+\chapter{Background and State of the Art}
 \label{chapter:sota}
 
 \begin{minipage}{80mm}
@@ -258,6 +258,9 @@ Traditionally,
 \ac{nat} is a networking mechanism responsible for translating \ac{ip} addresses in private networks into public addresses when packets sent from a private network are routed to the public Internet. In the context of \ac{vpn} communications, this process can prove to be a major constraint, not only due to \ac{nat}'s tampering of \ac{ip} packets' fields, namely destination and source addresses, which could potentially compromise its integrity in the eyes of a \ac{vpn} protocol, but also regarding the dynamically changing public \ac{ip} addresses which \ac{nat} decides to translate private addresses to.
 
 In fact, it is very likely that devices on the internet reside in a network behind both \ac{nat} mechanisms and Firewall rules, with no open ports. Also, believing nodes will have a consistent static \ac{ip} is a very naive assumption, especially when considering mobile devices. NAT Traversal is a networking technique that enables the establishing and maintaining (by keeping \ac{nat} holes open) of \ac{p2p} connections between two peers, no matter what's standing between them, making communication possible without the need for firewall configurations or public-facing open ports. There's no one solution to achieve this functionality. In fact, there are various developments effectively implementing a NAT Traversal solution, such as ICE ~\cite{rfc8445} and STUN ~\cite{rfc8489}. Hence, each \ac{vpn} service can have its own way of supporting NAT Traversal. Each case is explored separately in its own subsection.
+
+
+\section{VPN Providers}
 
 \subsection{IPSec}
 
@@ -320,7 +323,7 @@ Optionally, WireGuard peers can configure one additional field, an internet endp
 
 \subsubsection{Cipher Suite}
 
-As mentioned before, WireGuard offers a single cipher suite for encryption and authentication mechanisms in its ecosystem. The peers' pre-shared keys are Curve25519 points, an implementation of an elliptic-curve-Diffie-Hellman function, characterized by its strong conjectured security level - presenting the same security standards as other algorithms in public key cryptography - while achieving record computational speeds ~\cite{bernstein2006curve25519}.
+As mentioned before, WireGuard offers a single cipher suite for encryption and authentication mechanisms in its ecosystem. The peers' pre-shared keys are Curve25519 points, an implementation of an elliptic-curve-Diffie-Hellman function, characterized by its strong conjectured security level - presenting the same security standards as other algorithms in public key cryptography - while achieving record computational speeds ~\cite{bernstein2006curve25519}. Additionally, WireGuard's Curve25519 computation uses a verified implementation ~\cite{zinzindohoue2017hacl}, which contributes further to the robustness of the protocol's cryptography.
 
 Regarding payload data cryptography, a WireGuard message's plain text is encrypted with the sender's public key and a nonce counter, using ChaCha20Poly1305, a Salsa20 variation ~\cite{bernstein2008chacha}. The ChaCha cryptographic family offers robust resistance to cryptoanalytic methods ~\cite{cryptoeprint:2014/613}, without sacrificing its state-of-the-art performance.
 
@@ -389,25 +392,29 @@ $
 
 \subsubsection{WireGuard Topologies}
 
+Having outlined how a basic WireGuard scenario can be configured, the following paragraphs aim to explore four primary WireGuard topologies, which serve as the foundations for most of WireGuard's use cases.
 
+\subsubsubsection{Point to Point}
 
 \subsubsection{Limitations}
 
 Although WireGuard proves itself to be a robust, performant and maintainable protocol for encrypted communication, it still presents some complexity regarding administration agility and scalability, since it (intentionally) lacks a coordination entity. New clients added to a standalone WireGuard network imply the manual reconfiguration of every other peer already present, a process with added complexity that is prone to errors, as more nodes join the system.
 
-There are however, several software products implementing such an orchestrator, which manage WireGuard tunnels' creation and configuration, such as Tailscale, Netbird or Netmaker. These solutions will be explored in further sections.
+There are, however, several software products implementing such an orchestrator, which prvoide functionalities to easily manage WireGuard peers and respective tunnels, such as Tailscale, Netbird or Netmaker. These solutions will be explored in further sections.
 
 
-\subsection{Performance Comparison}
+\subsection{Protocol Comparison}
 
 The concept of performance in \ac{vpn} applications entails both protocol overhead on communication throughput and bandwidth usage minimization. These dimensions can be empirically measured, by calculating communication latency / ping time and throughput. The performance claims on ~\cite{donenfeld2017wireguard}, where, when comparing WireGuard to other discussed technologies like OpenVPN and IPsec, present results in favor of WireGuard in both metrics. This conclusion is backed by more extensive research ~\cite{mackey2020performance}, ~\cite{osswald2020performance}, where communication is tested in a wide range of different environments and CPU architectures.
 
 WireGuard, due to its kernel implementation (compared to, for example, OpenVPN's user space implementation) and efficient multi-threading usage, contribute greatly to such performance benchmarks. Moreover, its relatively small codebase (around 4000 lines) creates a very auditable, maintainable \ac{vpn} protocol.
 
-Hence, WireGuard proves to be
+\subsection{Summary}
+
+This section presents the fundamentals of \acp{vpn} and how they are able to ensure integrity and confidentiality to communication through insecure mediums. Then, some of the most notable \acp{vpn} providers were reviewed and compared, regarding functionalities, behaviour when dealing with network constraints and overall performance. The result of this analysis suggests WireGuard as the most promissing \ac{vpn} protocol, due to its ease of management, security mechanisms and strong cryptographic directives.
 
 
-\section{Control Platforms}
+\section{WireGuard Coordination}
 \label{sec:coordination}
 
 With this in mind, this section explores applications and implementations of control platforms built, or with the potential to be built, on top of WireGuard, aiming to create a seamless peer orchestration and configuration process, minimizing human intervention.
@@ -458,13 +465,15 @@ While Tailscale's client is open source, its control server isn't. There is, how
 
 Due to security and privacy concerns, the specification of the \ac{ua}'s network topology is not publicly available nor is it made available for this dissertation. As such, it is perceived as a black box. There are, however, a few reachable conclusions derived from observing its behavior.
 
-First, the network is highly segmented, where clients are grouped according to their roles. In fact, when clients connect to an \ac{ap} within the campus, they are connected to a \ac{vlan} shared by several other clients, in which the private resources are accessible. Then, the present \ac{nat} mechanisms in the network are unknown, as are their mappings' \ac{ttl}, which is an important variable discussed in the previous sections. Finally, the network contains a segment for public services, which can be accessed from anywhere on the Internet. This public point of communication will allow clients from within the campus to connect to the control platform, serving in this domain.
+First, the network is highly segmented, where clients are grouped according to their roles. In fact, when clients connect to an \ac{ap} within the campus, they are connected to a \ac{vlan} shared by several other clients, in which the private resources are accessible. Then, the present \ac{nat} mechanisms in the network are unknown, as are their mappings' \ac{ttl}, which is an important variable discussed in the previous sections to perform \ac{nat}-traversal techniques. Finally, the network contains a segment for public services, which can be accessed from anywhere on the Internet. This public point of communication will allow clients from within the campus to connect to the control platform, serving in this domain.
 
 \chapter{Methodology}
 \label{chapter:method}
 
 
-Having outlined the relevant technologies for this dissertation's context, this chapter aims to present a work proposal for the solution implementation. The approach to be taken is segmented in three main stages: Prototype Development, Production Deployment and, finally, Automation.
+Having outlined the relevant research, background and technologies for this dissertation's context, this chapter aims to present a work proposal for the solution implementation. The approach to be taken is segmented in three main stages: Prototype Development, Production Deployment and, finally, Automation.
+
+\section{Technology Stack}
 
 \section{Prototype Development}
 \label{sec:protodev}
