@@ -402,16 +402,16 @@ Having outlined how a basic WireGuard scenario can be configured, the following 
 
 \subsubsection{Limitations}
 
-Although WireGuard proves itself to be a robust, performant and maintainable protocol for encrypted communication, it still presents some complexity regarding administration agility and scalability, since it (intentionally) lacks a coordination entity. New clients added to a standalone WireGuard network imply the manual reconfiguration of every other peer already present, a process with added complexity that is prone to errors, as more nodes join the system.
+Although WireGuard proves to be a robust, performant and maintainable protocol for encrypted communication, it still presents some complexity regarding administration agility and scalability, since it (intentionally) lacks a coordination entity. New clients added to a standalone WireGuard network imply the manual reconfiguration of every other peer already present, a process with added complexity and prone to errors, if carried out manually.
 
-There are, however, several software products implementing such an orchestrator, which prvoide functionalities to easily manage WireGuard peers and respective tunnels, such as Tailscale, Netbird or Netmaker. These solutions will be explored in further sections.
+There are, however, several software products implementing such an orchestrator, which prvoide functionalities to easily manage WireGuard peers and respective tunnels, such as Tailscale, Netbird or Netmaker. These solutions are explored in further sections.
 
 
 \subsection{Protocol Comparison}
 
 The concept of performance in \ac{vpn} applications entails both protocol overhead on communication throughput and bandwidth usage minimization. These dimensions can be empirically measured, by calculating communication latency / ping time and throughput. The performance claims on ~\cite{donenfeld2017wireguard}, where, when comparing WireGuard to other discussed technologies like OpenVPN and IPsec, present results in favor of WireGuard in both metrics. This conclusion is backed by more extensive research ~\cite{mackey2020performance}, ~\cite{osswald2020performance}, where communication is tested in a wide range of different environments and CPU architectures.
 
-WireGuard, due to its kernel implementation (compared to, for example, OpenVPN's user space implementation) and efficient multi-threading usage, contribute greatly to such performance benchmarks. Moreover, its relatively small codebase (around 4000 lines) creates a very auditable, maintainable \ac{vpn} protocol.
+WireGuard, due to its kernel implementation (compared to, for example, OpenVPN's user space implementation) and efficient multi-threading usage, contribute greatly to such performance benchmarks. Moreover, its relatively small codebase (around 4000 lines) creates a very concise, auditable and maintainable \ac{vpn} protocol.
 
 \subsection{Summary}
 
@@ -665,7 +665,7 @@ Using the embedded self-hosted \ac{DERP} allows communication between clients to
 
 \subsection{Tailscale and Self-Signed Certificates}
 
-Tailscale's \ac{cli} does not support the use of self-signed certificates, even if the system trusts the certificate. Figure \ref{fig:tscert} presents the logic behind Tailscale's certificate validation. However, as an open-source codebase, this code can be freely modified and the binaries rebuilt to suit one's needs. Therefore, a fork of Tailscale was created, which shall be refered to as Trustscale \footnote{Trustscale's repository: https://github.com/VascoRegal/trustscale}.
+Tailscale's client does not support the use of self-signed certificates, even if the system trusts the certificate. Figure \ref{fig:tscert} presents the logic behind Tailscale's certificate validation. However, as an open-source codebase, this code can be freely modified and the binaries rebuilt to suit one's needs. Therefore, a fork of Tailscale was created, which shall be refered to as Trustscale \footnote{Trustscale's repository: https://github.com/VascoRegal/trustscale}.
 
 Trustscale implements a new command-line option, --\emph{allow-self-signed}, which stores a boolean value. When true, the certificate validation method allows the use of self-signed certificates.
 
@@ -694,7 +694,7 @@ conf.VerifyConnection = func(cs tls.ConnectionState) error {
      ...
 \end{lstlisting}
 \label{fig:tscert}
-\caption{Tailscale's client certificate verification method. Self-signed certificates are always considered invalid. /net/tlsdial/tlsdial.go, lines 79-90 }
+\caption{Snippet from Tailscale's client certificate verification method. Self-signed certificates are always considered invalid. /net/tlsdial/tlsdial.go, lines 79-90 }
 \end{figure}
 
 \subsection{Trusting Headscale}
@@ -708,7 +708,7 @@ conf.VerifyConnection = func(cs tls.ConnectionState) error {
 \begin{figure}[h]
 \centering
 \includegraphics[width=0.8\textwidth]{ua-latency.png}
-\caption{Average latency on a Tailscale connection from different UA buildings to IRIS-Lab. The numbers in the circles represent latency values.}
+\caption{Average latency on a Tailscale connection from different UA buildings to IRIS-Lab. The numbers in the circles represent average latency values.}
 \label{fig:ualats}
 \end{figure}
 
