@@ -86,12 +86,16 @@
 \acrodef{ssh}[SSH]{Secure Shell}
 \acrodef{cli}[CLI]{Command Line Interface}
 \acrodef{uri}[URI]{Uniform Resource Identifier}
+\acrodef{url}[URL]{Uniform Resource Locator}
 \acrodef{udp}[UDP]{User Datagram Protocol}
 \acrodef{cdn}[CDN]{Content Distribution Network}
 \acrodefplural{cdn}[CDNs]{Content Distribution Networks}
 \acrodef{sdwan}[SD-WAN]{Software-Defined WAN}
 \acrodef{ron}[RON]{Resilient Overlay Networks}
 \acrodef{iot}[IoT]{Internet of Things}
+\acrodef{https}[HTTPS]{Hyper-Text Transfer Protocol Secure}
+\acrodef{le}[LE]{Let's Encrypt}
+\acrodef{fqdn}[FQDN]{Fully Qualified Domain Name}
 
 \begin{document}
 
@@ -154,7 +158,7 @@
 \TitlePage
   \vspace*{55mm}
   \TEXT{\textbf{Abstract}}
-       {An overlay network is a group of computational nodes that communicate with each other through a virtual or logic channel, built on top of another network. Although there are already numerous services and protocols implementing this mechanic, scalability and administration agility are among the most desired characteristics of such a network topology. Hence, this document presents a centralized solution for the creation and control of secure overlay networks for multiple nodes - from client management to operation auditing, based on WireGuard, an open-source protocol for encrypted communication. In the University of Aveiro, namely the autonomous robot ecosystem residing in the IRIS lab, supporting such a networking architecture would prove to be particularly interesting, both for development and project organization.}
+       {An overlay network is a group of computational nodes that communicate with each other through a virtual or logic channel, built on top of another network. Although there are already numerous services and protocols implementing this mechanic, scalability and administration agility are among the most desired characteristics of such a network topology. Hence, this document presents a centralized solution for the creation and control of secure overlay networks for multiple nodes - from client management to operation auditing, based on WireGuard, an open-source protocol for encrypted communication. In the University of Aveiro, namely the autonomous robot ecosystem residing in the IRIS lab, supporting such a networking architecture would prove to be particularly interesting, both for development and solution deployment.}
 \EndTitlePage
 \titlepage\ \endtitlepage % empty page
 
@@ -233,7 +237,7 @@ By definition, an overlay network is a logical network implemented on top of the
 \label{fig:overlay}
 \end{figure}
 
-Overlay networks can be applied to applications to achieve numerous functionalities, such as finding alternate routes for unicast applications, explored by \ac{ron} ~\cite{ron}, which measures peers' average latencies in order to discover routes optimizing network end-to-end reliability and performance. This idea is also the principle of \ac{sdwan} services, where forwarding rules are dynamically reconfigured and automated according to a set of defined policies, a paradigm with prominent results ~\cite{9203058}, ~\cite{9492375}. Another common example of the use of overlay networks are object sharing applications such as BitTorrent, where the overlay network is formed by the nodes which possessing parts of the desired file. When a peer want to download a file, it establishes \ac{p2p} connections to the other overlay peers and retrieves the part of the data until the file is complete ~\cite{5482574}.
+Overlay networks can be applied to applications to achieve numerous functionalities, such as finding alternate routes for unicast applications, explored by \ac{ron} ~\cite{ron}, which measures peers' average latencies in order to discover routes optimizing network end-to-end reliability and performance. This idea is also the principle of \ac{sdwan} services, where forwarding rules are dynamically reconfigured and automated according to a set of defined policies, a paradigm with prominent results ~\cite{9203058}, ~\cite{9492375}. Another common example of the use of overlay networks are object sharing applications such as BitTorrent, where the overlay network is formed by the nodes which possessing parts of the desired file. When a peer wants to download a file, it establishes \ac{p2p} connections to the other overlay peers and retrieves the part of the data until the file is complete ~\cite{5482574}.
 
 While decentralized by design, some topologies applying overlay concepts have a degree of centralization, generally serving information regarding active peers in the network. Although a central point can cause bottlenecks, on-demand peer information is able to make a system easier to scale and reconfigure. BitTorrent is an example of this, where a new peer queries a central server, called a tracker, retrieving the addresses and identification of the peers it should connect to. Such centralization can, however, be discarded by implementing a peer finding algorithm which relies solely on the other peers already in the network.
 
@@ -245,7 +249,7 @@ Summarizing, the use of overlay networks provides an efficient and reliable way 
 
 Public networks are built on infrastructure users generally have no control over. Public routers, relay nodes, servers and even physical links carry the risk of traffic eavesdropping and tampering by untrusted entities. Therefore, to ensure the confidentiality, privacy and integrity of connections established through an insecure medium, data should be properly encrypted and authenticated. One such mechanism is the use of \acp{vpn}.
 
-Conceptually, a \ac{vpn} is any virtual network that provides functionalities that secure the transmission of data between any two endpoints ~\cite{HARMENING2017843}. This section aims to review the evolution of \acp{vpn}, from its inception to more recent paradigms, which follow overlay concepts, discussed in Section \ref{sec:on}. Then, it presents an overview on notable \ac{vpn} protocols and their respective pros, cons and suitability for the scope of this solution. This state of the art survey aims to pickup on similar works, namely ~\cite{zuqueteseguranca}, while additionally reviewing emerging protocols.
+Conceptually, a \ac{vpn} is a virtual network that provides functionalities that secure the transmission of data between any two endpoints ~\cite{HARMENING2017843}. This section aims to review the evolution of \acp{vpn}, from its inception to more recent paradigms, which follow overlay concepts, discussed in Section \ref{sec:on}. Then, it presents an overview on notable \ac{vpn} protocols and their respective pros, cons and suitability for the scope of this solution. This state of the art survey aims to pickup on similar works ~\cite{zuqueteseguranca}, ~\cite{berger2006analysis}, while additionally reviewing emerging protocols.
 
 \subsection{Types of VPNs}
 
@@ -632,7 +636,7 @@ This chapter details a successful implementation of a minimal configuration prot
 
 The following chapter presents the configuration and deployment of a solution capable of being used by any client in the campus. As such, and as mentioned in previous sections, this implies that the Headscale instance must be available regardless of a client's physical location within the campus.
 
-In this solution, the Headscale instance is hosted within \ac{iris}'s network. This, however, only allows communications from clients residing in the \ac{iris}'s network. For clients to be able to reach the instance from any location in the campus, port forwarding rules were created on an exposed server in \ac{iris}'s network, accessible within \ac{ua}'s network, which redirects traffic on ports 8080 (the main Headscale service and the embedded \ac{DERP}) and 3478 (\ac{stun} interface) to the Headscale server. With this configuration, clients within the campus, which can directly reach the public facing proxy machine, can perform authentication. Figure \ref{fig:prodsolution} presents such architecture.
+In this solution, the Headscale instance is hosted within \ac{iris}'s network. This, however, only allows communications from clients residing in the \ac{iris}'s network. For clients to be able to reach the instance from any location in the campus, port forwarding rules were created on an exposed server in \ac{iris}'s network, accessible within \ac{ua}'s network, which redirects traffic on ports 8080 (the main Headscale service and the embedded \ac{DERP}) and 3478 (\ac{stun} interface) to the Headscale server. With this configuration, clients within the campus, which can directly reach the public facing proxy machine, can communicate with the Headscale instance. Figure \ref{fig:prodsolution} presents such architecture.
 
 \begin{figure}[h]
 \centering
@@ -641,13 +645,13 @@ In this solution, the Headscale instance is hosted within \ac{iris}'s network. T
 \label{fig:prodsolution}
 \end{figure}
 
-Since Headscale's host is also an Ubuntu linux environment, installation of this service followed the process described in the development environment (see Section \ref{sec:devhs}). Regarding configuration, however, the \textbf{server\_url} parameter, which points to the endpoint clients should use to authenticate, is now the FQDN of the proxy server, \emph{iris-lab.ua.pt}.
-
-At this point, clients connected to \ac{ua}'s network are able to successfully perform authenticaton and, consequently, start establishing \ac{p2p} WireGuard tunnels.
+Since Headscale's host is also an Ubuntu linux environment, installation of this service followed the process described in the development environment (see Section \ref{sec:devhs}). Regarding configuration, however, the \textbf{server\_url} parameter, which points to the endpoint clients should use to authenticate, is now the \ac{fqdn} of the proxy server, \emph{iris-lab.ua.pt}.
 
 \subsection{Adding server certificates}
 
-Headscale private cant use lets encrypt or caddy, self-sgined
+To use the self-hosted \ac{DERP} server, Headscale is required to be exposed on an \ac{https} server, hence it needs a valid X509 certificate. Although Headscale's configuration allows a seamless integration with certificating tools such as \ac{le} or Caddy, in this scenario, where Headscale's \ac{fqdn} is not public, such methods can't be used. Alas, to certify Headscale, self-signed certificates were generated using the \textbf{openssl} \ac{cli} and added manually to the instance. TODO: JUSTIFICAR PORQUE É QUE NAO HA ATTACK VECTOR.
+
+Using self-signed certificates requires additional client certificate trust configurations, which shall be covered in further sections.
 
 \subsection{Self-Hosting DERP Infrastructure}
 
@@ -659,6 +663,40 @@ Using the embedded self-hosted \ac{DERP} allows communication between clients to
 
 \section{Client Deployment}
 
+\subsection{Tailscale and Self-Signed Certificates}
+
+Tailscale's \ac{cli} does not support the use of self-signed certificates, even if the system trusts the certificate. Figure \ref{fig:tscert} presents the logic behind Tailscale's certificate validation. However, as an open-source codebase, this code can be freely modified and the binaries rebuilt to suit one's needs. Therefore, a fork of Tailscale was created, which shall be refered to as Trustscale \footnote{Trustscale's repository: https://github.com/VascoRegal/trustscale}.
+
+Trustscale implements a new command-line option, --\emph{allow-self-signed}, which stores a boolean value. When true, the certificate validation method allows the use of self-signed certificates.
+
+With the use of this option, a self-signed certificate needs only to be trusted by the system to be valid in the eyes of Tailscale's client. Hence, for this scenario, clients run the binaries generated from Trustscale's source code.
+
+\begin{figure}
+\centering
+\begin{lstlisting}
+conf.VerifyConnection = func(cs tls.ConnectionState) error {
+     // Perform some health checks on this certificate before we do
+     // any verification.
+     if ht != nil {
+          if certIsSelfSigned(cs.PeerCertificates[0]) {
+               // Self-signed certs are never valid.
+               ht.SetTLSConnectionError(
+                    cs.ServerName,
+                    fmt.Errorf("certificate is self-signed")
+               )
+
+          } else {
+               // Ensure we clear any error state for
+               // this ServerName.
+               ht.SetTLSConnectionError(cs.ServerName, nil)
+          }
+     }
+     ...
+\end{lstlisting}
+\label{fig:tscert}
+\caption{Tailscale's client certificate verification method. Self-signed certificates are always considered invalid. /net/tlsdial/tlsdial.go, lines 79-90 }
+\end{figure}
+
 \subsection{Trusting Headscale}
 
 \subsection{Configuring Clients}
@@ -666,6 +704,13 @@ Using the embedded self-hosted \ac{DERP} allows communication between clients to
 \chapter{Automation}
 
 \chapter{Validation and Results}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.8\textwidth]{ua-latency.png}
+\caption{Average latency on a Tailscale connection from different UA buildings to IRIS-Lab. The numbers in the circles represent latency values.}
+\label{fig:ualats}
+\end{figure}
 
 \chapter{Conclusion}
 
