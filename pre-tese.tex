@@ -636,30 +636,33 @@ This chapter details a successful implementation of a minimal configuration prot
 
 The following chapter presents the configuration and deployment of a solution capable of being used by any client in the campus. As such, and as mentioned in previous sections, this implies that the Headscale instance must be available regardless of a client's physical location within the campus.
 
+\section{Headscale Deployment}
+
 In this solution, the Headscale instance is hosted within \ac{iris}'s network. This, however, only allows communications from clients residing in the \ac{iris}'s network. For clients to be able to reach the instance from any location in the campus, port forwarding rules were created on an exposed server in \ac{iris}'s network, accessible within \ac{ua}'s network, which redirects traffic on ports 8080 (the main Headscale service and the embedded \ac{DERP}) and 3478 (\ac{stun} interface) to the Headscale server. With this configuration, clients within the campus, which can directly reach the public facing proxy machine, can communicate with the Headscale instance. Figure \ref{fig:prodsolution} presents such architecture.
 
 \begin{figure}[h]
 \centering
-\includegraphics[width=0.5\textwidth]{prod.png}
+\includegraphics[width=\textwidth]{prod.png}
 \caption{Production Deployment Architecture}
 \label{fig:prodsolution}
 \end{figure}
 
 Since Headscale's host is also an Ubuntu linux environment, installation of this service followed the process described in the development environment (see Section \ref{sec:devhs}). Regarding configuration, however, the \textbf{server\_url} parameter, which points to the endpoint clients should use to authenticate, is now the \ac{fqdn} of the proxy server, \emph{iris-lab.ua.pt}.
 
-\subsection{Adding server certificates}
-
-To use the self-hosted \ac{DERP} server, Headscale is required to be exposed on an \ac{https} server, hence it needs a valid X509 certificate. Although Headscale's configuration allows a seamless integration with certificating tools such as \ac{le} or Caddy, in this scenario, where Headscale's \ac{fqdn} is not public, such methods can't be used. Alas, to certify Headscale, self-signed certificates were generated using the \textbf{openssl} \ac{cli} and added manually to the instance. TODO: JUSTIFICAR PORQUE É QUE NAO HA ATTACK VECTOR.
-
-Using self-signed certificates requires additional client certificate trust configurations, which shall be covered in further sections.
-
 \subsection{Self-Hosting DERP Infrastructure}
 
-Initially, Headscale was configured to use Tailscale's \ac{DERP} server fleet, however, upon testing this scenario using the two development virtual machines as clients, the established communication is relayed, which means \ac{DERP} servers are being used to redirect traffic over \ac{http}, as no other process was able to establish a \ac{p2p} \ac{udp} connection. Using Tailscale's \ac{DERP}s implied the redirection of traffic to a \ac{DERP} server in Germany, resulting in tunnels with an average latency of 452ms, a value unacceptable for the scope of this dissertation. Moreover, as this solution is meant to be used exclusevly by \ac{ua}'s clients, Tailscale's \ac{DERP} fleet was discarded, opting for a self-hosted alternative, as packets should have no necessity of leaving \ac{ua}'s network.
+Initially, Headscale was configured to use Tailscale's \ac{DERP} server fleet. However, upon testing this scenario, established relayed connections, meaning \ac{DERP} servers are being used to redirect traffic over \ac{http}, implied the redirection of traffic to a \ac{DERP} server in Germany, resulting in tunnels with an average latency of 452ms, a value unacceptable for the scope of this dissertation. Moreover, as this solution is meant to be used exclusevly by \ac{ua}'s clients, traffic should be contained within the campus' network. Therefore, Tailscale's \ac{DERP} fleet was discarded, opting for a self-hosted alternative.
 
 Headscale allows the use of an embedded \ac{DERP} server, which also exposes \ac{stun} functionalities for \ac{nat}-Traversal. This server can be enabled through Headscale's configuration file, and runs alongside Headscale's main service, on the same address and port. As for the \ac{stun} endpoints, these are also configured to run in the same address, on \ac{udp} port 3478.
 
-Using the embedded self-hosted \ac{DERP} allows communication between clients to be much more efficient, with an average latency of 1ms, for the VM clients. Moreover, as clients can now perform \ac{nat} traversal due to the now accessible local \ac{stun} endpoints, this scenario can now establish direct, non relayed, connections.
+Using the embedded self-hosted \ac{DERP} allows relayed communication between clients to be much more efficient, with much more appealing latencies (discussed in Chapter \ref{chap:results}).
+
+
+\subsection{Adding server certificates}
+
+To use the self-hosted \ac{DERP} server, Headscale is required to be exposed on an \ac{https} server, hence it needs a valid X509 certificate. Although Headscale's configuration allows a seamless integration with certificating tools such as \ac{le} or Caddy, in this scenario, where Headscale's \ac{fqdn} is not public, such methods can't be used. Alas, to certify Headscale, self-signed certificates were generated using the \textbf{openssl} \ac{cli} and added manually to the instance, by pointing to both certificate and key file paths through Headscale's configuration file. TODO: JUSTIFICAR PORQUE É QUE NAO HA ATTACK VECTOR.
+
+Using self-signed certificates requires additional client certificate trust configurations, which shall be covered in the following section.
 
 \section{Client Deployment}
 
@@ -669,7 +672,7 @@ Tailscale's client does not support the use of self-signed certificates, even if
 
 Trustscale implements a new command-line option, --\emph{allow-self-signed}, which stores a boolean value. When true, the certificate validation method allows the use of self-signed certificates.
 
-With the use of this option, a self-signed certificate needs only to be trusted by the system to be valid in the eyes of Tailscale's client. Hence, for this scenario, clients run the binaries generated from Trustscale's source code.
+With the use of this option, a self-signed certificate needs only to be trusted by the system to be valid in the eyes of Tailscale's client. Hence, this solution requires clients to run the binaries generated from Trustscale's source code.
 
 \begin{figure}
 \centering
@@ -699,11 +702,14 @@ conf.VerifyConnection = func(cs tls.ConnectionState) error {
 
 \subsection{Trusting Headscale}
 
-\subsection{Configuring Clients}
+As the Tailscale client can now accept self-signed certificates, Headscale's certificate can be added to the client machine's trusted list. On debian distributions, this required moving the certificate to the \emph{/usr/local/share/ca-certificates} and updating the list with the command \textbf{update-ca-certificates}.
 
 \chapter{Automation}
 
+In this chapter,
+
 \chapter{Validation and Results}
+\label{chap:results}
 
 \begin{figure}[h]
 \centering
