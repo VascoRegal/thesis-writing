@@ -508,6 +508,7 @@ Hence, this phase aims to (i) deploy an Headscale server in \ac{ua}'s public net
 
 
 \section{Automation}
+\label{sec:automethod}
 
 This final development phase aims to create automation processes to aid in the deployment and configuration of the solution.
 
@@ -671,6 +672,7 @@ Using self-signed certificates requires additional client certificate trust conf
 \section{Client Deployment}
 
 \subsection{Tailscale and Self-Signed Certificates}
+\label{sec:selfscale}
 
 Tailscale's client does not support the use of self-signed certificates, even if the system trusts the certificate. Figure \ref{fig:tscert} presents the logic behind Tailscale's certificate validation. However, as an open-source codebase, this code can be freely modified and the binaries rebuilt to suit one's needs. Therefore, a fork of Tailscale was created, which shall be refered to as selfscale \footnote{selfscale's repository: https://github.com/VascoRegal/selfscale}.
 
@@ -710,7 +712,7 @@ As the Tailscale client can now accept self-signed certificates, Headscale's cer
 
 \chapter{Automation}
 
-This chapter details the development
+This chapter details the development of automation tools to speed up deployment and configuration processes. In Section \ref{sec:automethod}, two main goals were defined, related to automatic deployments of the control server and clients. First, automating the deployment of a configured Headscale instance. This implies automating software installation, configuration applying and certificate management. Regarding clients, deployments require the installation of the custom binaries, explored in Section \ref{sec:selfscale}, adding Headscale's certificate to the trust list and, finally, authenticate to a desired network.
 
 \section{Distributing Selfscale binaries}
 
@@ -720,12 +722,13 @@ Regarding distribution, these are hosted as a compressed file in the GitHub repo
 
 To generate the compressed package, a shell script was developed, \textbf{build\_selfscale.sh}, which builds both the tailscale and tailscale daemon binaries and zips them with the aforementioned configuration file. This zip is hosted on the \textbf{selfscale} folder of the repository. Currently this script is used to release a new version.
 
-\subsection{Deploying Headscale}
+\section{Headscale Deployment}
 
-Headscale's deployment requires both the installation of the software and its configuration, namely the configuration yaml and the server certificate. Both these last files are publicly available in the automation repository.
+Headscale's deployment requires both the installation of the software and its configuration, namely the configuration yaml and the server certificate. These last files are publicly available in the automation repository \footnote{Project automation repository, publicly available. https://github.com/VascoRegal/ua-overlays-automation}.
 
-Hence, the \textbf{install\_headscale.sh} downloads Headscale's package,
+Hence, the \textbf{install\_headscale.sh} shell script starts by downloading a desired Headscale package, where version and system architecutre are specified with command-line arguments. Then, the script fetches the Headscale's configuration yaml, publicly available in the automation repository, and applies it to the instance. Finally, a x509 self-signed certificate is generated with the \textbf{openssl} \ac{cli} and placed, along with the certificate's key, in its respective path (matching what was defined in the the yaml).
 
+\section{Client Deployment}
 
 \chapter{Validation and Results}
 \label{chap:results}
