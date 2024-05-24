@@ -96,6 +96,8 @@
 \acrodef{https}[HTTPS]{Hyper-Text Transfer Protocol Secure}
 \acrodef{le}[LE]{Let's Encrypt}
 \acrodef{fqdn}[FQDN]{Fully Qualified Domain Name}
+\acrodef{acl}[ACL]{Access Control List}
+\acrodefplural{acl}[ACLs]{Access Control Lists}
 
 \begin{document}
 
@@ -507,7 +509,9 @@ Hence, this phase aims to (i) deploy an Headscale server in \ac{ua}'s public net
 
 \section{Automation}
 
-Automation of the processes taken in the previous phases, to make configuration with little to no manual intervention
+This final development phase aims to create automation processes to aid in the deployment and configuration of the solution.
+
+So, the automation process has two main goals in mind: First, to (i) provide a minimal configuration script to install and deploy an Headscale instance and provision its respective resources (auth keys, users, \acp{acl}) and (ii) provide a script installing Tailscale's client and configuring the system to automatically join the desired robot network.
 
 \section{Work Plan}
 
@@ -668,11 +672,11 @@ Using self-signed certificates requires additional client certificate trust conf
 
 \subsection{Tailscale and Self-Signed Certificates}
 
-Tailscale's client does not support the use of self-signed certificates, even if the system trusts the certificate. Figure \ref{fig:tscert} presents the logic behind Tailscale's certificate validation. However, as an open-source codebase, this code can be freely modified and the binaries rebuilt to suit one's needs. Therefore, a fork of Tailscale was created, which shall be refered to as Trustscale \footnote{Trustscale's repository: https://github.com/VascoRegal/trustscale}.
+Tailscale's client does not support the use of self-signed certificates, even if the system trusts the certificate. Figure \ref{fig:tscert} presents the logic behind Tailscale's certificate validation. However, as an open-source codebase, this code can be freely modified and the binaries rebuilt to suit one's needs. Therefore, a fork of Tailscale was created, which shall be refered to as selfscale \footnote{selfscale's repository: https://github.com/VascoRegal/selfscale}.
 
-Trustscale implements a new command-line option, --\emph{allow-self-signed}, which stores a boolean value. When true, the certificate validation method allows the use of self-signed certificates.
+selfscale implements a new command-line option, --\emph{allow-self-signed}, which stores a boolean value. When true, the certificate validation method allows the use of self-signed certificates.
 
-With the use of this option, a self-signed certificate needs only to be trusted by the system to be valid in the eyes of Tailscale's client. Hence, this solution requires clients to run the binaries generated from Trustscale's source code.
+With the use of this option, a self-signed certificate needs only to be trusted by the system to be valid in the eyes of Tailscale's client. Hence, this solution requires clients to run the binaries generated from selfscale's source code.
 
 \begin{figure}
 \centering
@@ -702,11 +706,26 @@ conf.VerifyConnection = func(cs tls.ConnectionState) error {
 
 \subsection{Trusting Headscale}
 
-As the Tailscale client can now accept self-signed certificates, Headscale's certificate can be added to the client machine's trusted list. On debian distributions, this required moving the certificate to the \emph{/usr/local/share/ca-certificates} and updating the list with the command \textbf{update-ca-certificates}.
+As the Tailscale client can now accept self-signed certificates, Headscale's certificate can be added to the client machine's trusted list. On debian distributions, this required moving the certificate to the \emph{/usr/local/share/ca-certificates} and updating the list with the command \textbf{update-ca-certificates}. Installation scripts are available on a public repository.
 
 \chapter{Automation}
 
-In this chapter,
+This chapter details the development
+
+\section{Distributing Selfscale binaries}
+
+Tailscale's codebase provides a script to build the binaries, which is also used to build Selfscale. Additionally, a configuration file is provided to setup Tailscale's daemon as a service.
+
+Regarding distribution, these are hosted as a compressed file in the GitHub repository. TODO: Distributing the software as a package would probably be more optimal.
+
+To generate the compressed package, a shell script was developed, \textbf{build\_selfscale.sh}, which builds both the tailscale and tailscale daemon binaries and zips them with the aforementioned configuration file. This zip is hosted on the \textbf{selfscale} folder of the repository. Currently this script is used to release a new version.
+
+\subsection{Deploying Headscale}
+
+Headscale's deployment requires both the installation of the software and its configuration, namely the configuration yaml and the server certificate. Both these last files are publicly available in the automation repository.
+
+Hence, the \textbf{install\_headscale.sh} downloads Headscale's package,
+
 
 \chapter{Validation and Results}
 \label{chap:results}
