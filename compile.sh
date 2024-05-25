@@ -5,9 +5,10 @@ rm -rf build
 mkdir -p build
 
 # make pdf and compile bib
-pdflatex -output-directory=build -interaction=nonstopmode pre-tese
-cp ./* build
+# pdflatex -output-directory=build -interaction=nonstopmode pre-tese
+rsync -av --exclude='.git' --exclude='build'  . build
 cd build
+cp figs/*.png .
 bibtex pre-tese
 pdflatex -interaction=nonstopmode pre-tese
 pdflatex -interaction=nonstopmode pre-tese

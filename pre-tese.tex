@@ -22,7 +22,6 @@
 \usepackage{acronym}
 \usepackage[acronym]{glossaries}
 
-
 % optional (comment to use default)s
 %   depth of the table of contents
 %     1 ... chapther and sections
@@ -512,7 +511,7 @@ Hence, this phase aims to (i) deploy an Headscale server in \ac{ua}'s public net
 
 This final development phase aims to create automation processes to aid in the deployment and configuration of the solution.
 
-So, the automation process has two main goals in mind: First, to (i) provide a minimal configuration script to install and deploy an Headscale instance and provision its respective resources (auth keys, users, \acp{acl}) and (ii) provide a script installing Tailscale's client and configuring the system to automatically join the desired robot network.
+So, the automation process has two main goals in mind: First, to (i) provide a minimal configuration script to install and deploy an Headscale instance and provision its respective resources (auth keys, users, \acp{acl}) and (ii) provide a script installing Tailscale's client and configuring the system to automatically join the desired network.
 
 \section{Work Plan}
 
@@ -728,16 +727,68 @@ Headscale's deployment requires both the installation of the software and its co
 
 Hence, the \textbf{install\_headscale.sh} shell script starts by downloading a desired Headscale package, where version and system architecutre are specified with command-line arguments. Then, the script fetches the Headscale's configuration yaml, publicly available in the automation repository, and applies it to the instance. Finally, a x509 self-signed certificate is generated with the \textbf{openssl} \ac{cli} and placed, along with the certificate's key, in its respective path (matching what was defined in the the yaml).
 
-\section{Client Deployment}
+% \section{Client Deployment}
 
 \chapter{Validation and Results}
 \label{chap:results}
+
+To validate the solution, two dimensions must be taken into account. First, it is necessary to ensure clients can use the overlay networks from anywhere within the campus. Then, the overall network performance should also be analyzed, namely communication latencies, network throughput both for \ac{tcp} and \ac{udp} and network jitter. Fortunatelly, both tests can be done simultaneously!
+
+\textbf{iperf3} is an open-source tool which measures several of such metrics by exchanging packets on a client-server model. Regarding latencies, these can be measured with simple \textbf{ping} commands.
+
+Therefore, these tests were implemented in a simple script which connects to a host to run \textbf{iper3} \ac{tcp} and \ac{udp} tests for 120 seconds each and exporting the results as \ac{json}. To this \ac{json} is added the average latency by executing the \textbf{ping} command with a limit of 50 replies.
+
+For this experiment, a Tailscale client running \textbf{iper3} as a server was placed . Then, with another machine, run the script
+
+\section{Campus Coverage}
+
+\section{Network Performance}
+
+\subsection{Throughput}
+
+\subsubsection{TCP}
+
+\begin{figure}[h]
+\centering
+  \includegraphics[width=0.8\textwidth]{biblioteca-tcp.png}
+  \caption{Tailscale tunnel Network Throughput (University Library)}
+  \label{fig:tcptplibrary}
+\end{figure}
+
+\subsubsection{UDP}
+
+\begin{figure}[h]
+\centering
+  \includegraphics[width=0.8\textwidth]{cp-udp.png}
+  \caption{Tailscale tunnel Network Throughput (CP)}
+  \label{fig:tcptplibrary}
+\end{figure}
+
+\subsection{Latency}
+
+\begin{figure}[h]
+\centering
+  \includegraphics[width=0.8\textwidth]{building-latency.png}
+  \caption{Tailscale tunnel Network Throughput (University Library)}
+  \label{fig:tcptplibrary}
+\end{figure}
+
 
 \begin{figure}[h]
 \centering
 \includegraphics[width=0.8\textwidth]{ua-latency.png}
 \caption{Average latency on a Tailscale connection from different UA buildings to IRIS-Lab. The numbers in the circles represent average latency values.}
 \label{fig:ualats}
+\end{figure}
+
+
+\subsection{Jitter}
+
+\begin{figure}[h]
+\centering
+  \includegraphics[width=0.8\textwidth]{building-jitter.png}
+  \caption{Network Jitter by campus location.}
+  \label{fig:tcptplibrary}
 \end{figure}
 
 \chapter{Conclusion}
