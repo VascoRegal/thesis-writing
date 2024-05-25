@@ -9,6 +9,8 @@ mkdir -p build
 rsync -av --exclude='.git' --exclude='build'  . build
 cd build
 cp figs/*.png .
+
+pdflatex -interaction=nonstopmode pre-tese
 bibtex pre-tese
 pdflatex -interaction=nonstopmode pre-tese
 pdflatex -interaction=nonstopmode pre-tese
