@@ -252,21 +252,25 @@ Summarizing, the use of overlay networks provides an efficient and reliable way 
 
 \section{Virtual Private Networks}
 
-Public networks are built on infrastructure users generally have no control over. Public routers, relay nodes, servers and even physical links always carry the risk of traffic eavesdropping and tampering by untrusted entities. Therefore, to ensure the confidentiality, privacy and integrity of connections established through an insecure medium, data should be properly encrypted and authenticated. One such mechanism is the use of \acp{vpn}.
+The Internet is built on public infrastructure users generally have no control over. Public routers, relay nodes, servers and even physical links always carry the risk of traffic eavesdropping and tampering by untrusted entities. Therefore, to ensure the confidentiality, privacy and integrity of connections established through an insecure medium, data should be properly encrypted and authenticated. Such is the fundamental principle of \acp{vpn}.
 
 Conceptually, a \ac{vpn} is a virtual network that provides functionalities which secure the transmission of data between any two endpoints ~\cite{HARMENING2017843}. This section aims to analyze how \acp{vpn} architecures have evolved, from its inception to more recent paradigms, which follow overlay concepts discussed in Section \ref{sec:on}. Then, it presents an overview of notable \ac{vpn} providers and their respective pros, cons and suitability for the scope of this solution. This state of the art survey aims to pickup on similar works ~\cite{zuqueteseguranca, berger2006analysis}, while additionally reviewing emerging protocols.
 
 \subsection{VPN architectures}
 
-Traditional \ac{vpn} services operate under a hub-and-spoke architecture, a model composed by one or more \ac{vpn} Gateways - devices accepting incoming connections from client nodes and forwarding the traffic to their final destination. Hub-and-spoke architectures carry some well known bottlenecks ~\cite{ELHEDHLI20051615, o1998geographer}. First, it implies increased latency associated with the geographical distance between a client and the nearest hub. Also, regarding scalability and dynamic configuration, adding new clients to the network requires the distribution of its keys to all hubs.
+Traditional \ac{vpn} services operate under a hub-and-spoke architecture, a model composed by one or more \ac{vpn} Gateways - devices accepting incoming connections from client nodes and forwarding the traffic to their final destination. Hub-and-spoke architectures carry some well known bottlenecks ~\cite{ELHEDHLI20051615, o1998geographer} and, more recently, ~\cite{AN2015103}. First, it implies increased latency associated with the geographical distance between a client and the nearest hub. This topology also raises reliability issues as hubs introduce a single point of failure to the system, requiring backup plans and alternative routes to ensure no network down times.
+
+To avoid the congestion associated with hub-and-spoke architectures, decentralized topologies have emerged which operate by establishing direct \ac{p2p} connection between clients, creating a mesh network.
 
 \ac{vpn}s can be classified according to their topology in two main categories: client-to-site and site-to-site. A client-to-site \ac{vpn} is characterized by connections from a single user (client) to a private network (site), while site-to-site \ac{vpn}s offer a secured connection between two private networks. Thus, in site-to-site networks, users are not required to individually configure \ac{vpn} clients. The tunnel in this type of \ac{vpn} is made available to the entire network.
 
+
+
 \subsection{VPNs on NAT Networks}
 
-\ac{nat} is a networking mechanism responsible for translating \ac{ip} addresses in private networks into public addresses when packets sent from a private network are routed to the public Internet. In the context of \ac{vpn} communications, this process can prove to be a major constraint, not only due to \ac{nat}'s tampering of \ac{ip} packets' fields, namely destination and source addresses, which could potentially compromise its integrity in the eyes of a \ac{vpn} protocol, but also regarding the dynamically changing public \ac{ip} addresses which \ac{nat} decides to translate private addresses to.
+A \ac{nat} is a networking mechanism responsible for translating \ac{ip} addresses in private networks to public addresses when packets sent from a private network are routed to the public Internet. In the context of \ac{vpn} communications, this process can prove to be a major constraint, not only due to \ac{nat}'s tampering of \ac{ip} packets' fields, namely destination and source addresses, which could potentially compromise its integrity in the eyes of a \ac{vpn} protocol, but also regarding the dynamically changing public \ac{ip} addresses which \ac{nat} decides to translate private addresses to. In another words, without additional tools, a host in a private network has no knowledge regarding which public \ac{ip} it will be assigned.
 
-In fact, it is very likely that devices on the internet reside in a network behind both \ac{nat} mechanisms and Firewall rules, with no open ports. Also, believing nodes will have a consistent static \ac{ip} is a very naive assumption, especially when considering mobile devices. NAT Traversal is a networking technique that enables the establishing and maintaining (by keeping \ac{nat} holes open) of \ac{p2p} connections between two peers, no matter what's standing between them, making communication possible without the need for firewall configurations or public-facing open ports. There's no one solution to achieve this functionality. In fact, there are various developments effectively implementing a NAT Traversal solution, such as ICE ~\cite{rfc8445} and STUN ~\cite{rfc8489}. Hence, each \ac{vpn} service can have its own way of supporting NAT Traversal. Each case is explored separately in its own subsection.
+In fact, it is very likely that devices on the internet reside in a network behind both \ac{nat} mechanisms and Firewall rules, with no open ports. Also, believing nodes will have a consistent static \ac{ip} is a very naive assumption, especially when considering mobile devices. NAT Traversal is a networking technique that enables the establishing and maintaining (by keeping \ac{nat} holes open) of \ac{p2p} connections between two peers, no matter what's standing between them, making communication possible without the need for firewall configurations or public-facing open ports. There's no one solution to achieve this functionality. In fact, there are various developments effectively implementing a NAT Traversal solution, such as ICE ~\cite{rfc8445} and STUN ~\cite{rfc8489}. Hence, each \ac{vpn} service can have its own way of supporting NAT Traversal. Each case is explored separately.
 
 
 \section{VPN Providers}
@@ -784,6 +788,7 @@ For coverage testing, twelve different scenarios were considered, presented on t
 
 \section{Network Performance}
 
+
 \subsection{Throughput}
 
 \subsubsection{TCP}
@@ -803,6 +808,7 @@ For coverage testing, twelve different scenarios were considered, presented on t
   \caption{UDP Tailscale tunnel Network Throughput (Pedagogic Complex)}
   \label{fig:tcptplibrary}
 \end{figure}
+
 
 \subsection{Latency}
 
@@ -829,6 +835,25 @@ For coverage testing, twelve different scenarios were considered, presented on t
   \includegraphics[width=0.8\textwidth]{building-jitter.png}
   \caption{Network Jitter by campus location.}
   \label{fig:uajitter}
+\end{figure}
+
+
+\subsection{Protocol Overhead}
+
+To evaluate Tailscale's overhead on communication, throughput and latency results via internal network connections were compared with the same scenario but via Tailscale tunnel. For this test, both client and server were residing inside \ac{iris}. Figure \ref{fig:overhead} presents the \ac{tcp} throughputs results and figure \ref{fig:latency_overhead} shows the average latencies. As expected, communicating through Tailscale implies a loss of throughput and a slight increase in latencies.
+
+\begin{figure}[h]
+\centering
+  \includegraphics[width=0.8\textwidth]{overhead.png}
+  \caption{Tailscale's toll on throughput, tested on internal and Tailscale connections inside IRIS-Lab}
+  \label{fig:overhead}
+\end{figure}
+
+\begin{figure}[h]
+\centering
+  \includegraphics[width=0.8\textwidth]{latency_overhead.png}
+  \caption{Average latency on internal and Tailscale connections}
+  \label{fig:latency_overhead}
 \end{figure}
 
 \chapter{Conclusion}
