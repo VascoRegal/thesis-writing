@@ -254,7 +254,7 @@ Summarizing, the use of overlay networks provides an efficient and reliable way 
 
 The Internet is built on public infrastructure users generally have no control over. Public routers, relay nodes, servers and even physical links always carry the risk of traffic eavesdropping and tampering by untrusted entities. Therefore, to ensure the confidentiality, privacy and integrity of connections established through an insecure medium, data should be properly encrypted and authenticated. Such is the fundamental principle of \acp{vpn}.
 
-Conceptually, a \ac{vpn} is a virtual network that provides functionalities which secure the transmission of data between any two endpoints ~\cite{HARMENING2017843}. This section aims to analyze how \acp{vpn} architecures have evolved, from its inception to more recent paradigms, which follow overlay concepts discussed in Section \ref{sec:on}. Then, it presents an overview of notable \ac{vpn} providers and their respective pros, cons and suitability for the scope of this solution. This state of the art survey aims to pickup on similar works ~\cite{zuqueteseguranca, berger2006analysis}, while additionally reviewing emerging protocols.
+Conceptually, a \ac{vpn} is a virtual network that provides functionalities which secure the transmission of data between any two endpoints ~\cite{HARMENING2017843}. This section aims to analyze how \ac{vpn} architecures have evolved, from its inception to more recent paradigms, which follow overlay concepts discussed in Section \ref{sec:on}. Then, it presents an overview of notable \ac{vpn} providers and their respective pros, cons and suitability for the scope of this solution. This state of the art survey aims to pickup on similar works ~\cite{zuqueteseguranca, berger2006analysis}, while additionally reviewing emerging protocols.
 
 \subsection{VPN architectures}
 
@@ -268,10 +268,9 @@ To avoid the congestion associated with hub-and-spoke architectures, decentraliz
 
 \subsection{VPNs on NAT Networks}
 
-A \ac{nat} is a networking mechanism responsible for translating \ac{ip} addresses in private networks to public addresses when packets sent from a private network are routed to the public Internet. In the context of \ac{vpn} communications, this process can prove to be a major constraint, not only due to \ac{nat}'s tampering of \ac{ip} packets' fields, namely destination and source addresses, which could potentially compromise its integrity in the eyes of a \ac{vpn} protocol, but also regarding the dynamically changing public \ac{ip} addresses which \ac{nat} decides to translate private addresses to. In another words, without additional tools, a host in a private network has no knowledge regarding which public \ac{ip} it will be assigned.
+A \ac{nat} is a networking mechanism responsible for translating \ac{ip} addresses in private networks to public addresses when packets sent from a private network are routed to the public Internet. In the context of \ac{vpn} communications, this process can prove to be a major constraint, not only due to \ac{nat}'s tampering of \ac{ip} packets' fields, namely destination and source addresses, which could potentially compromise its integrity in the eyes of a \ac{vpn} protocol, but also regarding the dynamically changing public \ac{ip} addresses which \ac{nat} decides to translate private addresses to. In other words, without additional tools, a host in a private network has no knowledge regarding which public \ac{ip} it will be assigned.
 
 In fact, it is very likely that devices on the internet reside in a network behind both \ac{nat} mechanisms and Firewall rules, with no open ports. Also, believing nodes will have a consistent static \ac{ip} is a very naive assumption, especially when considering mobile devices. NAT Traversal is a networking technique that enables the establishing and maintaining (by keeping \ac{nat} holes open) of \ac{p2p} connections between two peers, no matter what's standing between them, making communication possible without the need for firewall configurations or public-facing open ports. There's no one solution to achieve this functionality. In fact, there are various developments effectively implementing a NAT Traversal solution, such as ICE ~\cite{rfc8445} and STUN ~\cite{rfc8489}. Hence, each \ac{vpn} service can have its own way of supporting NAT Traversal. Each case is explored separately.
-
 
 \section{VPN Providers}
 
@@ -324,7 +323,7 @@ This process is analogous when dealing with TAP devices, differing, as mentioned
 
 WireGuard ~\cite{donenfeld2017wireguard} is an open-source UDP-only layer 3 network tunnel implemented as a kernel virtual network interface. WireGuard offers both a robust cryptographic suite and transparent session management, based on the fundamental principle of secure tunnels: peers in a WireGuard communication are registered as an association between a public key (analogous to the OpenSSH keys mechanism) and a tunnel source \ac{ip} address.
 
-One of WireGuard's selling points is its simplicity. In fact, compared to similar protocols, which generally support a wide range of cryptographic suites, WireGuard settles for a singular one. Although one may consider the lack of cipher agility as a disadvantage, this approach minimizes protocol complexity, increasing security robustness by avoiding vulnerabilities commonly originating from such protocol negotiation.
+One of WireGuard's selling points is its simplicity. In fact, compared to similar protocols, which generally support a wide range of cryptographic suites, WireGuard settles for a singular one. Although one may consider the lack of cipher agility as a disadvantage, this approach minimizes protocol complexity, increasing security robustness by avoiding vulnerabilities commonly originating from such protocol negotiation ~\cite{curguz2016vulnerabilities}.
 
 \subsubsection{Routing}
 
@@ -410,6 +409,7 @@ Having outlined how a basic WireGuard scenario can be configured, the following 
 \subsubsubsection{Point to Point}
 
 \subsubsection{Limitations}
+\label{sec:wglimits}
 
 Although WireGuard proves to be a robust, performant and maintainable protocol for encrypted communication, it still presents some complexity regarding administration agility and scalability, since it (intentionally) lacks a coordination entity. New clients added to a standalone WireGuard network imply the manual reconfiguration of every other peer already present, a process with added complexity and prone to errors, if carried out manually.
 
@@ -418,28 +418,26 @@ There are, however, several software products implementing such an orchestrator,
 
 \subsection{Protocol Comparison}
 
-The concept of performance in \ac{vpn} applications entails both protocol overhead on communication throughput and bandwidth usage minimization. These dimensions can be empirically measured, by calculating communication latency / ping time and throughput. The performance claims on ~\cite{donenfeld2017wireguard}, where, when comparing WireGuard to other discussed technologies like OpenVPN and IPsec, present results in favor of WireGuard in both metrics. This conclusion is backed by more extensive research ~\cite{mackey2020performance}, ~\cite{osswald2020performance}, where communication is tested in a wide range of different environments and CPU architectures.
+The concept of performance in \ac{vpn} applications refers to the impact the protocol has on network behavior. This dimension can be empirically measured, by analyzing metrics like latency, also refered to as \ac{rtt}, throughput and jitter. CPU utilization is also a valuable metric, as demanding operations can also take a toll on overall network performance, since processing traffic might stall due to the CPU overloading.
 
-WireGuard, due to its kernel implementation (compared to, for example, OpenVPN's user space implementation) and efficient multi-threading usage, contribute greatly to such performance benchmarks. Moreover, its relatively small codebase (around 4000 lines) creates a very concise, auditable and maintainable \ac{vpn} protocol.
+The performance claims on ~\cite{donenfeld2017wireguard}, where, when comparing WireGuard to other discussed technologies like OpenVPN and IPsec, present results in favor of WireGuard in such metrics. This conclusion is backed by more extensive research ~\cite{mackey2020performance}, ~\cite{osswald2020performance}, where communication is tested in a wide range of different environments and CPU architectures.
+
+WireGuard, due to its kernel implementation (compared to, for example, OpenVPN's user space implementation) and efficient multi-threading usage, contribute greatly to such performance benchmarks. Overall, WireGuard combines simplicity with state of the art cryptography and efficiency.
 
 \subsection{Summary}
 
-This section presents the fundamentals of \acp{vpn} and how they are able to ensure integrity and confidentiality to communication through insecure mediums. Then, some of the most notable \acp{vpn} providers were reviewed and compared, regarding functionalities, behaviour when dealing with network constraints and overall performance. The result of this analysis suggests WireGuard as the most promissing \ac{vpn} protocol, due to its ease of management, security mechanisms and strong cryptographic directives.
+This section presents the fundamentals of \acp{vpn} and how they are able to ensure integrity and confidentiality to communication through insecure mediums. Then, some of the most notable \ac{vpn} providers were reviewed and compared, regarding functionalities, behaviour when dealing with network constraints and overall performance. The result of this analysis suggests WireGuard as the most promissing \ac{vpn} protocol, due to its ease of management and configuration, security mechanisms and verified cryptography.
 
 
 \section{WireGuard Coordination}
 \label{sec:coordination}
 
-With this in mind, this section explores applications and implementations of control platforms built, or with the potential to be built, on top of WireGuard, aiming to create a seamless peer orchestration and configuration process, minimizing human intervention.
+In Section \ref{sec:wglimits}, the lack of a coordination entity on standalone WireGuard topologies was raised as a possible limitation. In fact, manually reconfiguring peers in a WireGuard network is a process that scales terribly. Moreover, on highly restrictive networks, creating direct WireGuard tunnels might prove to not be that easy.
 
-First, it is mandatory to define what a control platform is. The main goal should be to overcome the limitations previously mentioned, by supporting:
+With this in mind, this section explores applications and implementations of coordination platforms built, or with the potential to be built, on top of WireGuard, aiming to create a seamless peer orchestration and configuration process, minimizing human intervention.
 
-\begin{itemize}
-     \item A centralized server storing peers' identification (public key and tunnel \ac{ip} address).
-     \item Establishment of secure channels between peers and such a centralized server.
-     \item On-demand retrieving of information regarding any peer in its network domain.
-\end{itemize}
 
+\iffalse
 \subsection{OOR Map Server Implementation}
 
 An implementation with said requirements is proposed in \cite{paillisse2021control}. The core architecture of this solution is composed by a centralized \ac{oor} Map Server, containing peer identification data, which provides devices with on-demand information regarding any other peer in the network to setup a direct connection.  From a client perspective, a peer wanting to communicate with another should first establish a secure WireGuard connection to this server and request a connection with a destination node. The server, with the source \ac{ip} and public key of the requesting client, redirects this data to the destination node, reaching a state where both peers contain all necessary information to begin the WireGuard tunnel.
@@ -447,24 +445,24 @@ An implementation with said requirements is proposed in \cite{paillisse2021contr
 This prototype successfully tackles one of the main limitations of WireGuard, offering a mechanism capable of dynamically configuring peers, without the need to reconfigure every device every time a new client joins the network. Also, it reduces routing table complexity, as peers are not required to keep all other peers' information locally. However, the addition of such a centralized entity also introduces a new attack vector. Effectively, if the private key of the central server, crucial in creating the first secure channel between a peer and the server, is compromised, a man-in-the-middle attack could be mounted, since an attacker could impersonate the centralized server.
 
 Regarding performance, there is, as expected, an overhead compared to native OOR benchmarks, as requests to \ac{oor} Map Server are themselves conducted through a WireGuard channel.
+\fi
 
 \subsection{Tailscale}
 
-Tailscale is a \ac{vpn} service operating with a golang user-space WireGuard variant as its data plane ~\cite{tailscale2020online}. Making a paralelism with SECTION-TYPES OF VPN.
+Tailscale is a \ac{vpn} service operating with a golang user-space WireGuard variant as its data plane ~\cite{tailscale2020online}.
 
+\subsubsection{Architecutre}
 
-\subsection{Architecutre}
-
-Tailscale's central entity, referred to as the coordination server, functions as a shared repository of peer information, used by clients to retrieve data regarding other nodes and establish on-demand \ac{p2p} connections among each other.
+Tailscale's central entity, referred to as the \textbf{coordination server}, functions as a shared repository of peer information, used by clients to retrieve data regarding other nodes and establish on-demand \ac{p2p} connections among each other.
 
 This approach differs from traditional hub-and-spoke since the coordination server carries nearly no trafic - it only serves encryption keys and peer information. Tailscale's architecture provides the best of both worlds, benefiting from the advantages of a centralized entity facilitating dynamic configurations and peer discovery without bottlenecking its data exchanging performance.
 
-In practical terms, a Tailscale client will store, on the coordination server, its own public key and where it can currently be found. Then, it downloads a list of public keys and addresses that have been stored on the server previously by other clients. With this information, the client node is able to configure its WireGuard interface and start communicating with any other node in its domain.
+In practical terms, a Tailscale client will store, in the coordination server, its own public key and where it can currently be found. Then, it downloads a list of public keys and addresses that have been stored on the server previously by other clients. With this information, the client node is able to configure its WireGuard interface and start communicating with any other node in its domain.
 
 \subsubsection{Overcoming restrictive networks}
 \label{ssec:tsnetworks}
 
-There are however, some network security configurations which prevent WireGuard tunnels from being established. For example, firewalls blocking \ac{udp} traffic entirely prevent the creation of direct WireGuard tunnels between two peers (as WireGuard is an \ac{udp} only protocol). In addition to orchestrating WireGuard peers, Tailscale is also able to overcome such constrained networks.
+There are however, some network security configurations which prevent WireGuard tunnels from being established. For example, firewalls blocking \ac{udp} traffic entirely prevent the creation of direct WireGuard tunnels between two peers (as WireGuard is a \ac{udp} only protocol). In addition to orchestrating WireGuard peers, Tailscale is also able to overcome such constrained networks.
 
 Regarding stateful firewalls, where, generally, inbound traffic for a given source address on a non-open port is only accepted if the firewall has recently seen an outgoing packet with such \emph{ip:port} as destination (essentially assuming that, if outbound traffic flowed to a destination, the source expects to receive an answer from that same destination), Tailscale keeps, in its coordination server, the \emph{ip:port} of each node in its network. With this information, if both peers send an outgoing packet to each other at approximately the same time (a time delta inferior to the firewall's cache expiration), then the firewalls at each end will be expecting the reception of packets from the opposite peer. Hence, packets can flow bidirectionally and a \ac{p2p} communication is established. To ensure this synchronism of attempting communication at approximate times, Tailscale uses its coordination server and \ac{DERP} servers (explored further in the following paragraphs) as a side channel.
 
@@ -472,9 +470,13 @@ Although this procedure is quite effective, in networks with \ac{nat} mechanisms
 
 There are, however, some \ac{nat} devices that create a completely different public address mapping for each different destination a machine communicates with, which hinders the above address discovery process. Such devices are classified as \ac{edm} (in opposition to \ac{eim}) ~\cite{rfc4787}.
 
-Networks employing \ac{edm} devices and/or really strict firewall rules, render these traversal techniques useless. To enable \ac{p2p} communications in such scenarios, Tailscale also provides a network of \ac{DERP} servers, which are responsible for relaying packets over \ac{http}. A Tailscale client is able to forward its encrypted packets to one of such \ac{DERP} servers. Since a client's private key never actually leaves its node, \ac{DERP} servers can't decrypt the traffic being relayed, performing only redirection of already encrypted packets. These relay servers are distributed geographically. However, there is the possibility of an increase in latency and loss of bandwidth, which isn't terrible, as the alternative is not being able to establish connections at all.
+Networks employing \ac{edm} devices and/or really strict firewall rules, render these traversal techniques useless. To enable \ac{p2p} communications in such scenarios, Tailscale also provides a network of \ac{DERP} servers, which are responsible for relaying packets over \ac{http}. A Tailscale client is able to forward its encrypted packets to one of such \ac{DERP} servers. Since a client's private key never actually leaves its node, \ac{DERP} servers can't decrypt the traffic being relayed, performing only redirection of already encrypted packets. These relay servers are distributed geographically. However, traffic relayed by \ac{DERP} servers always carry an increase in latency and loss of bandwidth, which isn't terrible, as the alternative is not being able to establish connections at all.
 
 As such, Tailscale's design provides a set of directives and infrastructure that work together to ensure WireGuard tunnels can be set up between any two peers, regardless of what policies the network between them employs.
+
+\subsubsection{Direct vs Relayed Connections}
+
+Hence, Tailscale connections can be of two types: either \textbf{direct} or \textbf{relayed}. Tailscale will always attempt to create direct connections. In fact, if \ac{nat}-traversal succeeds on both endpoints, a direct WireGuard tunnel can be established. However, on networks employing dynamic \ac{nat} mappings and/or \ac{udp} blocking firewalls, direct connections cannot be formed. That's where relayed connections are created. Clients on relayed connections encapsulate WireGuard \ac{udp} packets as \ac{tcp} streams and forwards them to the closest \ac{DERP} server available, which in turn delivers them to its destination.
 
 \subsubsection{Headscale}
 \label{sec:hs}
