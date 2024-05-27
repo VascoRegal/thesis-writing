@@ -705,7 +705,7 @@ Using self-signed certificates requires additional client certificate trust conf
 
 Tailscale's client does not support the use of self-signed certificates, even if the system trusts the certificate. Figure \ref{fig:tscert} presents the logic behind Tailscale's certificate validation. However, as an open-source codebase, this code can be freely modified and the binaries rebuilt to suit one's needs. Therefore, a fork of Tailscale was created, which shall be refered to as selfscale \footnote{selfscale's repository: https://github.com/VascoRegal/selfscale}.
 
-selfscale implements a new command-line option, --\emph{allow-self-signed}, which stores a boolean value. When true, the certificate validation method allows the use of self-signed certificates.
+Selfscale implements a new command-line option, --\emph{allow-self-signed}, that stores a boolean value. When true, the certificate validation method allows the use of self-signed certificates.
 
 With the use of this option, a self-signed certificate needs only to be trusted by the system to be valid in the eyes of Tailscale's client. Hence, this solution requires clients to run the binaries generated from selfscale's source code.
 
@@ -761,7 +761,7 @@ Hence, the \textbf{install\_headscale.sh} shell script starts by downloading a d
 
 A shell script was also created for the clients. Here, configuring a client requires the installation of the modified Tailscale bianries, which can be downloaded as a zip from Selfscale's GitHub repository. Then, the package is extracted and files are placed accordingly. Then, Headscale's server certificate is also fetched and added to the system's trust mechanisms. 
 
-Running this simple script leaves a machine in a state where, given a pre-shared key, authentication can be performed with the \textbf{tailscale up} command.
+Running this simple script leaves a machine in a state where, given a pre-shared key, authentication can be performed with the \textbf{tailscale up} command, passing the additional \emph{allow-self-signed} option.
 
 \chapter{Validation and Results}
 \label{chap:results}
@@ -772,9 +772,13 @@ Therefore, these tests were implemented as a python script \footnote{https://git
 
 For this experiment, a Tailscale client running \textbf{iperf3} as a server was placed inside \ac{iris} network. Then, with another machine, the script was run in clients connected to \ac{ua}'s network, from disperse points in the campus. This procedure allows not only the collection of \textbf{iperf3}'s network metrics and latencies but also the validation of the solution's coverage, since the script connects to the \ac{iris}'s host with its Tailscale IP. If this connection fails, Tailscale can't cover that area, possibly due to more constraining networking rules. As it will be shown in the following section, however, none of the tested areas failed to establish communication.
 
+Twelve different test scenarios were run, presented on table \ref{tab:locs}. Since the \textbf{iperf3} server is running on \ac{iris} network, tests can be executed either using the server's Wi-Fi interface or its Tailscale interface. Interpolating data from these two scenarios allows the visualization of Tailscale's overhead on communication. The remaining scenarios are meant to both ensure Tailscale can establish connections from any point in the campus, while also providing insights on general communication performance.
+
 \section{Campus Coverage}
 
-For coverage testing, twelve different scenarios were considered, presented on table \ref{tab:locs}.
+
+As mentioned above, all identified locations were able to communicate with the client running on \ac{iris} through its tunnel interface, validating the solution's ability to establish Tailscale tunnels from anywhere within the campus.
+
 
 \begin{table}[]
   \centering
