@@ -476,7 +476,7 @@ As such, Tailscale's design provides a set of directives and infrastructure that
 
 \subsubsection{Direct vs Relayed Connections}
 
-Hence, Tailscale connections can be of two types: either \textbf{direct} or \textbf{relayed}. Tailscale will always attempt to create direct connections. In fact, if \ac{nat}-traversal succeeds on both endpoints, a direct WireGuard tunnel can be established. However, on networks employing dynamic \ac{nat} mappings and/or \ac{udp} blocking firewalls, direct connections cannot be formed. That's where relayed connections are created. Clients on relayed connections encapsulate WireGuard \ac{udp} packets as \ac{tcp} streams and forwards them to the closest \ac{DERP} server available, which in turn delivers them to its destination.
+Hence, Tailscale connections can be of two types: either \textbf{direct} or \textbf{relayed}. Tailscale will always attempt to create direct connections. In fact, if \ac{nat}-traversal succeeds on both endpoints, a direct WireGuard tunnel can be established. However, on networks employing \ac{edm} \ac{nat} mappings and/or \ac{udp} blocking firewalls, direct connections cannot be formed. That's where relayed connections are created. Clients on relayed connections encapsulate WireGuard \ac{udp} packets as \ac{tcp} streams and forwards them to the closest \ac{DERP} server available, which in turn delivers them to its destination.
 
 \subsubsection{Headscale}
 \label{sec:hs}
@@ -499,14 +499,14 @@ Having outlined the relevant research, background and technologies for this diss
 
 \section{Technology Stack}
 
-Based on the research done in the previous section, WireGuard seems the most adequate encrypted communication protocol for this project. However, to avoid the already covered added complexity of a standalone WireGuard network, Tailscale will function as the core of this solution. Ideally, all Tailscale related infrastructure should be self-hosted, which can be achieved using Headscale's open-source implementation of Tailscale's control server. 
+Based on the research done in the previous section, WireGuard seems the most adequate encrypted communication protocol for this project. However, to avoid the already covered added complexity of a standalone WireGuard network, Tailscale will function as the core of this solution. Ideally, all Tailscale related infrastructure should be self-hosted, which can be achieved using Headscale's open-source implementation of Tailscale's coordination server.
 
 Therefore, our overlay networks are formed by a group of Tailscale clients, running in the robots, which are managed and coordinated by Headscale.
 
 \section{Prototype Development}
 \label{sec:protodev}
 
-This first phase aims to build a small-scale prototype in a virtual development environment. The prototype should, using Headscale and Tailscale, be able to establish a \ac{p2p} connection between two sample clients, which couldn't communicate beforehand. Hence, this phase's main goals are to (i) create a virtual environment which simulates the scenario being tackled, (ii) establish \ac{p2p} connections between clients behind private \ac{nat} networks  and (iii) validate the communication through the \ac{ros} middleware. Obviously, regarding goal (i), the simulation of the networking conditions can't be entirely accuracte, since, as referenced in section \ref{sec:uanet}, details regarding \ac{ua}'s network mechanisms are vastly unknown. It is possible, however, to create an analogous situation, where clients can't form \ac{p2p} commmunications with each other but can all communicate with an external, public server. Moreover, as stated in previous sections, Tailscale's protocol effictevly deals with most network costraints preventing direct communication. In other words, it is only known clients can't communicate, the reasons behind why they can't are abstracted by Tailscale.
+This first phase aims to build a small-scale prototype in a virtual development environment. The prototype should, using Headscale as the coordination server and Tailscale as clients, be able to establish a \ac{p2p} connection between two sample machines, which couldn't communicate beforehand. Hence, this phase's main goals are to (i) create a virtual environment which simulates the scenario being tackled, (ii) establish \ac{p2p} connections between clients behind private \ac{nat} networks  and (iii) validate the communication through the \ac{ros} middleware. Obviously, regarding goal (i), the simulation of the networking conditions can't be entirely accuracte, since, as referenced in section \ref{sec:uanet}, details regarding \ac{ua}'s network mechanisms are vastly unknown. It is possible, however, to create an analogous situation, where clients can't immediately form \ac{p2p} commmunications with each other but can all communicate with an external, public server. Moreover, as stated in previous sections, Tailscale's protocol effictevly deals with most network costraints preventing direct communication. In other words, it is only known clients can't communicate, the reasons behind why they can't are abstracted by Tailscale.
 
 This virtual environment must be composed of three entities: a public server and two clients in their own private networks. As mentioned in section \ref{sec:hs}, Headscale is an open-source implementation of Tailscale's control server. Thus, the control server in this environment is a self-hosted Headscale instance deployed in the public server. Both clients, which can reach the public server, but not each other, should then auhtenticate in this control server and configure their Tailscale interfaces and addresses, allowing for a direct communication to take place.
 
@@ -528,6 +528,13 @@ After achieving and configuring the prototype previously developed, the next pha
 
 Hence, this phase aims to (i) deploy an Headscale server available to any client connected to \ac{ua}'s network, (ii) configure robots to act as Tailscale clients and (iii) establish secure communication between a team of robots spread out throughout the campus.
 
+
+\section{Validation}
+\label{sec:metvalidation}
+
+(i) Measure network performance on normal vs Tailscale connections
+(ii) Validate connections spread out through various campus points
+(iii) Test the solution with demanding apps, such as live video streaming, through Tailscale interfaces.
 
 \section{Automation}
 \label{sec:automethod}
@@ -561,11 +568,11 @@ This chapter details the configuration of the development environment, as propos
 
 \section{Development Environment}
 
-\subsubsection{Access Point}
+\subsection{Access Point}
 
 The access point used in this environment is a N600 Wireless Dual Band Gigabit router. The host machine is connected to the access point via ethernet. With this setup, when one of the client machines wants to communicate with \textbf{VM-3}, the traffic will be routed from the client to the \ac{ap}'s Wi-Fi interface. Then the router will forward the packet through its ethernet interface, reaching the host machine and, consequently, reaching \textbf{VM-3}, as its network adapter is bridged to the host's ethernet interface, as described above.
 
-\subsubsection{Virtual Machines}
+\subsection{Virtual Machines}
 
 The three virtual machines composing the environment run \emph{Ubuntu Server 22.04} as their operating system. Due to the nature of the goals to be achieved in this phase, which focus on an extremly narrow scope, the machines require very little resources. Regarding networking, \textbf{VM-3} is attached to a bridge network on the ethernet interface of the host machine. As for \textbf{VM-1} and \textbf{VM-2}, each respective network adapter is attached to a \ac{nat}, isolating each client on its own private network, unaccessible from the outside. All machines can access the internet through the access point, explored above.
 
@@ -627,7 +634,7 @@ Table \ref{table:hstest} presents the available services and their respective li
 
 \section{Client Configuration}
 
-Initially, clients can't really establish a direct connection in a traditional way. In fact, neither client is assigned a public address which could be used as a communication's endpoint, nor do they possess any information regarding one another. They can, however, reach the outside internet, which consequently implies the translation of their private addresses into public ones, a process carried by the adapter attached to the host machine's \ac{nat}. <TODO: explicar teoria de porque é que o tailscale vai funcionar aqui>
+Initially, clients can't really establish a direct connection in a traditional way. In fact, neither client is assigned a public address which could be used as a communication's endpoint, nor do they possess any information regarding one another. They can, however, reach the outside Internet, which consequently implies the translation of their private addresses into public ones, a process carried by the adapter attached to the host machine's \ac{nat}. <TODO: explicar teoria de porque é que o tailscale vai funcionar aqui>
 
 Using Tailscale's \ac{cli}, a client is able to authenticate in the Headscale instance previously deployed, which in turn configures its Tailscale interface with a respective Tailscale \ac{ip}, in the range previously configured in the control server. This will allow a state where \ac{p2p} WireGuard tunnels can be established freely between the registered clients.
 
@@ -637,11 +644,11 @@ At this point, clients are ready to perform authentication in the control server
 
 \section{Authentication}
 
-Authenticating in the Headscale instance can be done either using a pre-authenticated key, generated by the control sever and shared with a client, or by accessing the instance through the browser in the client side. For automation purposes, the authentication keys provide a much more useful mechanism presenting itself as the option more adequate for this solution.
+Authenticating in the Headscale instance can be done either using a pre-authenticated key, generated by the control sever and shared with a client, or by accessing the instance through the browser in the client side. For automation purposes, the authentication keys provide a much more useful mechanism.
 
 With that said, reusable keys were generated in the control server with Headscale's \textbf{headscale preauthkeys create}, an utility included in the software's \ac{cli}, and shared with its respective clients. Clients are now able to authenticate with Tailscale's \ac{cli}, by using the \textbf{tailscale up} command. Two additional command-line parameters are set, the \emph{login-server}, which points to the address previously defined in Headscale's config, and the \emph{authkey}, where the shared pre-authenticated key is injected.
 
-With the clients authenticated, both devices are respectively assigned a Tailscale IP and hostname, used to communicate through the overlay network. Table \ref{tab:tsips} presents the clients' Tailscale configurations at this state.
+With the clients authenticated, both devices are respectively assigned a Tailscale IP and hostname. Table \ref{tab:tsips} presents the clients' Tailscale configurations. At this state, clients can communicate directly via Tailscale interfaces.
 
 \begin{table}[]
 \centering
@@ -670,11 +677,11 @@ This chapter details a successful implementation of a minimal configuration prot
 
 \chapter{Production Deployment}
 
-The following chapter presents the configuration and deployment of a solution capable of being used by any client in the campus. As such, and as mentioned in previous sections, this implies that the Headscale instance must be available regardless of a client's physical location within the campus.
+The following chapter presents the configuration and deployment of a solution capable of being used by any client in the campus. As such, and as mentioned in previous sections, this implies that the Headscale instance must be available regardless of a client's physical location within \ac{ua}'s premises.
 
 \section{Headscale Deployment}
 
-In this solution, the Headscale instance is hosted within \ac{iris}'s network. This, however, only allows communications from clients residing in the \ac{iris}'s network. For clients to be able to reach the instance from any location in the campus, port forwarding rules were created on an exposed server in \ac{iris}'s network, available to any client inside \ac{ua}'s network, which redirects traffic on ports \ac{tcp}/8080 (the main Headscale service and the embedded \ac{DERP}) and \ac{udp}/3478 (\ac{stun} interface) to the Headscale server. With this configuration, clients within the campus, which can directly reach the public facing proxy machine, can communicate with the Headscale instance. Figure \ref{fig:prodsolution} presents such architecture.
+In this solution, the Headscale instance is hosted within \ac{iris}'s network. This, however, only allows communications from clients residing in the laboratory's private network. For clients to be able to reach the instance from any location in the campus, port forwarding rules were created on an exposed server in \ac{iris}'s network, available to any client inside \ac{ua}'s network, which redirects traffic on ports \ac{tcp}/8080 (the main Headscale service and the embedded \ac{DERP}) and \ac{udp}/3478 (\ac{stun} interface) to the Headscale server. With this configuration, clients within the campus, which can directly reach the public facing proxy machine, can communicate with the Headscale instance. Figure \ref{fig:prodsolution} presents such architecture.
 
 \begin{figure}[h]
 \centering
@@ -691,7 +698,7 @@ Initially, Headscale was configured to use Tailscale's \ac{DERP} server fleet. H
 
 Headscale allows the use of an embedded \ac{DERP} server, which also exposes \ac{stun} functionalities for \ac{nat}-Traversal. This server can be enabled through Headscale's configuration file, and runs alongside Headscale's main service, on the same address and port. As for the \ac{stun} endpoints, these are also configured to run in the same address, on \ac{udp} port 3478.
 
-Using the embedded self-hosted \ac{DERP} allows relayed communication between clients to be much more efficient, with much more appealing latencies (discussed in Chapter \ref{chap:results}).
+Using the embedded self-hosted \ac{DERP} allows relayed communication between clients to be much more efficient, with much more appealing latencies, discussed in Chapter \ref{chap:results}.
 
 
 \subsection{Adding server certificates}
@@ -705,7 +712,7 @@ Using self-signed certificates requires additional client certificate trust conf
 \subsection{Tailscale and Self-Signed Certificates}
 \label{sec:selfscale}
 
-Tailscale's client does not support the use of self-signed certificates, even if the system trusts the certificate. Figure \ref{fig:tscert} presents the logic behind Tailscale's certificate validation. However, as an open-source codebase, this code can be freely modified and the binaries rebuilt to suit one's needs. Therefore, a fork of Tailscale was created, which shall be refered to as selfscale \footnote{selfscale's repository: https://github.com/VascoRegal/selfscale}.
+Tailscale's client does not support the use of self-signed certificates, even if the system trusts the certificate. Figure \ref{fig:tscert} presents the logic behind Tailscale's certificate validation. However, as an open-source codebase, this code can be freely modified and the binaries rebuilt to suit one's needs. Therefore, a fork of Tailscale was created, which shall be refered to as Selfscale \footnote{selfscale's repository: https://github.com/VascoRegal/selfscale}.
 
 Selfscale implements a new command-line option, --\emph{allow-self-signed}, that stores a boolean value. When true, the certificate validation method allows the use of self-signed certificates.
 
@@ -777,7 +784,6 @@ For this experiment, a Tailscale client running \textbf{iperf3} as a server was 
 Twelve different test scenarios were run, presented on table \ref{tab:locs}. Since the \textbf{iperf3} server is running on \ac{iris} network, tests can be executed either using the server's Wi-Fi interface or its Tailscale interface. Interpolating data from these two scenarios allows the visualization of Tailscale's overhead on communication. The remaining scenarios are meant to both ensure Tailscale can establish connections from any point in the campus, while also providing insights on general communication performance.
 
 \section{Campus Coverage}
-
 
 As mentioned above, all identified locations were able to communicate with the client running on \ac{iris} through its tunnel interface, validating the solution's ability to establish Tailscale tunnels from anywhere within the campus.
 
