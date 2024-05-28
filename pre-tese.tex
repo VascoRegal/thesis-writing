@@ -163,7 +163,7 @@
 \TitlePage
   \vspace*{55mm}
   \TEXT{\textbf{Abstract}}
-       {An overlay network is a group of computational nodes that communicate with each other through a virtual or logic channel, built on top of another network. Although there are already numerous services and protocols implementing this mechanic, scalability and administration agility are among the most desired characteristics of such a network topology. Hence, this document presents a centralized solution for the creation and control of secure overlay networks for multiple nodes - from client management to operation auditing, based on WireGuard, an open-source protocol for encrypted communication. In the University of Aveiro, namely the autonomous robot ecosystem residing in the IRIS lab, supporting such a networking architecture would prove to be particularly interesting, both for development and solution deployment.}
+       {An overlay network is a group of computational nodes that communicate with each other through a logical channel, built on top of another network. Nodes in an overlay network, which are generally end systems, run Internet applications capable of performing more complex operations besides just forwarding and switching traffic. As such, an overlay network can apply routing rules and data manipulation to create a custom protocol running on top of another network. This document presents a secure and private overlay network solution deployed over University of Aveiro's very restrictive network. This solution allows clients, namely the autonomous robots residing in the Intelligent Robotics and Systems Laboratory research unit, to establish direct communications with each other, regardless of their physical location within the campus or network security mechanisms which render such connections impossible. This not only aids developers as they can interact directly with the robots through their personal machines, but also makes it possible to deploy solutions capable of communicating through any of the campus' buildings.}
 \EndTitlePage
 \titlepage\ \endtitlepage % empty page
 
@@ -263,8 +263,6 @@ Traditional \ac{vpn} services operate under a hub-and-spoke architecture, a mode
 To avoid the congestion associated with hub-and-spoke architectures, decentralized topologies have emerged which operate by establishing direct \ac{p2p} connection between clients, creating a mesh network.
 
 \ac{vpn}s can be classified according to their topology in two main categories: client-to-site and site-to-site. A client-to-site \ac{vpn} is characterized by connections from a single user (client) to a private network (site), while site-to-site \ac{vpn}s offer a secured connection between two private networks. Thus, in site-to-site networks, users are not required to individually configure \ac{vpn} clients. The tunnel in this type of \ac{vpn} is made available to the entire network.
-
-
 
 \subsection{VPNs on NAT Networks}
 
