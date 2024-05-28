@@ -476,7 +476,7 @@ As such, Tailscale's design provides a set of directives and infrastructure that
 
 \subsubsection{Direct vs Relayed Connections}
 
-Hence, Tailscale connections can be of two types: either \textbf{direct} or \textbf{relayed}. Tailscale will always attempt to create direct connections. In fact, if \ac{nat}-traversal succeeds on both endpoints, a direct WireGuard tunnel can be established. However, on networks employing \ac{edm} \ac{nat} mappings and/or \ac{udp} blocking firewalls, direct connections cannot be formed. That's where relayed connections are created. Clients on relayed connections encapsulate WireGuard \ac{udp} packets as \ac{tcp} streams and forwards them to the closest \ac{DERP} server available, which in turn delivers them to its destination.
+Hence, Tailscale connections can be of two types: either \textbf{direct} or \textbf{relayed}. Tailscale will always attempt to create direct connections. In fact, if \ac{nat}-traversal succeeds on both endpoints, a direct WireGuard tunnel can be established. However, on networks employing \ac{edm} \ac{nat} mappings and/or \ac{udp} blocking firewalls, direct connections cannot be formed. That's where relayed connections are created. Clients on relayed connections encapsulate WireGuard \ac{udp} packets as \ac{tcp} streams and forwards them through \ac{http} to the closest \ac{DERP} server available, which in turn delivers them to its destination.
 
 \subsubsection{Headscale}
 \label{sec:hs}
@@ -768,20 +768,20 @@ Hence, the \textbf{install\_headscale.sh} shell script starts by downloading a d
 
 \section{Client Deployment}
 
-A shell script was also created for the clients. Here, configuring a client requires the installation of the modified Tailscale bianries, which can be downloaded as a zip from Selfscale's GitHub repository. Then, the package is extracted and files are placed accordingly. Then, Headscale's server certificate is also fetched and added to the system's trust mechanisms. 
+A shell script was also created for the clients. Here, configuring a client requires the installation of the modified Tailscale bianries, which can be downloaded as a zip from Selfscale's GitHub repository. Then, the package is extracted and files are placed accordingly. Finally, Headscale's server certificate is fetched and added to the system's trust mechanisms.
 
 Running this simple script leaves a machine in a state where, given a pre-shared key, authentication can be performed with the \textbf{tailscale up} command, passing the additional \emph{allow-self-signed} option.
 
 \chapter{Validation and Results}
 \label{chap:results}
 
-To validate the solution, two dimensions must be taken into account. First, it is necessary to ensure clients can use the overlay networks from anywhere within the campus. Then, the overall network performance must also be analyzed, namely communication latencies, network throughput both for \ac{tcp} and \ac{udp} and network jitter. Fortunatelly, both scopes can be tested simultaneously! \textbf{iperf3} is an open-source tool which collects such metrics by exchanging packets on a client-server model.
+To validate the solution, two dimensions must be taken into account. First, it is necessary to ensure clients can use the overlay networks from anywhere within the campus. Then, the overall network performance must also be analyzed, namely communication latencies, network \ac{tcp} throughput, \ac{udp} packet loss and maximum bandwidth and network jitter. Fortunatelly, both scopes can be tested simultaneously! \textbf{iperf3} is an open-source tool which collects such metrics by exchanging packets on a client-server model.
 
 Therefore, these tests were implemented as a python script \footnote{https://github.com/VascoRegal/ua-overlays-automation/blob/main/tests/network/iperf/analysis.py} which connects to a host to run \textbf{iper3} \ac{tcp} and \ac{udp} tests for 120 seconds each and exporting the results as \ac{json}. \textbf{iperf3}'s \ac{tcp} tests collect \ac{tcp} network throughput and minimum, maximum and mean \ac{rtt} time. \ac{udp} tests collect \ac{udp} throughput and packet loss.
 
-For this experiment, a Tailscale client running \textbf{iperf3} as a server was placed inside \ac{iris} network. Then, with another machine, the script was run in clients connected to \ac{ua}'s network, from disperse points in the campus. This procedure allows not only the collection of \textbf{iperf3}'s network metrics and latencies but also the validation of the solution's coverage, since the script connects to the \ac{iris}'s host with its Tailscale IP. If this connection fails, Tailscale can't cover that area, possibly due to more constraining networking rules. As it will be shown in the following section, however, none of the tested areas failed to establish communication.
+For this experiment, a Tailscale client running \textbf{iperf3} as a server was placed inside \ac{iris}'s network. Then, with another machine, the script was run in clients connected to \ac{ua}'s network, from disperse points in the campus. This procedure allows not only the collection of \textbf{iperf3}'s network metrics and latencies but also the validation of the solution's coverage, since the script connects to the \ac{iris}'s host with its Tailscale IP. If this connection fails, Tailscale can't cover that area, possibly due to more constraining networking rules. As it will be shown in the following section, however, none of the tested areas failed to establish communication.
 
-Twelve different test scenarios were run, presented on table \ref{tab:locs}. Since the \textbf{iperf3} server is running on \ac{iris} network, tests can be executed either using the server's Wi-Fi interface or its Tailscale interface. Interpolating data from these two scenarios allows the visualization of Tailscale's overhead on communication. The remaining scenarios are meant to both ensure Tailscale can establish connections from any point in the campus, while also providing insights on general communication performance.
+Twelve different test scenarios were run, presented on table \ref{tab:locs}. Since the \textbf{iperf3} server is running on \ac{iris} network, tests can be executed either using the server's Wi-Fi interface or its Tailscale interface. Interpolation of the data from these two scenarios allows the visualization of Tailscale's overhead on communication. The remaining scenarios are meant to both ensure Tailscale can establish connections from any point in the campus, while also providing insights on general communication performance.
 
 \section{Campus Coverage}
 
@@ -816,21 +816,10 @@ As mentioned above, all identified locations were able to communicate with the c
 
 \subsection{Throughput}
 
-\subsubsection{TCP}
-
 \begin{figure}[h]
 \centering
   \includegraphics[width=0.8\textwidth]{biblioteca-tcp.png}
   \caption{TCP Tailscale tunnel Network TCP Throughput (University Library)}
-  \label{fig:tcptplibrary}
-\end{figure}
-
-\subsubsection{UDP}
-
-\begin{figure}[h]
-\centering
-  \includegraphics[width=0.8\textwidth]{cp-udp.png}
-  \caption{UDP Tailscale tunnel Network Throughput (Pedagogic Complex)}
   \label{fig:tcptplibrary}
 \end{figure}
 
@@ -848,7 +837,7 @@ As mentioned above, all identified locations were able to communicate with the c
 \begin{figure}[h]
 \centering
 \includegraphics[width=0.8\textwidth]{ua-latency.png}
-\caption{Average latency on a Tailscale connection from different UA buildings to IRIS-Lab. The numbers in the circles represent average latency values.}
+\caption{Average latency on a Tailscale connection from different UA buildings to IRIS-Lab. The numbers in the circles represent average latency values, in ms.}
 \label{fig:ualats}
 \end{figure}
 
@@ -865,7 +854,7 @@ As mentioned above, all identified locations were able to communicate with the c
 
 \subsection{Protocol Overhead}
 
-To evaluate Tailscale's overhead on communication, throughput and latency results via internal network connections were compared with the same scenario but via Tailscale tunnel. For this test, both client and server were residing inside \ac{iris}. Figure \ref{fig:overhead} presents the \ac{tcp} throughputs results and figure \ref{fig:latency_overhead} shows the average latencies. As expected, communicating through Tailscale implies a loss of throughput and a slight increase in latencies.
+To evaluate Tailscale's overhead on communication, throughput and latency results via internal network connections were compared with the same scenario but via Tailscale tunnel. For this test, both client and server were residing inside \ac{iris}. Figure \ref{fig:overhead} presents the \ac{tcp} throughputs results and figure \ref{fig:latency_overhead} shows the average latencies. As expected, communicating through Tailscale implies a loss of throughput <TODO: Calcular percentagem de perda> and a slight increase in latencies.
 
 \begin{figure}[h]
 \centering
