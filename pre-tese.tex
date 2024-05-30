@@ -568,11 +568,11 @@ This chapter details the configuration of the development environment, as propos
 
 \subsection{Access Point}
 
-The access point used in this environment is a N600 Wireless Dual Band Gigabit router. The host machine is connected to the access point via ethernet. With this setup, when one of the client machines wants to communicate with \textbf{VM-3}, the traffic will be routed from the client to the \ac{ap}'s Wi-Fi interface. Then the router will forward the packet through its ethernet interface, reaching the host machine and, consequently, reaching \textbf{VM-3}, as its network adapter is bridged to the host's ethernet interface, as described above.
+The access point used in this environment is a N600 Wireless Dual Band Gigabit router. The host machine is connected to the access point via ethernet. With this setup, when one of the client machines wants to communicate with \textbf{VM-3}, the traffic will be routed from the client to the \ac{ap}'s Wi-Fi interface. Then the router will forward the packet through its ethernet interface, reaching the host machine and, consequently, reaching \textbf{VM-3}, as its network adapter is bridged to the host's ethernet interface.
 
 \subsection{Virtual Machines}
 
-The three virtual machines composing the environment run \emph{Ubuntu Server 22.04} as their operating system. Due to the nature of the goals to be achieved in this phase, which focus on an extremly narrow scope, the machines require very little resources. Regarding networking, \textbf{VM-3} is attached to a bridge network on the ethernet interface of the host machine. As for \textbf{VM-1} and \textbf{VM-2}, each respective network adapter is attached to a \ac{nat}, isolating each client on its own private network, unaccessible from the outside. All machines can access the internet through the access point, explored above.
+The three virtual machines composing the environment run \emph{Ubuntu Server 22.04} as their operating system. Due to the nature of the goals to be achieved in this phase, which focus on an extremly narrow scope, the machines require very little resources. Regarding networking, \textbf{VM-3} is attached to a bridge network on the ethernet interface of the host machine. As for \textbf{VM-1} and \textbf{VM-2}, each respective network adapter is attached to a \ac{nat}, isolating each client on its own private network, unaccessible from the outside. All machines can access the internet through the access point, described in the previous section.
 
 Both \textbf{VM-1} and \textbf{VM-2} are assigned the same private \ac{ip} address since they are residing in distinct private networks. For convenience, the Virtual Machines are also configured to allow \ac{ssh} connections, which means port 22 is open on all machines. Moreover, for machines \textbf{VM-1} and \textbf{VM-2}, which are confined to their private networks, this was achieved with port forwarding rules, forwarding \textbf{VM-1}'s port 22 to the host machine's port 2222 and \textbf{VM-2}'s port 22 to the host machine's port 2223.
 
@@ -907,6 +907,8 @@ Resulting in a latency increase of \textbf{35.25} \%
   \caption{Average latency on internal and Tailscale connections}
   \label{fig:latency_overhead}
 \end{figure}
+
+\chapter{Future Work}
 
 \chapter{Conclusion}
 
