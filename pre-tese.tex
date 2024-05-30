@@ -688,11 +688,11 @@ In this solution, the Headscale instance is hosted within \ac{iris}'s network. T
 \label{fig:prodsolution}
 \end{figure}
 
-Since Headscale's host is also an Ubuntu linux environment, installation of this service followed the process described in the development environment (see Section \ref{sec:devhs}). Regarding configuration, however, the \textbf{server\_url} parameter, which points to the endpoint clients should use to authenticate, is now the \ac{fqdn} of the proxy server, \emph{iris-lab.ua.pt}.
+Since Headscale's host is also an Ubuntu Linux environment, installation of this service followed the process described in the development environment (see Section \ref{sec:devhs}). Regarding configuration, however, the \textbf{server\_url} parameter, which points to the endpoint clients should use to authenticate, is now the \ac{fqdn} of the proxy server, \emph{iris-lab.ua.pt}.
 
 \subsection{Self-Hosting DERP Infrastructure}
 
-Initially, Headscale was configured to use Tailscale's \ac{DERP} server fleet. However, upon testing this scenario, relayed connections implied the redirection of traffic to a \ac{DERP} server in Germany, resulting in tunnels with an average latency of 452ms, a value unacceptable for the scope of this dissertation. Moreover, as this solution is meant to be used exclusevly by \ac{ua}'s clients, traffic should be contained within the campus' network. Therefore, Tailscale's \ac{DERP} fleet was discarded, opting for a self-hosted alternative.
+Initially, Headscale was configured to use Tailscale's \ac{DERP} server fleet. However, upon testing this scenario, relayed connections implied the redirection of traffic to a \ac{DERP} server in Germany, resulting in tunnels with an average latency of 452ms, a value unacceptable for the scope of this dissertation. Moreover, as this solution is meant to be used exclusively by \ac{ua}'s clients, traffic should be contained within the campus' network. Therefore, Tailscale's \ac{DERP} fleet was discarded, opting for a self-hosted alternative.
 
 Headscale allows the use of an embedded \ac{DERP} server, which also exposes \ac{stun} functionalities for \ac{nat}-Traversal. This server can be enabled through Headscale's configuration file, and runs alongside Headscale's main service, on the same address and port. As for the \ac{stun} endpoints, these are also configured to run in the same address, on \ac{udp} port 3478.
 
@@ -701,7 +701,7 @@ Using the embedded self-hosted \ac{DERP} allows relayed communication between cl
 
 \subsection{Adding server certificates}
 
-To use the self-hosted \ac{DERP} server, Headscale is required to be exposed on an \ac{https} server, hence it needs a valid X509 certificate. Although Headscale's configuration allows a seamless integration with certificating tools such as \ac{le} or Caddy, in this scenario, where Headscale's \ac{fqdn} is not public, such methods aren't as straightforward. Alas, to certify Headscale, self-signed certificates were generated using the \textbf{openssl} \ac{cli} and added manually to the instance, by pointing to both certificate and key file paths through Headscale's configuration file. TODO: JUSTIFICAR PORQUE É QUE NAO HA ATTACK VECTOR.
+To use the self-hosted \ac{DERP} server, Headscale is required to be exposed on an \ac{https} server, hence it needs a valid X509 certificate. Although Headscale's configuration allows a seamless integration with certification tools such as \ac{le} or Caddy, in this scenario, where Headscale's \ac{fqdn} is not public, such methods aren't as straightforward. Alas, to certify Headscale, self-signed certificates were generated using the \textbf{openssl} \ac{cli} and added manually to the instance, by pointing to both certificate and key file paths through Headscale's configuration file. TODO: JUSTIFICAR PORQUE É QUE NAO HA ATTACK VECTOR.
 
 Using self-signed certificates requires additional client certificate trust configurations, which shall be covered in the following section.
 
@@ -710,11 +710,11 @@ Using self-signed certificates requires additional client certificate trust conf
 \subsection{Tailscale and Self-Signed Certificates}
 \label{sec:selfscale}
 
-Tailscale's client does not support the use of self-signed certificates, even if the system trusts the certificate. Figure \ref{fig:tscert} presents the logic behind Tailscale's certificate validation. However, as an open-source codebase, this code can be freely modified and the binaries rebuilt to suit one's needs. Therefore, a fork of Tailscale was created, which shall be refered to as Selfscale \footnote{selfscale's repository: https://github.com/VascoRegal/selfscale}.
+Tailscale's client does not support the use of self-signed certificates, even if the system trusts the certificate. Figure \ref{fig:tscert} presents the logic behind Tailscale's certificate validation. However, as an open-source codebase, this code can be freely modified and the binaries rebuilt to suit one's needs. Therefore, a fork of Tailscale was created, which shall be referred to as Selfscale \footnote{Selfscale's repository: https://github.com/VascoRegal/selfscale}.
 
 Selfscale implements a new command-line option to the \textbf{tailscale} command, --\emph{allow-self-signed}, which stores a boolean value. When true, the certificate validation method will not run the self-signed validation condition.
 
-With the use of this option, a self-signed certificate needs only to be trusted by the system to be valid in the eyes of Tailscale's client. Hence, this solution requires clients to run the binaries generated from selfscale's source code.
+With the use of this option, a self-signed certificate needs only to be trusted by the system to be valid in the eyes of Tailscale's client. Hence, this solution requires clients to run the binaries generated from Selfscale's source code.
 
 \begin{figure}
 \centering
@@ -744,7 +744,7 @@ conf.VerifyConnection = func(cs tls.ConnectionState) error {
 
 \subsection{Trusting Headscale}
 
-As the Tailscale client can now accept self-signed certificates, Headscale's certificate can be added to the client machine's trusted list. On debian distributions, this required moving the certificate to the \emph{/usr/local/share/ca-certificates} and updating the list with the command \textbf{update-ca-certificates}. Installation scripts are available on a public repository.
+As the Tailscale client can now accept self-signed certificates, Headscale's certificate can be added to the client machine's trusted list. On Debian distributions, this required moving the certificate to the \emph{/usr/local/share/ca-certificates} and updating the list with the command \textbf{update-ca-certificates}. Installation scripts are available on a public repository.
 
 \section{Chapter Summary}
 
@@ -762,9 +762,9 @@ To generate the compressed package, a shell script was developed, \textbf{build\
 
 \section{Headscale Deployment}
 
-Headscale's deployment requires both the installation of the software and its configuration, namely the configuration yaml and the server certificate. These last files are publicly available in the automation repository \footnote{Project automation repository, publicly available. https://github.com/VascoRegal/ua-overlays-automation}.
+Headscale's deployment requires both the installation of the software and its configuration, namely the configuration YAML and the server certificate. These last files are publicly available in the automation repository \footnote{Project automation repository, publicly available. https://github.com/VascoRegal/ua-overlays-automation}.
 
-Hence, the \textbf{install\_headscale.sh} shell script starts by downloading a desired Headscale package, where version and system architecutre are specified with command-line arguments. Then, the script fetches the Headscale's configuration yaml, publicly available in the automation repository, and applies it to the instance. Finally, a x509 self-signed certificate is generated with the \textbf{openssl} \ac{cli} and placed, along with the certificate's key, in its respective path (matching what was defined in the the yaml).
+Hence, the \textbf{install\_headscale.sh} shell script starts by downloading a desired Headscale package, where version and system architecture are specified with command-line arguments. Then, the script fetches the Headscale's configuration YAML, publicly available in the automation repository, and applies it to the instance. Finally, a x509 self-signed certificate is generated with the \textbf{openssl} \ac{cli} and placed, along with the certificate's key, in its respective path (matching what was defined in the the YAML).
 
 \section{Client Deployment}
 
@@ -774,10 +774,12 @@ Running this simple script leaves a machine in a state where, given a pre-shared
 
 \section{Chapter Summary}
 
+This chapter covered how the processes involved in deploying and configuring both the Headscale instance and Tailscale clients were automated using shell scripts. These scripts create a minimal intervention procedure, useful when adding new clients to the overlays.
+
 \chapter{Validation and Results}
 \label{chap:results}
 
-To validate the solution, two dimensions must be taken into account. First, it is necessary to ensure clients can use the overlay networks from anywhere within the campus. Then, the overall network performance must also be analyzed, namely communication latencies, network \ac{tcp} throughput, \ac{udp} packet loss and maximum bandwidth and network jitter. Fortunatelly, both scopes can be tested simultaneously! \textbf{iperf3} is an open-source tool which collects such metrics by exchanging packets on a client-server model.
+To validate the solution, two dimensions must be taken into account. First, it is necessary to ensure clients can use the overlay networks from anywhere within the campus. Then, the overall network performance must also be analysed, namely communication latencies, network \ac{tcp} throughput, \ac{udp} packet loss and maximum bandwidth and network jitter. Fortunately, both scopes can be tested simultaneously! \textbf{iperf3} is an open-source tool which collects such metrics by exchanging packets on a client-server model.
 
 Therefore, these tests were implemented as a python script \footnote{https://github.com/VascoRegal/ua-overlays-automation/blob/main/tests/network/iperf/analysis.py} which connects to a host to run \textbf{iperf3} \ac{tcp} and \ac{udp} tests for 120 seconds each and exporting the results as \ac{json}. \textbf{iperf3}'s \ac{tcp} tests collect \ac{tcp} network throughput and minimum, maximum and mean \ac{rtt} time. \ac{udp} tests collect \ac{udp} throughput and packet loss.
 
@@ -855,7 +857,7 @@ As mentioned above, all identified locations were able to communicate with the c
 
 \subsection{Packet Loss}
 
-Packet loss is a metric associated with \ac{udp} tests, included in \textbf{iperf3}. All \ac{udp} tests presented a 0 \% packet loss.
+Packet loss is a metric associated with \ac{udp} tests, included in \textbf{iperf3}. All \ac{udp} tests resulted in a 0 \% packet loss.
 
 
 \subsection{Protocol Overhead}
