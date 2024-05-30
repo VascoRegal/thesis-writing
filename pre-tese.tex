@@ -852,7 +852,22 @@ As mentioned above, all identified locations were able to communicate with the c
 
 \subsection{Protocol Overhead}
 
-To evaluate Tailscale's overhead on communication, throughput and latency results via internal network connections were compared with the same scenario but via Tailscale tunnel. For this test, both client and server were residing inside \ac{iris}. Figure \ref{fig:overhead} presents the \ac{tcp} throughputs results and figure \ref{fig:latency_overhead} shows the average latencies. As expected, communicating through Tailscale implies a loss of throughput <TODO: Calcular percentagem de perda> and a slight increase in latencies.
+To evaluate Tailscale's overhead on communication, throughput and latency results via internal network connections were compared with the same scenario via Tailscale tunnel. For this test, both client and server were residing inside \ac{iris}. Figure \ref{fig:overhead} presents the \ac{tcp} throughputs results and figure \ref{fig:latency_overhead} shows the average latencies. As expected, communicating through Tailscale implies a loss of throughput and a slight increase in latencies.
+
+Throughput loss can be calculated by the expression:
+
+\[
+\text{Throughput Loss (\%)} = \left( \frac{ \overline{\text{TP}}_I - \overline{\text{TP}}_T }{ \overline{\text{TP}}_I } \right) \times 100
+\]
+
+Where,
+
+\begin{itemize}
+    \item \( \overline{\text{TP}}_I \) is the average throughput for the internal connection.
+    \item \( \overline{\text{TP}}_T \) is the average throughput for the Tailscale connection.
+\end{itemize}
+
+Which results in a throughput loss of \textbf{38.71} \%
 
 \begin{figure}[h]
 \centering
