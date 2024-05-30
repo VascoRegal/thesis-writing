@@ -163,7 +163,7 @@
 \TitlePage
   \vspace*{55mm}
   \TEXT{\textbf{Abstract}}
-       {An overlay network is a group of computational nodes that communicate with each other through a logical channel, built on top of another network. Nodes in an overlay network, which are generally end systems, run Internet applications capable of performing more complex operations besides just forwarding and switching traffic. As such, an overlay network can apply routing rules and data manipulation to create a custom protocol running on top of another network. This document presents a secure and private overlay network solution deployed over University of Aveiro's very restrictive network. This solution allows clients, namely the autonomous robots residing in the Intelligent Robotics and Systems Laboratory research unit, to establish direct communications with each other, regardless of their physical location within the campus or network security mechanisms which render such connections impossible. This not only aids developers as they can interact directly with the robots through their personal machines, but also makes it possible to deploy solutions capable of communicating through any of the campus' buildings.}
+       {An overlay network is a group of computational nodes that communicate with each other through a logical channel, built on top of another network. Nodes in an overlay network, which are generally end systems, run Internet applications capable of performing more complex operations besides just forwarding and switching traffic. As such, an overlay network can apply routing rules and data encapsulation to create a custom protocol running on top of another network. This document presents a secure and private overlay network solution deployed over University of Aveiro's very restrictive network. This solution allows clients, namely the autonomous robots residing in the Intelligent Robotics and Systems Laboratory research unit, to establish direct communications with each other, regardless of their physical location within the campus or network security mechanisms which render such connections impossible. This not only aids developers as they can interact directly with the robots through their personal machines, but also makes it possible to deploy solutions capable of communicating through any of the campus' buildings.}
 \EndTitlePage
 \titlepage\ \endtitlepage % empty page
 
@@ -262,7 +262,9 @@ Traditional \ac{vpn} services operate under a hub-and-spoke architecture, a mode
 
 To avoid the congestion associated with hub-and-spoke architectures, decentralized topologies have emerged which operate by establishing direct \ac{p2p} connection between clients, creating a mesh network.
 
+\iffalse
 \ac{vpn}s can be classified according to their topology in two main categories: client-to-site and site-to-site. A client-to-site \ac{vpn} is characterized by connections from a single user (client) to a private network (site), while site-to-site \ac{vpn}s offer a secured connection between two private networks. Thus, in site-to-site networks, users are not required to individually configure \ac{vpn} clients. The tunnel in this type of \ac{vpn} is made available to the entire network.
+\fi
 
 \subsection{VPNs on NAT Networks}
 
@@ -430,7 +432,7 @@ This section presents the fundamentals of \acp{vpn} and how they are able to ens
 \section{WireGuard Coordination}
 \label{sec:coordination}
 
-In Section \ref{sec:wglimits}, the lack of a coordination entity on stand-alone WireGuard topologies was raised as a possible limitation. In fact, manually reconfiguring peers in a WireGuard network is a process that scales terribly. Moreover, on highly restrictive networks, creating direct WireGuard tunnels might prove to not be that easy.
+In Section \ref{sec:wglimits}, the lack of a coordination entity on stand-alone WireGuard topologies was raised as a possible limitation. In fact, manually reconfiguring peers in a WireGuard network is a process that scales terribly. Moreover, on highly restrictive networks, creating direct WireGuard tunnels proves to not be that straightforward.
 
 With this in mind, this section explores applications and implementations of coordination platforms built, or with the potential to be built, on top of WireGuard, aiming to create a seamless peer orchestration and configuration process, minimizing human intervention.
 
@@ -453,7 +455,9 @@ Tailscale is a \ac{vpn} service operating with a Golang user-space WireGuard var
 
 Tailscale's central entity, referred to as the \textbf{coordination server}, functions as a shared repository of peer information, used by clients to retrieve data regarding other nodes and establish on-demand \ac{p2p} connections among each other.
 
-This approach differs from traditional hub-and-spoke since the coordination server carries nearly no traffic - it only serves encryption keys and peer information. Tailscale's architecture provides the best of both worlds, benefiting from the advantages of a centralized entity facilitating dynamic configurations and peer discovery without bottlenecking its data exchanging performance.
+Tailscale's client authenticates in the coordination server and retrieve information regarding the state of the network, peer information and available \ac{DERP} servers.
+
+This approach differs from traditional hub-and-spoke since the coordination server carries nearly no traffic, it only serves encryption keys and peer information. Tailscale's architecture provides the best of both worlds, benefiting from the advantages of a centralized entity facilitating dynamic configurations and peer discovery without bottlenecking its data exchanging performance.
 
 In practical terms, a Tailscale client will store, in the coordination server, its own public key and where it can currently be found. Then, it downloads a list of public keys and addresses that have been stored on the server previously by other clients. With this information, the client node is able to configure its WireGuard interface and start communicating with any other node in its domain.
 
@@ -468,7 +472,7 @@ Although this procedure is quite effective, in networks with \ac{nat} mechanisms
 
 There are, however, some \ac{nat} devices that create a completely different public address mapping for each different destination a machine communicates with, which hinders the above address discovery process. Such devices are classified as \ac{edm} (in opposition to \ac{eim}) ~\cite{rfc4787}.
 
-Networks employing \ac{edm} devices and/or really strict firewall rules, render these traversal techniques useless. To enable \ac{p2p} communications in such scenarios, Tailscale also provides a network of \ac{DERP} servers, which are responsible for relaying packets over \ac{http}. A Tailscale client is able to forward its encrypted packets to one of such \ac{DERP} servers. Since a client's private key never actually leaves its node, \ac{DERP} servers can't decrypt the traffic being relayed, performing only redirection of already encrypted packets. These relay servers are distributed geographically. However, traffic relayed by \ac{DERP} servers always carry an increase in latency and loss of bandwidth, which isn't terrible, as the alternative is not being able to establish connections at all.
+Networks employing \ac{edm} devices and/or really strict firewall rules, render these traversal techniques useless. To enable \ac{p2p} communications in such scenarios, Tailscale also provides a network of \ac{DERP} servers, which are responsible for relaying packets over \ac{http}. A Tailscale client is able to forward its encrypted packets to one of such \ac{DERP} servers. Since a client's private key never actually leaves its node, \ac{DERP} servers can't decrypt the traffic being relayed, performing only redirection of already encrypted packets. These relay servers are distributed geographically. However, traffic relayed by \ac{DERP} servers always carry an increase in latency and loss of bandwidth, which isn't terrible, as the alternative is not being able to communicate at all.
 
 As such, Tailscale's design provides a set of directives and infrastructure that work together to ensure WireGuard tunnels can be set up between any two peers, regardless of what policies the network between them employs.
 
@@ -481,7 +485,7 @@ Hence, Tailscale connections can be of two types: either \textbf{direct} or \tex
 
 While Tailscale's client is open source, its coordination server isn't. There is, however, an open-source, self-hosted alternative to Tailscale's control server, Headscale. Headscale ~\cite{headscale2023online} provides a narrow-scope implementation (with a single Tailscale private network) of the aforementioned control server, which, in the authors' words, is mostly suitable for personal use and small organizations. Nodes running Tailscale clients can opt to specify the location of the control server, which can be the address of a running self-hosted Headscale instance.
 
-Headscale also supports the self-hosting of \ac{DERP} and \ac{stun} servers, required when establishing relayed connections. This is useful as it allows the self-hosting of a complete Tailscale solution.
+Headscale also supports the self-hosting of \ac{DERP} and \ac{stun} servers. This is useful as it allows the self-hosting of a complete Tailscale solution.
 
 \section{University of Aveiro Network}
 \label{sec:uanet}
@@ -764,7 +768,7 @@ This chapter details the development of automation tools to speed up deployment 
 
 Tailscale's codebase provides a script to build the binaries, which is also used to build Selfscale. Additionally, a configuration file is provided to setup Tailscale's daemon as a service.
 
-Regarding distribution, these are hosted as a compressed file in the GitHub repository. TODO: Distributing the software as a package would probably be more optimal.
+Regarding distribution, these are hosted as a compressed file in the GitHub repository. TODO: This is (obviously) not the best solution to distribute software.
 
 To generate the compressed package, a shell script was developed, \textbf{build\_selfscale.sh}, which builds both the tailscale and tailscale daemon binaries and zips them with the aforementioned configuration file. This zip is hosted on the \textbf{selfscale} folder of the repository. Currently this script is used to release a new version.
 
