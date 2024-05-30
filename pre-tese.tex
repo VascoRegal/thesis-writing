@@ -748,6 +748,14 @@ As the Tailscale client can now accept self-signed certificates, Headscale's cer
 
 \section{Chapter Summary}
 
+This chapter details how a production solution was achieved. Headscale was deployed on a server inside \ac{iris}'s private network. Since using Tailscale's \ac{DERP} servers resulted in unacceptable latencies, this server also hosts an embedded \ac{DERP} server and a \ac{stun} server. To make the Headscale instance available to any client within the campus while deployed in \ac{iris}, forwarding rules were configured on an \ac{iris} server exposed to \ac{ua}'s network clients.
+
+To certificate Headscale and run it on \ac{https}, required when using self-hosted \ac{DERP} servers, self-signed certificates were generated, as the forwarding server is not exposed to the Internet.
+
+Regarding clients, instead of using the official Tailscale build, which does not allow the use of self-signed certificates, a custom version was built, Selfscale, implementing an option to handle this scenario. Finally, Headscale's certificate was added to the client's trust system. Hence, clients can login by accessing the \ac{fqdn} of the forwarding server and using this new option.
+
+Such deployment allows any two clients connected to \ac{ua}'s network to communicate directly using Tailscale interfaces from anywhere in the campus.
+
 \chapter{Automation}
 
 This chapter details the development of automation tools to speed up deployment and configuration processes. In Section \ref{sec:automethod}, two main goals were defined, related to automatic deployments of the control server and clients. First, automating the deployment of a configured Headscale instance. This implies automating software installation, configuration applying and certificate management. Regarding clients, deployments require the installation of the custom binaries, explored in Section \ref{sec:selfscale}, adding Headscale's certificate to the trust list and, finally, authenticate to a desired network.
