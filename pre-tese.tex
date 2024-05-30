@@ -195,9 +195,9 @@ Network security has become a topic of growing interest in any information syste
 
 Such is the case in the \ac{ua}, where the network, although covering most of the campus' area, enforces several constraining mechanisms that prevent, for example, the establishment of direct \ac{p2p} connections between two clients.
 
-The \ac{iris} is a research unit operating in \ac{ua}'s premises which develops projects using autonomous mobile robots, capable of communicating through a wireless network. Currently, the robots are confined to the laboratory's internal network, since, as mentioned above, \ac{ua}'s highly restrictive network prevents the robots from communicating directly using \ac{ua}'s network, also refered to as \textbf{eduroam}.
+The \ac{iris} is a research unit operating in \ac{ua}'s premises which develops projects using autonomous mobile robots, capable of communicating through a wireless network. Currently, the robots are confined to the laboratory's internal network, since, as mentioned above, \ac{ua}'s highly restrictive network prevents the robots from communicating directly using \ac{ua}'s network, also referred to as \textbf{eduroam}.
 
-Overcoming these limitations would be extremly valuable for \ac{iris}'s developments. In fact, allowing robots to communicate directly in a \ac{p2p} communication would not only enable solutions across multiple buildings but also aid researchers during development, as they would be able to interact with the robots directly through their personal machines.
+Overcoming these limitations would be extremely valuable for \ac{iris}'s developments. In fact, allowing robots to communicate directly in a \ac{p2p} communication would not only enable solutions across multiple buildings but also aid researchers during development, as they would be able to interact with the robots directly through their personal machines.
 
 \section{Objectives}
 
@@ -231,7 +231,7 @@ This document presents an implementation of such an overlay network manager. Hen
 \section{Overlay Networks}
 \label{sec:on}
 
-In the last few decades, the Internet has been subjected to an exponential growth, both in the number of users and connected devices. To answer the increasing demand and support aspects such as mobility and scalibility, Internet applications have diverged from classic distributed systems to more complex network topologies, creating an extremly heterogeneous environment. In such a non-patternized landscape, \ac{p2p} overlay networks have emerged as a topic of growing interest, as conducted research on the matter attempts to create networking solutions capable of addressing the adversities imposed by the modern day Internet. This section explores the fundamental principles of overlay networks and how its abstraction layer is able to produce a topology with the potential to bring a logical order to  the chaotic network architecture of the Internet.
+In the last few decades, the Internet has been subjected to an exponential growth, both in the number of users and connected devices. To answer the increasing demand and support aspects such as mobility and scalability, Internet applications have diverged from classic distributed systems to more complex network topologies, creating an extremely heterogeneous environment. In such a non-patterned landscape, \ac{p2p} overlay networks have emerged as a topic of growing interest, as conducted research on the matter attempts to create networking solutions capable of addressing the adversities imposed by the modern day Internet. This section explores the fundamental principles of overlay networks and how its abstraction layer is able to produce a topology with the potential to bring a logical order to  the chaotic network architecture of the Internet.
 
 By definition, an overlay network is a logical network implemented on top of the links of another, already established, underlay network ~\cite{livronet}. In other words, nodes (also called peers) in an overlay network (which also exist in the underlay network) implement its own application-defined routing and datagram processing behaviour. Hence, the Internet application running in the nodes is responsible for the creation and management of the \ac{p2p} logical links that form the overlay network. Figure \ref{fig:overlay} illustrates this concept.
 
@@ -254,7 +254,7 @@ Summarizing, the use of overlay networks provides an efficient and reliable way 
 
 The Internet is built on public infrastructure users generally have no control over. Public routers, relay nodes, servers and even physical links always carry the risk of traffic eavesdropping and tampering by untrusted entities. Therefore, to ensure the confidentiality, privacy and integrity of connections established through an insecure medium, data should be properly encrypted and authenticated. Such is the fundamental principle of \acp{vpn}.
 
-Conceptually, a \ac{vpn} is a virtual network that provides functionalities which secure the transmission of data between any two endpoints ~\cite{HARMENING2017843}. This section aims to analyze how \ac{vpn} architecures have evolved, from its inception to more recent paradigms, which follow overlay concepts discussed in Section \ref{sec:on}. Then, it presents an overview of notable \ac{vpn} providers and their respective pros, cons and suitability for the scope of this solution. This state of the art survey aims to pickup on similar works ~\cite{zuqueteseguranca, berger2006analysis}, while additionally reviewing emerging protocols.
+Conceptually, a \ac{vpn} is a virtual network that provides functionalities which secure the transmission of data between any two endpoints ~\cite{HARMENING2017843}. This section aims to analyze how \ac{vpn} architectures have evolved, from its inception to more recent paradigms, which follow overlay concepts discussed in Section \ref{sec:on}. Then, it presents an overview of notable \ac{vpn} providers and their respective pros, cons and suitability for the scope of this solution. This state of the art survey aims to pickup on similar works ~\cite{zuqueteseguranca, berger2006analysis}, while additionally reviewing emerging protocols.
 
 \subsection{VPN architectures}
 
@@ -280,7 +280,7 @@ Communication in an IPSec connection is managed according to \acp{sa}. A \ac{sa}
 
 \subsubsection{Transport and Tunnel modes}
 
-IPsec supports two distinct modes of functionality: transport and tunnel ~\cite{rfc4301}, which differ in the way traffic is dealt with and processed. In the context of \ac{vpn}s, tunnel mode presents the
+IPSec supports two distinct modes of functionality: transport and tunnel ~\cite{rfc4301}, which differ in the way traffic is dealt with and processed. In the context of \ac{vpn}s, tunnel mode presents the
 most desirable characteristics. First, tunnel mode encapsulates the original \ac{ip} packet, allowing the use of private \ac{ip} addresses as source or destination. Tunnel mode creates the concept of an ``outer" and ``inner`` \ac{ip} header. The former contains the addresses of the IPSec peers, while the latter contains the real source and destination addresses. Moreover, this very same encapsulation adds confidentiality to the original addresses.
 
 Transport mode requires fewer computational resources and, consequently, carries less protocol overhead. It does not, however, provide much security compared to tunnel mode, so, in the context of \ac{vpn}s, tunnel mode's total protection and confidentiality of the encapsulated \ac{ip} packet carry much more valuable functionalities.
@@ -299,7 +299,7 @@ To calculate the \ac{icv}, the \ac{ah} requires the value of the source and dest
 
 The \ac{esp} protocol also offers authentication, integrity and replay protection mechanisms. It differs from \ac{ah} by also providing encryption functionalities, where peers in a communication use a shared key for cryptographic operations. Analogous to the previous protocol, the \ac{esp}'s header location differs in different IPSec modes. In transport mode, the header is inserted right after the \ac{ip} header of the original packet. Also, in this mode, since the original \ac{ip} header is not encrypted, endpoint addresses are visible and might be exposed. As for tunnel mode, a new \ac{ip} header is created, followed by the \ac{esp} header.
 
-Tunnel mode \ac{esp} is the most commonly used IPSec mode. This setup not only offers original \ac{ip} address encryption, concealing source and destination addresses, but also supports the addition of padding to packets, difficulting cipher analysis techniques. Moreover, it can be made compatible with \ac{nat} and employ \ac{nat}-traversal techniques ~\cite{nam2022high, singh2012nat}.
+Tunnel mode \ac{esp} is the most commonly used IPSec mode. This setup not only offers original \ac{ip} address encryption, concealing source and destination addresses, but also supports the addition of padding to packets, hampering cipher analysis techniques. Moreover, it can be made compatible with \ac{nat} and employ \ac{nat}-traversal techniques ~\cite{nam2022high, singh2012nat}.
 
 \subsection{OpenVPN}
 
@@ -325,7 +325,7 @@ One of WireGuard's selling points is its simplicity. In fact, compared to simila
 
 \subsubsection{Routing}
 
-Peers in a WireGuard communication maintain a data structure containing their own identification (both the public and private keys) and interface listening port. Then, for each known peer, an entry is present containing an association between a public key and a set of allowed source ips.
+Peers in a WireGuard communication maintain a data structure containing their own identification (both the public and private keys) and interface listening port. Then, for each known peer, an entry is present containing an association between a public key and a set of allowed source \ac{ip}s.
 
 This structure is queried both for outgoing and incoming packets. To encrypt packets to be sent, the structure is consulted, and, based on the destination address, the desired peer's public key is retrieved. As for receiving data, after decryption (with the peer's own keys), the structure is used to verify the validity of the packet's source address, which, in other words, means checking if there's a match between the source address and the allowed addresses present on the routing structure.
 
@@ -335,7 +335,7 @@ Optionally, WireGuard peers can configure one additional field, an internet endp
 
 As mentioned before, WireGuard offers a single cipher suite for encryption and authentication mechanisms in its ecosystem. The peers' pre-shared keys are Curve25519 points, an implementation of an elliptic-curve-Diffie-Hellman function, characterized by its strong conjectured security level - presenting the same security standards as other algorithms in public key cryptography - while achieving record computational speeds ~\cite{bernstein2006curve25519}. Additionally, WireGuard's Curve25519 computation uses a verified implementation ~\cite{zinzindohoue2017hacl}, which contributes further to the robustness of the protocol's cryptography.
 
-Regarding payload data cryptography, a WireGuard message's plain text is encrypted with the sender's public key and a nonce counter, using ChaCha20Poly1305, a Salsa20 variation ~\cite{bernstein2008chacha}. The ChaCha cryptographic family offers robust resistance to cryptoanalytic methods ~\cite{cryptoeprint:2014/613}, without sacrificing its state-of-the-art performance.
+Regarding payload data cryptography, a WireGuard message's plain text is encrypted with the sender's public key and a nonce counter, using ChaCha20Poly1305, a Salsa20 variation ~\cite{bernstein2008chacha}. The ChaCha cryptographic family offers robust resistance to crypto-analytic methods ~\cite{cryptoeprint:2014/613}, without sacrificing its state-of-the-art performance.
 
 Finally, before any encrypted message exchange actually happens, WireGuard enforces a 1-\ac{rtt} handshake for symmetric key exchange (one for sending, and one for receiving). The messages involved in this handshake process follow a variation of the Noise ~\cite{perrin2018noise} protocol, which is essentially a state machine controlled by a set of variables maintained by each party in the process.
 
@@ -409,28 +409,28 @@ Having outlined how a basic WireGuard scenario can be configured, the following 
 \subsubsection{Limitations}
 \label{sec:wglimits}
 
-Although WireGuard proves to be a robust, performant and maintainable protocol for encrypted communication, it still presents some complexity regarding administration agility and scalability, since it (intentionally) lacks a coordination entity. New clients added to a standalone WireGuard network imply the manual reconfiguration of every other peer already present, a process with added complexity and prone to errors, if carried out manually.
+Although WireGuard proves to be a robust, performant and maintainable protocol for encrypted communication, it still presents some complexity regarding administration agility and scalability, since it (intentionally) lacks a coordination entity. New clients added to a stand-alone WireGuard network imply the manual reconfiguration of every other peer already present, a process with added complexity and prone to errors, if carried out manually.
 
-There are, however, several software products implementing such an orchestrator, which prvoide functionalities to easily manage WireGuard peers and respective tunnels, such as Tailscale, Netbird or Netmaker. These solutions are explored in further sections.
+There are, however, several software products implementing such an orchestrator, which provide functionalities to easily manage WireGuard peers and respective tunnels, such as Tailscale, Netbird or Netmaker. These solutions are explored in further sections.
 
 
 \subsection{Protocol Comparison}
 
-The concept of performance in \ac{vpn} applications refers to the impact the protocol has on network behavior. This dimension can be empirically measured, by analyzing metrics like latency, also refered to as \ac{rtt}, throughput and jitter. CPU utilization is also a valuable metric, as demanding operations can also take a toll on overall network performance, since processing traffic might stall due to the CPU overloading.
+The concept of performance in \ac{vpn} applications refers to the impact the protocol has on network behaviour. This dimension can be empirically measured, by analysing metrics like latency, also referred to as \ac{rtt}, throughput and jitter. CPU utilization is also a valuable metric, as demanding operations can also take a toll on overall network performance, since processing traffic might stall due to the CPU overloading.
 
-The performance claims on ~\cite{donenfeld2017wireguard}, where, when comparing WireGuard to other discussed technologies like OpenVPN and IPsec, present results in favor of WireGuard in such metrics. This conclusion is backed by more extensive research ~\cite{mackey2020performance}, ~\cite{osswald2020performance}, where communication is tested in a wide range of different environments and CPU architectures.
+The performance claims on ~\cite{donenfeld2017wireguard}, where, when comparing WireGuard to other discussed technologies like OpenVPN and IPSec, present results in favour of WireGuard in such metrics. This conclusion is backed by more extensive research ~\cite{mackey2020performance}, ~\cite{osswald2020performance}, where communication is tested in a wide range of different environments and CPU architectures.
 
 WireGuard, due to its kernel implementation (compared to, for example, OpenVPN's user space implementation) and efficient multi-threading usage, contribute greatly to such performance benchmarks. Overall, WireGuard combines simplicity with state of the art cryptography and efficiency.
 
 \subsection{Summary}
 
-This section presents the fundamentals of \acp{vpn} and how they are able to ensure integrity and confidentiality to communication through insecure mediums. Then, some of the most notable \ac{vpn} providers were reviewed and compared, regarding functionalities, behaviour when dealing with network constraints and overall performance. The result of this analysis suggests WireGuard as the most promissing \ac{vpn} protocol, due to its ease of management and configuration, security mechanisms and verified cryptography.
+This section presents the fundamentals of \acp{vpn} and how they are able to ensure integrity and confidentiality to communication through insecure mediums. Then, some of the most notable \ac{vpn} providers were reviewed and compared, regarding functionalities, behaviour when dealing with network constraints and overall performance. The result of this analysis suggests WireGuard as the most promising \ac{vpn} protocol, due to its ease of management and configuration, security mechanisms and verified cryptography.
 
 
 \section{WireGuard Coordination}
 \label{sec:coordination}
 
-In Section \ref{sec:wglimits}, the lack of a coordination entity on standalone WireGuard topologies was raised as a possible limitation. In fact, manually reconfiguring peers in a WireGuard network is a process that scales terribly. Moreover, on highly restrictive networks, creating direct WireGuard tunnels might prove to not be that easy.
+In Section \ref{sec:wglimits}, the lack of a coordination entity on stand-alone WireGuard topologies was raised as a possible limitation. In fact, manually reconfiguring peers in a WireGuard network is a process that scales terribly. Moreover, on highly restrictive networks, creating direct WireGuard tunnels might prove to not be that easy.
 
 With this in mind, this section explores applications and implementations of coordination platforms built, or with the potential to be built, on top of WireGuard, aiming to create a seamless peer orchestration and configuration process, minimizing human intervention.
 
@@ -447,13 +447,13 @@ Regarding performance, there is, as expected, an overhead compared to native OOR
 
 \subsection{Tailscale}
 
-Tailscale is a \ac{vpn} service operating with a golang user-space WireGuard variant as its data plane ~\cite{tailscale2020online}.
+Tailscale is a \ac{vpn} service operating with a Golang user-space WireGuard variant as its data plane ~\cite{tailscale2020online}.
 
-\subsubsection{Architecutre}
+\subsubsection{Architecture}
 
 Tailscale's central entity, referred to as the \textbf{coordination server}, functions as a shared repository of peer information, used by clients to retrieve data regarding other nodes and establish on-demand \ac{p2p} connections among each other.
 
-This approach differs from traditional hub-and-spoke since the coordination server carries nearly no trafic - it only serves encryption keys and peer information. Tailscale's architecture provides the best of both worlds, benefiting from the advantages of a centralized entity facilitating dynamic configurations and peer discovery without bottlenecking its data exchanging performance.
+This approach differs from traditional hub-and-spoke since the coordination server carries nearly no traffic - it only serves encryption keys and peer information. Tailscale's architecture provides the best of both worlds, benefiting from the advantages of a centralized entity facilitating dynamic configurations and peer discovery without bottlenecking its data exchanging performance.
 
 In practical terms, a Tailscale client will store, in the coordination server, its own public key and where it can currently be found. Then, it downloads a list of public keys and addresses that have been stored on the server previously by other clients. With this information, the client node is able to configure its WireGuard interface and start communicating with any other node in its domain.
 
@@ -479,14 +479,14 @@ Hence, Tailscale connections can be of two types: either \textbf{direct} or \tex
 \subsubsection{Headscale}
 \label{sec:hs}
 
-While Tailscale's client is open source, its coordination server isn't. There is, however, an open-source, self-hosted alternative to Tailscale's control server, Headscale. Headscale ~\cite{headscale2023online} provides a narrow-scope implementation (with a single Tailscale private network) of the aforementioned control server, which, in the authors' words, is mostly suitable for personal use and small organizations. Nodes running tailscale clients can opt to specify the location of the control server, which can be the address of a running self-hosted Headscale instance.
+While Tailscale's client is open source, its coordination server isn't. There is, however, an open-source, self-hosted alternative to Tailscale's control server, Headscale. Headscale ~\cite{headscale2023online} provides a narrow-scope implementation (with a single Tailscale private network) of the aforementioned control server, which, in the authors' words, is mostly suitable for personal use and small organizations. Nodes running Tailscale clients can opt to specify the location of the control server, which can be the address of a running self-hosted Headscale instance.
 
 Headscale also supports the self-hosting of \ac{DERP} and \ac{stun} servers, required when establishing relayed connections. This is useful as it allows the self-hosting of a complete Tailscale solution.
 
 \section{University of Aveiro Network}
 \label{sec:uanet}
 
-Due to security and privacy concerns, the specification of the \ac{ua}'s network topology is not publicly available nor is it made available for this dissertation. As such, it is perceived as a black box. There are, however, a few reachable conclusions derived from observing its behavior.
+Due to security and privacy concerns, the specification of the \ac{ua}'s network topology is not publicly available nor is it made available for this dissertation. As such, it is perceived as a black box. There are, however, a few reachable conclusions derived from observing its behaviour.
 
 First, the network is highly segmented, where clients are grouped according to their roles. In fact, when clients connect to an \ac{ap} within the campus, they are connected to a \ac{vlan} shared by several other clients, in which the private resources are accessible. Then, the present \ac{nat} mechanisms in the network are unknown, as are their mappings' \ac{ttl}, which is an important variable mentioned in Section \ref{ssec:tsnetworks} to perform \ac{nat}-traversal techniques. Finally, the network contains a segment for public services, which can be accessed from anywhere on the Internet. This public point of communication will allow clients from within the campus to connect to the control platform, serving in this domain.
 
@@ -497,25 +497,25 @@ Having outlined the relevant research, background and technologies for this diss
 
 \section{Technology Stack}
 
-Based on the research done in the previous section, WireGuard seems the most adequate encrypted communication protocol for this project. However, to avoid the already covered added complexity of a standalone WireGuard network, Tailscale will function as the core of this solution. Ideally, all Tailscale related infrastructure should be self-hosted, which can be achieved using Headscale's open-source implementation of Tailscale's coordination server.
+Based on the research done in the previous section, WireGuard seems the most adequate encrypted communication protocol for this project. However, to avoid the already covered added complexity of a stand-alone WireGuard network, Tailscale will function as the core of this solution. Ideally, all Tailscale related infrastructure should be self-hosted, which can be achieved using Headscale's open-source implementation of Tailscale's coordination server.
 
 Therefore, our overlay networks are formed by a group of Tailscale clients, running in the robots, which are managed and coordinated by Headscale.
 
 \section{Prototype Development}
 \label{sec:protodev}
 
-This first phase aims to build a small-scale prototype in a virtual development environment. The prototype should, using Headscale as the coordination server and Tailscale as clients, be able to establish a \ac{p2p} connection between two sample machines, which couldn't communicate beforehand. Hence, this phase's main goals are to (i) create a virtual environment which simulates the scenario being tackled, (ii) establish \ac{p2p} connections between clients behind private \ac{nat} networks  and (iii) validate the communication through the \ac{ros} middleware. Obviously, regarding goal (i), the simulation of the networking conditions can't be entirely accuracte, since, as referenced in section \ref{sec:uanet}, details regarding \ac{ua}'s network mechanisms are vastly unknown. It is possible, however, to create an analogous situation, where clients can't immediately form \ac{p2p} commmunications with each other but can all communicate with an external, public server. Moreover, as stated in previous sections, Tailscale's protocol effictevly deals with most network costraints preventing direct communication. In other words, it is only known clients can't communicate, the reasons behind why they can't are abstracted by Tailscale.
+This first phase aims to build a small-scale prototype in a virtual development environment. The prototype should, using Headscale as the coordination server and Tailscale as clients, be able to establish a \ac{p2p} connection between two sample machines, which couldn't communicate beforehand. Hence, this phase's main goals are to (i) create a virtual environment which simulates the scenario being tackled, (ii) establish \ac{p2p} connections between clients behind private \ac{nat} networks  and (iii) validate the communication through the \ac{ros} middleware. Obviously, regarding goal (i), the simulation of the networking conditions can't be entirely accurate, since, as referenced in section \ref{sec:uanet}, details regarding \ac{ua}'s network mechanisms are vastly unknown. It is possible, however, to create an analogous situation, where clients can't immediately form \ac{p2p} communications with each other but can all communicate with an external, public server. Moreover, as stated in previous sections, Tailscale's protocol efficiently deals with most network constraints preventing direct communication. In other words, it is only known clients can't communicate, the reasons behind why they can't are abstracted by Tailscale.
 
-This virtual environment must be composed of three entities: a public server and two clients in their own private networks. As mentioned in section \ref{sec:hs}, Headscale is an open-source implementation of Tailscale's control server. Thus, the control server in this environment is a self-hosted Headscale instance deployed in the public server. Both clients, which can reach the public server, but not each other, should then auhtenticate in this control server and configure their Tailscale interfaces and addresses, allowing for a direct communication to take place.
+This virtual environment must be composed of three entities: a public server and two clients in their own private networks. As mentioned in section \ref{sec:hs}, Headscale is an open-source implementation of Tailscale's control server. Thus, the control server in this environment is a self-hosted Headscale instance deployed in the public server. Both clients, which can reach the public server, but not each other, should then authenticate in this control server and configure their Tailscale interfaces and addresses, allowing for a direct communication to take place.
 
-Such an enviornment can easily be established in a single host, using virtualization software, with the use of three linux virtual machines running on minimum resources. To achieve the networking requirements, as stated in goal (i), the client machines should be attached to individual private \ac{nat} Networks and connected via Wi-Fi to an \ac{ap}, while the server machine should be attached to a bridge on the host's ethernet interface. Figure \ref{fig:sandbox} depicts this architecture.
+Such an environment can easily be established in a single host, using virtualization software, with the use of three Linux virtual machines running on minimum resources. To achieve the networking requirements, as stated in goal (i), the client machines should be attached to individual private \ac{nat} Networks and connected via Wi-Fi to an \ac{ap}, while the server machine should be attached to a bridge on the host's Ethernet interface. Figure \ref{fig:sandbox} depicts this architecture.
 
 Finally, to validate goal (iii), a simple \ac{ros} application should be deployed and tested in the clients, in which communication is done through the Tailscale interfaces.
 
 \begin{figure}[h]
 \centering
 \includegraphics[width=0.5\textwidth]{dev.png}
-\caption{Development Enviornment Architecture}
+\caption{Development Environment Architecture}
 \label{fig:sandbox}
 \end{figure}
 
@@ -549,7 +549,7 @@ The tasks encompassing the phases described above can be summed up in a Gantt di
   \item \textbf{Prototype Development} - Implementation, in the development environment, of a prototype fulfilling the requirements. The end goal is to establish a \ac{p2p} connection between the two machines that can't communicate.
   \item \textbf{Deployment} - Deployment of the control server in \ac{ua}'s public services domain and configuration of clients in the robots.
   \item \textbf{Validation} - Validation of the deployed solution, ensuring encrypted communication between nodes in different geographical locations within the campus.
-  \item \textbf{Automation} - Development of config-based scripts automating client and server configurations.
+  \item \textbf{Automation} - Development of configuration based scripts automating client and server configurations.
   \item \textbf{Final Document Writing} - Writing of the final document, presenting the development process and providing analysis of respective results.
 \end{itemize}
 
@@ -562,17 +562,17 @@ The tasks encompassing the phases described above can be summed up in a Gantt di
 
 \chapter{Prototype Development}
 
-This chapter details the configuration of the development environment, as proposed in figure \ref{fig:sandbox}, and its use for the implementation of a narrow scope prototype. This environment is managed with Oracle Virtual Box. Having defined the goals for this experiment in the aforestated work porposal, this prototype requires the deployment of the Headscale control server, which is hosted in \textbf{VM-3}, followed by the configuration, and respective authentication of both clients, \textbf{VM-1} and \textbf{VM-2}, using the Tailscale \ac{cli}. With the clients configured with Tailscale addresses, these can be used to run tests on \ac{ros} applications.
+This chapter details the configuration of the development environment, as proposed in figure \ref{fig:sandbox}, and its use for the implementation of a narrow scope prototype. This environment is managed with Oracle Virtual Box. Having defined the goals for this experiment in the afore stated work proposal, this prototype requires the deployment of the Headscale control server, which is hosted in \textbf{VM-3}, followed by the configuration, and respective authentication of both clients, \textbf{VM-1} and \textbf{VM-2}, using the Tailscale \ac{cli}. With the clients configured with Tailscale addresses, these can be used to run tests on \ac{ros} applications.
 
 \section{Development Environment}
 
 \subsection{Access Point}
 
-The access point used in this environment is a N600 Wireless Dual Band Gigabit router. The host machine is connected to the access point via ethernet. With this setup, when one of the client machines wants to communicate with \textbf{VM-3}, the traffic will be routed from the client to the \ac{ap}'s Wi-Fi interface. Then the router will forward the packet through its ethernet interface, reaching the host machine and, consequently, reaching \textbf{VM-3}, as its network adapter is bridged to the host's ethernet interface.
+The access point used in this environment is a N600 Wireless Dual Band Gigabit router. The host machine is connected to the access point via Ethernet. With this setup, when one of the client machines wants to communicate with \textbf{VM-3}, the traffic will be routed from the client to the \ac{ap}'s Wi-Fi interface. Then the router will forward the packet through its Ethernet interface, reaching the host machine and, consequently, reaching \textbf{VM-3}, as its network adapter is bridged to the host's Ethernet interface.
 
 \subsection{Virtual Machines}
 
-The three virtual machines composing the environment run \emph{Ubuntu Server 22.04} as their operating system. Due to the nature of the goals to be achieved in this phase, which focus on an extremly narrow scope, the machines require very little resources. Regarding networking, \textbf{VM-3} is attached to a bridge network on the ethernet interface of the host machine. As for \textbf{VM-1} and \textbf{VM-2}, each respective network adapter is attached to a \ac{nat}, isolating each client on its own private network, unaccessible from the outside. All machines can access the internet through the access point, described in the previous section.
+The three virtual machines composing the environment run \emph{Ubuntu Server 22.04} as their operating system. Due to the nature of the goals to be achieved in this phase, which focus on an extremely narrow scope, the machines require very little resources. Regarding networking, \textbf{VM-3} is attached to a bridge network on the Ethernet interface of the host machine. As for \textbf{VM-1} and \textbf{VM-2}, each respective network adapter is attached to a \ac{nat}, isolating each client on its own private network, inaccessible from the outside. All machines can access the internet through the access point, described in the previous section.
 
 Both \textbf{VM-1} and \textbf{VM-2} are assigned the same private \ac{ip} address since they are residing in distinct private networks. For convenience, the Virtual Machines are also configured to allow \ac{ssh} connections, which means port 22 is open on all machines. Moreover, for machines \textbf{VM-1} and \textbf{VM-2}, which are confined to their private networks, this was achieved with port forwarding rules, forwarding \textbf{VM-1}'s port 22 to the host machine's port 2222 and \textbf{VM-2}'s port 22 to the host machine's port 2223.
 
@@ -599,17 +599,17 @@ Table \ref{table:vmspecs} summarizes said specification.
 \section{Headscale Instance Deployment}
 \label{sec:devhs}
 
-Headscale provides an highly configurable open-source implementation of Tailscale's coordination server. At the time of writing, the latest stable Headscale release is \emph{v0.22.3} \footnote{Headscale's official releases, hosted in GitHub. https://github.com/juanfont/headscale/releases.}, which is the version of the software refered to in the rest of this chapter.
+Headscale provides an highly configurable open-source implementation of Tailscale's coordination server. At the time of writing, the latest stable Headscale release is \emph{v0.22.3} \footnote{Headscale's official releases, hosted in GitHub. https://github.com/juanfont/headscale/releases.}, which is the version of the software referred to in the rest of this chapter.
 
 The Headscale instance must be made available to all clients. In this environment, that means Headscale is running in \textbf{VM-3}, since the two other Virtual Machines can communicate with it directly. Hence, in this server, Headscale was downloaded and installed.
 
 \subsection{Configuring Headscale}
 
-Headscale includes in its software a configuration yaml used to tweak parameters of the coordination server. First, the \textbf{server\_url} field, which dictates the address clients should connect to for authentication, points to \textbf{VM-3}'s \ac{ip} address, 192.168.10.214, on port 8080. Regarding Tailscale \ac{ip} assignments, the instance uses the default subnet prefixes, 100.64.0.0/10 for ipv4 and fd7a:115c:a1e0::/48 for ipv6. Registered clients will be assigned \ac{ip} addresses in these ranges. For the scope of this environment, no other additional configurations are necessary.
+Headscale includes in its software a configuration YAML used to tweak parameters of the coordination server. First, the \textbf{server\_url} field, which dictates the address clients should connect to for authentication, points to \textbf{VM-3}'s \ac{ip} address, 192.168.10.214, on port 8080. Regarding Tailscale \ac{ip} assignments, the instance uses the default subnet prefixes, 100.64.0.0/10 for ipv4 and fd7a:115c:a1e0::/48 for ipv6. Registered clients will be assigned \ac{ip} addresses in these ranges. For the scope of this environment, no other additional configurations are necessary.
 
 \subsection{Development Users}
 
-With the service running, \textbf{VM-3} is now listening for Tailscale clients to connect and start using the protocol. To authenticate, clients are required to login under a user. By default, Headscale does not create any users automitcally. Hence, for development purposes, an Headscale user, \textbf{dev}, was created in the instance and shall be the user the clients will register themselves with.
+With the service running, \textbf{VM-3} is now listening for Tailscale clients to connect and start using the protocol. To authenticate, clients are required to login under a user. By default, Headscale does not create any users automatically. Hence, for development purposes, an Headscale user, \textbf{dev}, was created in the instance and shall be the user the clients will register themselves with.
 
 \subsection{Services}
 
@@ -679,7 +679,7 @@ The following chapter presents the configuration and deployment of a solution ca
 
 \section{Headscale Deployment}
 
-In this solution, the Headscale instance is hosted within \ac{iris}'s network. This, however, only allows communications from clients residing in the laboratory's private network. For clients to be able to reach the instance from any location in the campus, port forwarding rules were created on an exposed server in \ac{iris}'s network, available to any client inside \ac{ua}'s network, which redirects traffic on ports \ac{tcp}/8080 (the main Headscale service and the embedded \ac{DERP}) and \ac{udp}/3478 (\ac{stun} interface) to the Headscale server. With this configuration, clients within the campus, which can directly reach the public facing proxy machine, can communicate with the Headscale instance. Figure \ref{fig:prodsolution} presents such architecture.
+In this solution, the Headscale instance is hosted within \ac{iris}'s network. This, however, only allows communications from clients residing in the laboratory's private network. For clients to be able to reach the instance from any location in the campus, port forwarding rules were created on an exposed server in \ac{iris}'s network, available to any client inside \ac{ua}'s network. This server forwards traffic on ports \ac{tcp}/8080, for the main Headscale service and the embedded \ac{DERP} and \ac{udp}/3478, running the \ac{stun} server, to the Headscale server. With this configuration, clients within the campus, which can directly reach the public facing proxy machine, can communicate with the Headscale instance. Figure \ref{fig:prodsolution} presents such architecture.
 
 \begin{figure}[h]
 \centering
@@ -692,7 +692,7 @@ Since Headscale's host is also an Ubuntu linux environment, installation of this
 
 \subsection{Self-Hosting DERP Infrastructure}
 
-Initially, Headscale was configured to use Tailscale's \ac{DERP} server fleet. However, upon testing this scenario, established relayed connections, meaning \ac{DERP} servers are being used to redirect traffic over \ac{http}, implied the redirection of traffic to a \ac{DERP} server in Germany, resulting in tunnels with an average latency of 452ms, a value unacceptable for the scope of this dissertation. Moreover, as this solution is meant to be used exclusevly by \ac{ua}'s clients, traffic should be contained within the campus' network. Therefore, Tailscale's \ac{DERP} fleet was discarded, opting for a self-hosted alternative.
+Initially, Headscale was configured to use Tailscale's \ac{DERP} server fleet. However, upon testing this scenario, relayed connections implied the redirection of traffic to a \ac{DERP} server in Germany, resulting in tunnels with an average latency of 452ms, a value unacceptable for the scope of this dissertation. Moreover, as this solution is meant to be used exclusevly by \ac{ua}'s clients, traffic should be contained within the campus' network. Therefore, Tailscale's \ac{DERP} fleet was discarded, opting for a self-hosted alternative.
 
 Headscale allows the use of an embedded \ac{DERP} server, which also exposes \ac{stun} functionalities for \ac{nat}-Traversal. This server can be enabled through Headscale's configuration file, and runs alongside Headscale's main service, on the same address and port. As for the \ac{stun} endpoints, these are also configured to run in the same address, on \ac{udp} port 3478.
 
@@ -701,7 +701,7 @@ Using the embedded self-hosted \ac{DERP} allows relayed communication between cl
 
 \subsection{Adding server certificates}
 
-To use the self-hosted \ac{DERP} server, Headscale is required to be exposed on an \ac{https} server, hence it needs a valid X509 certificate. Although Headscale's configuration allows a seamless integration with certificating tools such as \ac{le} or Caddy, in this scenario, where Headscale's \ac{fqdn} is not public, such methods can't be used. Alas, to certify Headscale, self-signed certificates were generated using the \textbf{openssl} \ac{cli} and added manually to the instance, by pointing to both certificate and key file paths through Headscale's configuration file. TODO: JUSTIFICAR PORQUE É QUE NAO HA ATTACK VECTOR.
+To use the self-hosted \ac{DERP} server, Headscale is required to be exposed on an \ac{https} server, hence it needs a valid X509 certificate. Although Headscale's configuration allows a seamless integration with certificating tools such as \ac{le} or Caddy, in this scenario, where Headscale's \ac{fqdn} is not public, such methods aren't as straightforward. Alas, to certify Headscale, self-signed certificates were generated using the \textbf{openssl} \ac{cli} and added manually to the instance, by pointing to both certificate and key file paths through Headscale's configuration file. TODO: JUSTIFICAR PORQUE É QUE NAO HA ATTACK VECTOR.
 
 Using self-signed certificates requires additional client certificate trust configurations, which shall be covered in the following section.
 
@@ -712,7 +712,7 @@ Using self-signed certificates requires additional client certificate trust conf
 
 Tailscale's client does not support the use of self-signed certificates, even if the system trusts the certificate. Figure \ref{fig:tscert} presents the logic behind Tailscale's certificate validation. However, as an open-source codebase, this code can be freely modified and the binaries rebuilt to suit one's needs. Therefore, a fork of Tailscale was created, which shall be refered to as Selfscale \footnote{selfscale's repository: https://github.com/VascoRegal/selfscale}.
 
-Selfscale implements a new command-line option, --\emph{allow-self-signed}, that stores a boolean value. When true, the certificate validation method allows the use of self-signed certificates.
+Selfscale implements a new command-line option to the \textbf{tailscale} command, --\emph{allow-self-signed}, which stores a boolean value. When true, the certificate validation method will not run the self-signed validation condition.
 
 With the use of this option, a self-signed certificate needs only to be trusted by the system to be valid in the eyes of Tailscale's client. Hence, this solution requires clients to run the binaries generated from selfscale's source code.
 
@@ -746,6 +746,8 @@ conf.VerifyConnection = func(cs tls.ConnectionState) error {
 
 As the Tailscale client can now accept self-signed certificates, Headscale's certificate can be added to the client machine's trusted list. On debian distributions, this required moving the certificate to the \emph{/usr/local/share/ca-certificates} and updating the list with the command \textbf{update-ca-certificates}. Installation scripts are available on a public repository.
 
+\section{Chapter Summary}
+
 \chapter{Automation}
 
 This chapter details the development of automation tools to speed up deployment and configuration processes. In Section \ref{sec:automethod}, two main goals were defined, related to automatic deployments of the control server and clients. First, automating the deployment of a configured Headscale instance. This implies automating software installation, configuration applying and certificate management. Regarding clients, deployments require the installation of the custom binaries, explored in Section \ref{sec:selfscale}, adding Headscale's certificate to the trust list and, finally, authenticate to a desired network.
@@ -766,9 +768,11 @@ Hence, the \textbf{install\_headscale.sh} shell script starts by downloading a d
 
 \section{Client Deployment}
 
-A shell script was also created for the clients. Here, configuring a client requires the installation of the modified Tailscale bianries, which can be downloaded as a zip from Selfscale's GitHub repository. Then, the package is extracted and files are placed accordingly. Finally, Headscale's server certificate is fetched and added to the system's trust mechanisms.
+A shell script was also created for the clients. Here, configuring a client requires the installation of the modified Tailscale binaries, which can be downloaded as a zip from Selfscale's GitHub repository. Then, the package is extracted and files are placed accordingly. Finally, Headscale's server certificate is fetched and added to the system's trust mechanisms.
 
 Running this simple script leaves a machine in a state where, given a pre-shared key, authentication can be performed with the \textbf{tailscale up} command, passing the additional \emph{allow-self-signed} option.
+
+\section{Chapter Summary}
 
 \chapter{Validation and Results}
 \label{chap:results}
@@ -917,21 +921,6 @@ Resulting in a latency increase of \textbf{35.25} \%
 % The bibliography
 %
 \cleardoublepage
-\iffalse
-  % Use this is the final version
-  %  unsrt produces numbered entries, sorted by order of citation
-  %  plain produces numbered entries, sorted alphabetically
-  %  other styles are possible (I recommend the harvard package)
-  %\bibliographystyle{ieeetr}
-  \bibliography{my-bib-file}% replace by the name of name of your .bib file
-\else
-  % An example (the contents of the .bbl file)
-  %\begin{thebibliography}{10}
-
-
-
-  %\end{thebibliography}
-%\fi
 
 \bibliographystyle{ieeetr}
 \bibliography{refs}
