@@ -534,16 +534,14 @@ Hence, this phase aims to (i) deploy an Headscale server available to any client
 \section{Validation}
 \label{sec:metvalidation}
 
-(i) Measure network performance on normal vs Tailscale connections
-(ii) Validate connections spread out through various campus points
-(iii) Test the solution with demanding apps, such as live video streaming, through Tailscale interfaces.
+Validating the solution requires an analysis of Tailscale's overhead on  network performance, which should ensure suitable results to use in \ac{ros} applications. This includes collecting metrics like \ac{rtt}, throughput, jitter and packet loss both on regular and Tailscale connections. Also, clients should be able to join the overlay networks from anywhere in the campus. So, the goals for these experiments are to (i) measure network performance on regular vs Tailscale connections, (ii) validate connections spread out through various campus points and (iii) test the solution with demanding apps, such as live video streaming, through Tailscale interfaces.
 
 \section{Automation}
 \label{sec:automethod}
 
 This final development phase aims to create automation processes to aid in the deployment and configuration of the solution.
 
-So, the automation process has two main goals in mind: First, to (i) provide a minimal configuration script to install and deploy an Headscale instance and provision its respective resources (auth keys, users, \acp{acl}) and (ii) provide a script installing Tailscale's client and configuring the system to automatically join the desired network.
+So, the automation process has two main goals in mind: First, to (i) provide a minimal configuration script to install and deploy an Headscale instance and provision its respective resources (auth keys, users, \acp{acl}) and (ii) provide a script installing Tailscale's client and configuring the system to be ready to join the desired network.
 
 \section{Work Plan}
 
@@ -566,7 +564,7 @@ The tasks encompassing the phases described above can be summed up in a Gantt di
 
 \chapter{Prototype Development}
 
-This chapter details the configuration of the development environment, as proposed in figure \ref{fig:sandbox}, and its use for the implementation of a narrow scope prototype. This environment is managed with Oracle Virtual Box. Having defined the goals for this experiment in the afore stated work proposal, this prototype requires the deployment of the Headscale control server, which is hosted in \textbf{VM-3}, followed by the configuration, and respective authentication of both clients, \textbf{VM-1} and \textbf{VM-2}, using the Tailscale \ac{cli}. With the clients configured with Tailscale addresses, these can be used to run tests on \ac{ros} applications.
+This chapter details the configuration of the development environment, as proposed in figure \ref{fig:sandbox}, and its use for the implementation of a narrow scope prototype. This environment is managed with Oracle Virtual Box. Having defined the goals for this experiment in the previous section, this prototype requires the deployment of an Headscale control server, hosted in \textbf{VM-3}, followed by the configuration, and respective authentication of both clients, \textbf{VM-1} and \textbf{VM-2}, using the Tailscale \ac{cli}. With the clients configured with Tailscale addresses, these can be used to run tests on \ac{ros} applications.
 
 \section{Development Environment}
 
