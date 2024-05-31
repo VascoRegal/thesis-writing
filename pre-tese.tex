@@ -328,6 +328,7 @@ Similarly, when receiving a packet, the OpenVPN server will perform decipherment
 This process is analogous when dealing with TAP devices, differing, as mentioned before, at the protocol level.
 
 \subsection{WireGuard}
+\label{ss:wg}
 
 WireGuard ~\cite{donenfeld2017wireguard} is an open-source UDP-only layer 3 network tunnel implemented as a kernel virtual network interface. WireGuard offers both a robust cryptographic suite and transparent session management, based on the fundamental principle of secure tunnels: peers in a WireGuard communication are registered as an association between a public key (analogous to the OpenSSH keys mechanism) and a tunnel source \ac{ip} address.
 
@@ -410,12 +411,6 @@ $
 \label{fig:wgconf}
 \end{figure}
 
-\subsubsection{WireGuard Topologies}
-
-Having outlined how a basic WireGuard scenario can be configured, the following paragraphs aim to explore four primary WireGuard topologies, which serve as the foundations for most of WireGuard's use cases.
-
-\subsubsubsection{Point to Point}
-
 \subsubsection{Limitations}
 \label{sec:wglimits}
 
@@ -426,11 +421,21 @@ There are, however, several software products implementing such an orchestrator,
 
 \subsection{Protocol Comparison}
 
+\subsubsection{Security}
+
+Regarding security, although analysed providers are capable of robustly authenticating and encrypting data, recent verifications of WireGuard's cryptographic suite \cite{lipp2019mechanised, dowling2018cryptographic} conclude WireGuard offers a smaller attack surface, when compared with OpenVPN and IPSec.
+
+\subsubsection{Performance}
+
 The concept of performance in \ac{vpn} applications refers to the impact the protocol has on network behaviour. This dimension can be empirically measured, by analysing metrics like latency, also referred to as \ac{rtt}, throughput and jitter. CPU utilization is also a valuable metric, as demanding operations can also take a toll on overall network performance, since processing traffic might stall due to the CPU overloading.
 
-The performance claims on ~\cite{donenfeld2017wireguard}, where, when comparing WireGuard to other discussed technologies like OpenVPN and IPSec, present results in favour of WireGuard in such metrics. This conclusion is backed by more extensive research ~\cite{mackey2020performance}, ~\cite{osswald2020performance}, where communication is tested in a wide range of different environments and CPU architectures.
+The performance claims on ~\cite{donenfeld2017wireguard}, where, when comparing WireGuard to other discussed technologies, present results in favour of WireGuard in such performance tests. This conclusion is backed by more extensive research ~\cite{mackey2020performance}, ~\cite{osswald2020performance}, where communication is tested in a wide range of different environments and CPU architectures.
 
-WireGuard, due to its kernel implementation (compared to, for example, OpenVPN's user space implementation) and efficient multi-threading usage, contribute greatly to such performance benchmarks. Overall, WireGuard combines simplicity with state of the art cryptography and efficiency.
+WireGuard, due to its kernel implementation (compared to, for example, OpenVPN's user space implementation) and efficient multi-threading usage, contribute greatly to such performance benchmarks. Overall, WireGuard outperforms IPSec and OpenVPN with no trade-offs in performance.
+
+\subsubsection{Usability}
+
+Usability in \ac{vpn} protocols refers to the ease of use regarding service configuration and management. IPSec's configuration can be quite complex, due to its cryptographic directives and protocol negotiation. Also, the several different modes IPSec can be configured to run in might prove overwhelming for unfamiliar users. OpenVPN's GUI provides a user-friendly platform to easily administrate the software, still requiring, however, a considerable degree of technical expertise. WireGuard, however, is able to combine protocol simplicity, as it enforces a single cipher suite, with straightforward configuration. In fact, as we've seen in Section \ref{ss:wg}, configuring WireGuard peers requires no knowledge of the protocol's specification.
 
 \subsection{Summary}
 
