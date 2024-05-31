@@ -290,10 +290,10 @@ Communication in an IPSec connection is managed according to \acp{sa}. A \ac{sa}
 
 \subsubsection{Transport and Tunnel modes}
 
-IPSec supports two distinct modes of functionality: transport and tunnel ~\cite{rfc4301}, which differ in the way traffic is dealt with and processed. In the context of \ac{vpn}s, tunnel mode presents the
+IPSec supports two distinct modes of functionality: transport and tunnel ~\cite{rfc4301}, which differ in the way traffic is dealt with and processed. In the context of \acp{vpn}, tunnel mode presents the
 most desirable characteristics. First, tunnel mode encapsulates the original \ac{ip} packet, allowing the use of private \ac{ip} addresses as source or destination. Tunnel mode creates the concept of an ``outer" and ``inner`` \ac{ip} header. The former contains the addresses of the IPSec peers, while the latter contains the real source and destination addresses. Moreover, this very same encapsulation adds confidentiality to the original addresses.
 
-Transport mode requires fewer computational resources and, consequently, carries less protocol overhead. It does not, however, provide much security compared to tunnel mode, so, in the context of \ac{vpn}s, tunnel mode's total protection and confidentiality of the encapsulated \ac{ip} packet carry much more valuable functionalities.
+Transport mode requires fewer computational resources and, consequently, carries less protocol overhead. It does not, however, provide much security compared to tunnel mode, so, to secure data in a communication, tunnel mode's total protection and confidentiality of the encapsulated \ac{ip} packet carry much more valuable functionalities.
 
 \subsubsection{Authentication Header}
 
@@ -332,7 +332,7 @@ This process is analogous when dealing with TAP devices, differing, as mentioned
 
 WireGuard ~\cite{donenfeld2017wireguard} is an open-source UDP-only layer 3 network tunnel implemented as a kernel virtual network interface. WireGuard offers both a robust cryptographic suite and transparent session management, based on the fundamental principle of secure tunnels: peers in a WireGuard communication are registered as an association between a public key (analogous to the OpenSSH keys mechanism) and a tunnel source \ac{ip} address.
 
-One of WireGuard's selling points is its simplicity. In fact, compared to similar protocols, which generally support a wide range of cryptographic suites, WireGuard settles for a singular one. Although one may consider the lack of cipher agility as a disadvantage, this approach minimizes protocol complexity, increasing security robustness by avoiding vulnerabilities commonly originating from such protocol negotiation ~\cite{curguz2016vulnerabilities}.
+One of WireGuard's selling points is its simplicity. In fact, compared to similar protocols, which generally support a wide range of cryptographic suites, WireGuard settles for a singular one. Although one may consider the lack of cipher agility as a disadvantage, this approach minimizes protocol complexity and increases security robustness by avoiding vulnerabilities commonly originating from such protocol negotiation ~\cite{curguz2016vulnerabilities}.
 
 \subsubsection{Routing}
 
@@ -427,11 +427,11 @@ Regarding security, although analysed providers are capable of robustly authenti
 
 \subsubsection{Performance}
 
-The concept of performance in \ac{vpn} applications refers to the impact the protocol has on network behaviour. This dimension can be empirically measured, by analysing metrics like latency, also referred to as \ac{rtt}, throughput and jitter. CPU utilization is also a valuable metric, as demanding operations can also take a toll on overall network performance, since processing traffic might stall due to the CPU overloading.
+The concept of performance in \ac{vpn} applications refers to the impact the protocol has on communications. This dimension can be empirically measured, by analysing metrics like latency, also referred to as \ac{rtt}, throughput and jitter. CPU utilization is also a valuable metric, as demanding operations can also take a toll on overall network performance, since processing traffic might stall due to the CPU overloading.
 
-The performance claims on ~\cite{donenfeld2017wireguard}, where, when comparing WireGuard to other discussed technologies, present results in favour of WireGuard in such performance tests. This conclusion is backed by more extensive research ~\cite{mackey2020performance}, ~\cite{osswald2020performance}, where communication is tested in a wide range of different environments and CPU architectures.
+The performance claims on ~\cite{donenfeld2017wireguard}, which compares WireGuard to other discussed technologies, present results in favour of WireGuard in such performance tests. This conclusion is backed by more extensive research ~\cite{mackey2020performance, osswald2020performance}, where communication is tested in a wide range of different network scenarios and CPU architectures.
 
-WireGuard, due to its kernel implementation (compared to, for example, OpenVPN's user space implementation) and efficient multi-threading usage, contribute greatly to such performance benchmarks. Overall, WireGuard outperforms IPSec and OpenVPN with no trade-offs in performance.
+WireGuard's kernel implementation and efficient multi-threading usage contribute greatly to such performance benchmarks. Overall, WireGuard outperforms IPSec and OpenVPN with no notable trade-offs.
 
 \subsubsection{Usability}
 
