@@ -262,13 +262,16 @@ Conceptually, a \ac{vpn} is a virtual network that provides functionalities  sec
 
 The following sections aim to analyse how \ac{vpn} services have evolved, from its traditional design to more recent paradigms, which are able to tackle complexity and scalability issues. Then, it presents an individual overview of notable \ac{vpn} providers and compares their respective advantages, limitations, trade-offs and suitability for the scope of this solution. This state of the art technological survey aims to pickup on similar works ~\cite{zuqueteseguranca, berger2006analysis}, which examine established protocols such as OpenVPN and IPSec, while additionally reviewing modern protocols, namely WireGuard and Tailscale. This exploration serves as the foundation for understanding which protocol is the most suitable for this project.
 
+
+\iffalse
 \subsubsection{VPN Toplogies}
 
 Not all \ac{vpn} providers have the same structural design. In fact, even individual \ac{vpn} services can be deployed to suit different use cases. Grasping the architectural capabilities and limitations of popular \ac{vpn} topologies is fundamental to evaluate the suitability of a service for a given scenario. Therefore, before individually analysing \ac{vpn} providers, this section presents a review on the advantages, disadvantages and applications of the most common \ac{vpn} topologies.
 
-Traditional \ac{vpn} services operate under a hub-and-spoke architecture, a model composed by one or more \ac{vpn} Gateways - devices accepting incoming connections from client nodes and forwarding the traffic to their final destination. Hub-and-spoke architectures carry some well known bottlenecks ~\cite{ELHEDHLI20051615, o1998geographer} and, more recently, ~\cite{AN2015103}. First, it implies increased latency associated with the geographical distance between a client and the nearest hub. This topology also raises reliability issues as hubs introduce a single point of failure to the system, requiring backup plans and alternative routes to ensure no network down times.
+Traditional \ac{vpn} services operate under a \textbf{hub-and-spoke} architecture, a model composed by one or more \ac{vpn} Gateways - devices accepting incoming connections from client nodes and forwarding the traffic to their final destination. Hub-and-spoke architectures carry some well known bottlenecks ~\cite{ELHEDHLI20051615, o1998geographer} and, more recently, ~\cite{AN2015103}. First, it implies increased latency associated with the geographical distance between a client and the nearest hub. This topology also raises reliability issues as hubs introduce a single point of failure to the system, requiring backup plans and alternative routes to ensure no network down times.
 
 To avoid the congestion associated with hub-and-spoke architectures, decentralized topologies have emerged which operate by establishing direct \ac{p2p} connection between clients, creating a mesh network.
+\fi
 
 \subsubsection{VPNs on NAT Networks}
 
