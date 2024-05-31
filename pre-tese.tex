@@ -686,7 +686,7 @@ The experiment starts by configuring \textbf{VM-1} as a \ac{ros} Master, achieve
 
 \section{Chapter Summary}
 
-This chapter details a successful implementation of a minimal configuration prototype which simulates, in an analogous environment, the interactions between a self-hosted Headscale control server and its clients. In fact, the configured environment presented a situation where two nodes, due to their network topology, couldn't immediately establish a \ac{p2p} connection, but could both reach a third node. Headscale was then introduced in the public node as a self-hosted Tailscale control server, which, after authentication operations via pre-shared keys, made it possible to connect the client nodes through the Tailscale interfaces. Finally, this tunnel was tested when used along with \ac{ros}, operating as expected. The procedure taken in this phase meets the goals outlined in section \ref{sec:protodev}.
+This chapter detailed a successful implementation of a minimal configuration prototype which simulates, in an analogous environment, the interactions between a self-hosted Headscale control server and its clients. In fact, the configured environment presented a situation where two nodes, due to their network topology, couldn't immediately establish a \ac{p2p} connection, but could both reach a third node. Headscale was then introduced in the public node as a self-hosted Tailscale control server, which, after authentication operations via pre-shared keys, made it possible to connect the client nodes through the Tailscale interfaces. Finally, this tunnel was tested when used along with \ac{ros}, operating as expected. The procedure taken in this phase meets the goals outlined in section \ref{sec:protodev}.
 
 \chapter{Production Deployment}
 
@@ -763,7 +763,7 @@ As the Tailscale client can now accept self-signed certificates, Headscale's cer
 
 \section{Chapter Summary}
 
-This chapter details how a production solution was achieved. Headscale was deployed on a server inside \ac{iris}'s private network. Since using Tailscale's \ac{DERP} servers resulted in unacceptable latencies, this server also hosts an embedded \ac{DERP} server and a \ac{stun} server. To make the Headscale instance available to any client within the campus while deployed in \ac{iris}, forwarding rules were configured on an \ac{iris} server exposed to \ac{ua}'s network clients.
+This chapter presented how a production solution was achieved. Headscale was deployed on a server inside \ac{iris}'s private network. Since using Tailscale's \ac{DERP} servers resulted in unacceptable latencies, this server also hosts an embedded \ac{DERP} server and a \ac{stun} server. To make the Headscale instance available to any client within the campus while deployed in \ac{iris}, forwarding rules were configured on an \ac{iris} server exposed to \ac{ua}'s network clients.
 
 To certificate Headscale and run it on \ac{https}, required when using self-hosted \ac{DERP} servers, self-signed certificates were generated, as the forwarding server is not exposed to the Internet.
 
