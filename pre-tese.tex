@@ -99,6 +99,8 @@
 \acrodef{fqdn}[FQDN]{Fully Qualified Domain Name}
 \acrodef{acl}[ACL]{Access Control List}
 \acrodefplural{acl}[ACLs]{Access Control Lists}
+\acrodef{mitm}[MitM]{Man in the Middle}
+\acrodef{dos}[DoS]{Denial of Service}
 
 \raggedbottom
 
@@ -231,9 +233,13 @@ This document presents an implementation of such an overlay network manager. Hen
 \section{Overlay Networks}
 \label{sec:on}
 
-In the last few decades, the Internet has been subjected to an exponential growth, both in the number of users and connected devices. To answer the increasing demand and support aspects such as mobility and scalability, Internet applications have diverged from classic distributed systems to more complex network topologies, creating an extremely heterogeneous environment. In such a non-patterned landscape, \ac{p2p} overlay networks have emerged as a topic of growing interest, as conducted research on the matter attempts to create networking solutions capable of addressing the adversities imposed by the modern day Internet. This section explores the fundamental principles of overlay networks and how its abstraction layer is able to produce a topology with the potential to bring a logical order to  the chaotic network architecture of the Internet.
+In the last few decades, the Internet has been subjected to an exponential growth, both in the number of users and connected devices. To answer the increasing demand and support aspects such as mobility and scalability, Internet applications have diverged from classic distributed systems to more complex network topologies, creating an extremely heterogeneous environment. In such a non-patterned landscape, overlay networks have emerged as a topic of growing interest ~\cite{1610546}, as conducted research on the matter attempts to create networking solutions capable of addressing the adversities imposed by the modern day Internet ~\cite{jannotti2000overcast, waldvogel2003efficient}. This section explores the fundamental principles of overlay networks and how its abstraction layer is able to produce a topology with the potential to bring a logical order to  the chaotic network architecture of the Internet.
 
-By definition, an overlay network is a logical network implemented on top of the links of another, already established, underlay network ~\cite{livronet}. In other words, nodes (also called peers) in an overlay network (which also exist in the underlay network) implement its own application-defined routing and datagram processing behaviour. Hence, the Internet application running in the nodes is responsible for the creation and management of the \ac{p2p} logical links that form the overlay network. Figure \ref{fig:overlay} illustrates this concept.
+\subsection{Definition and Motivation}
+
+By definition, an overlay network is a logical network implemented on top of the links of another existing physical network ~\cite{livronet}. In other words, nodes (also called peers) in an overlay network (which also exist in the underlay network) implement its own application-defined routing and datagram processing behaviour. Hence, the Internet application running in the nodes is responsible for the creation and management of the logical links that form the overlay network. Figure \ref{fig:overlay} illustrates this concept.
+
+As the nodes in an overlay network are systems running Internet applications, they are generally capable of performing more computational demanding operations than simply forwarding and switching traffic. Routing traffic through an overlay node allows any application-defined traffic forwarding and data encapsulation to be applied to the datagrams, creating a custom communication protocol running on top of the underlay network.
 
 \begin{figure}[h]
 \centering
@@ -242,19 +248,17 @@ By definition, an overlay network is a logical network implemented on top of the
 \label{fig:overlay}
 \end{figure}
 
-Overlay networks can be used in applications to achieve numerous functionalities, such as finding alternate routes for unicast applications, explored by \ac{ron} ~\cite{ron}, which measures peers' average latencies in order to discover routes optimizing network end-to-end reliability and performance. This idea is also the principle behind \ac{sdwan} services, where forwarding rules are dynamically reconfigured and automated according to a set of defined policies, an emerging paradigm with prominent results ~\cite{9203058, 9492375}. Another common example of the use of overlay networks are object sharing applications such as BitTorrent, where the overlay network is formed by the nodes which possess parts of the desired file. When a peer wants to download a file, it establishes \ac{p2p} connections to the other overlay peers and retrieves the part of the data until the file is complete ~\cite{5482574}.
+\subsection{Security in Overlay Networks}
 
-While decentralized by design, some topologies applying overlay concepts have a degree of centralization, generally serving information regarding active peers in the network. Although a central point can cause bottlenecks, on-demand peer information is able to make a system easier to scale and reconfigure. BitTorrent is an example of this, where a new peer queries a central server, called a tracker, retrieving the addresses and identification of the peers it should connect to. Such centralization can, however, be discarded by implementing a peer finding algorithm which relies solely on the other peers already in the network.
+The Internet is built on public infrastructure users generally have no control over. Public routers, relay nodes, servers and even physical links always carry the risk of traffic eavesdropping and tampering by untrusted entities. Although overlay networks are able to create a logical communication structure, traffic can still be routed through this susceptible infrastructure before reaching its destination node. Therefore, to ensure the confidentiality, privacy and integrity of connections established through an insecure medium, data should be properly encrypted and authenticated.
 
-As the nodes in an overlay network are systems running Internet applications, they are generally capable of performing more computational demanding operations than simply forwarding traffic, which is the case when dealing with devices in the underlay network, like routers or switches. Routing traffic through a node allows any application-defined manipulation to be applied to the datagrams, namely cryptographic operations. This idea is explored in further sections, as it serves as the backbone in several encrypted \ac{p2p} communication protocols.
+In fact, if the Internet application running in the nodes of an overlay network has no such security considerations, communication will always be subjected to network attack vectors such as \ac{mitm} and \ac{dos} attacks and traffic snooping.
 
-Summarizing, the use of overlay networks provides an efficient and reliable way to create a logical structure between a set of nodes residing in an otherwise unstructured topology. Additionally, as overlay nodes are essentially end systems, there's great leverage for applications to freely manipulate and route traffic. By relying on \ac{p2p} communications, overlay networks' decentralized nature provides a very scalable and reconfigurable design.
+To add a confidentiality layer to communication, overlay networks employ security mechanisms which encapsulate datagrams, ensuring only designated overlay nodes can interpret the transmitted information. A common way to achieve this functionality is the use of \acp{vpn}.
 
-\section{Virtual Private Networks}
+\subsubsection{Virtual Private Networks}
 
-The Internet is built on public infrastructure users generally have no control over. Public routers, relay nodes, servers and even physical links always carry the risk of traffic eavesdropping and tampering by untrusted entities. Therefore, to ensure the confidentiality, privacy and integrity of connections established through an insecure medium, data should be properly encrypted and authenticated. Such is the fundamental principle of \acp{vpn}.
-
-Conceptually, a \ac{vpn} is a virtual network that provides functionalities which secure the transmission of data between any two endpoints ~\cite{HARMENING2017843}. This section aims to analyze how \ac{vpn} architectures have evolved, from its inception to more recent paradigms, which follow overlay concepts discussed in Section \ref{sec:on}. Then, it presents an overview of notable \ac{vpn} providers and their respective pros, cons and suitability for the scope of this solution. This state of the art survey aims to pickup on similar works ~\cite{zuqueteseguranca, berger2006analysis}, while additionally reviewing emerging protocols.
+Conceptually, a \ac{vpn} is a virtual network that provides functionalities which secure the transmission of data between any two endpoints ~\cite{HARMENING2017843}. The following paragraphs aim to analyze how \ac{vpn} architectures have evolved, from its inception to more recent paradigms. Then, it presents an overview of notable \ac{vpn} providers and their respective pros, cons and suitability for the scope of this solution. This state of the art survey aims to pickup on similar works ~\cite{zuqueteseguranca, berger2006analysis}, while additionally reviewing modern protocols.
 
 \subsection{VPN architectures}
 
@@ -791,7 +795,7 @@ This chapter covered how the processes involved in deploying and configuring bot
 
 To validate the solution, two dimensions must be taken into account. First, it is necessary to ensure clients can use the overlay networks from anywhere within the campus. Then, the overall network performance must also be analysed, namely communication latencies, network \ac{tcp} throughput, \ac{udp} packet loss and maximum bandwidth and network jitter. Fortunately, both scopes can be tested simultaneously! \textbf{iperf3} is an open-source tool which collects such metrics by exchanging packets on a client-server model.
 
-Therefore, these tests were implemented as a python script \footnote{https://github.com/VascoRegal/ua-overlays-automation/blob/main/tests/network/iperf/analysis.py} which connects to a host to run \textbf{iperf3} \ac{tcp} and \ac{udp} tests for 120 seconds each and exporting the results as \ac{json}. \textbf{iperf3}'s \ac{tcp} tests collect \ac{tcp} network throughput and minimum, maximum and mean \ac{rtt} time. \ac{udp} tests collect \ac{udp} throughput and packet loss.
+Therefore, these tests were implemented as a python script \footnote{https://github.com/VascoRegal/ua-overlays-automation/blob/main/tests/network/iperf/analysis.py} which connects to a host to run \textbf{iperf3} \ac{tcp} and \ac{udp} tests for 120 seconds each and exporting the results as \ac{json}. \textbf{iperf3}'s \ac{tcp} tests collect \ac{tcp} network throughput and minimum, maximum and mean \ac{rtt} time. \ac{udp} tests collect network jitter and packet loss.
 
 For this experiment, a Tailscale client running \textbf{iperf3} as a server was placed inside \ac{iris}'s network. Then, with another machine, the script was run in clients connected to \ac{ua}'s network, from disperse points in the campus. This procedure allows not only the collection of \textbf{iperf3}'s network metrics and latencies but also the validation of the solution's coverage, since the script connects to the \ac{iris}'s host with its Tailscale IP. If this connection fails, Tailscale can't cover that area, possibly due to more constraining networking rules. As it will be shown in the following section, however, none of the tested areas failed to establish communication.
 
