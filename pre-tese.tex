@@ -207,7 +207,7 @@ This dissertation aims to implement a private overlay network manager to be used
 
 In the \ac{iris} scenario, the management platform should provide operations to achieve a secure, private communication between a group of robots connected to \ac{ua}'s network, regardless of their physical location within the campus. Moreover, the authentication and connection to a desired overlay network by the robots must be a seamless operation, requiring little to no manual configuration.
 
-To reinforce the privacy and confidentiality, this solution should be hosted entirely within \ac{ua}'s premises, preferably using open source tools.
+To reinforce privacy and confidentiality, this solution should be hosted entirely within \ac{ua}'s premises, preferably using open source tools.
 
 Therefore, the objectives for this dissertation can be summarized as (i) enabling secure \ac{p2p} communications between clients connected to \ac{ua}'s network, (ii) automation of client deployment, authentication and configuration mechanisms, creating an abstraction layer for the usual robot operations and (iii) ensure communication overhead is suitable for \ac{iris}'s projects requirements.
 
@@ -277,7 +277,7 @@ To avoid the congestion associated with hub-and-spoke architectures, decentraliz
 
 A \ac{nat} is a networking mechanism responsible for translating \ac{ip} addresses in private networks to public addresses when packets sent from a private network are routed to the public Internet. In the context of \ac{vpn} communications, this process can prove to be a major constraint, not only due to \ac{nat}'s tampering of \ac{ip} packets' fields, namely destination and source addresses, which could potentially compromise its integrity in the eyes of a \ac{vpn} protocol, but also regarding the dynamically changing public \ac{ip} addresses which \ac{nat} decides to translate private addresses to. In other words, without additional tools, a host in a private network has no knowledge regarding which public \ac{ip} it will be assigned.
 
-In fact, it is very likely that devices on the internet reside in a network behind both \ac{nat} mechanisms and Firewall rules, with no open ports. Also, believing nodes will have a consistent static \ac{ip} is a very naive assumption, especially when considering mobile devices. NAT Traversal is a networking technique that enables the establishing and maintaining (by keeping \ac{nat} holes open) of \ac{p2p} connections between two peers, no matter what's standing between them, making communication possible without the need for firewall configurations or public-facing open ports. There's no one solution to achieve this functionality. In fact, there are various developments effectively implementing a NAT Traversal solution, such as ICE ~\cite{rfc8445} and STUN ~\cite{rfc8489}. Hence, each \ac{vpn} service can have its own way of supporting NAT Traversal. Each case is explored separately.
+In fact, it is very likely that devices connected to the Internet reside in a network behind both \ac{nat} mechanisms and Firewall rules, with no open ports. Also, believing nodes will have a consistent static \ac{ip} is a very naive assumption, especially when considering mobile devices. NAT Traversal is a networking technique that enables the establishing and maintaining (by keeping \ac{nat} holes open) of \ac{p2p} connections between two peers, no matter what's standing between them, making communication possible without the need for firewall configurations or public-facing open ports. There's no one solution to achieve this functionality. In fact, there are various developments effectively implementing a NAT Traversal solution, such as ICE ~\cite{rfc8445} and STUN ~\cite{rfc8489}. Hence, each \ac{vpn} service can have its own way of supporting NAT Traversal. Each case is explored separately.
 
 
 \section{VPN Providers}
@@ -462,7 +462,11 @@ Regarding performance, there is, as expected, an overhead compared to native OOR
 
 \subsection{Tailscale}
 
-Tailscale is a \ac{vpn} service operating with a Golang user-space WireGuard variant as its data plane ~\cite{tailscale2020online}.
+Tailscale is a \ac{vpn} service operating with a Golang user-space WireGuard variant as its data plane ~\cite{tailscale2020online}. Tailscale operates under a hybrid \ac{vpn} model. Although a central entity is present, resembling hub-and-spoke architectures, its main purpose is to aid clients in configuring themselves to form a mesh network, serving nearly no traffic.
+
+In addition to orchestrating the configuration and establishment of WireGuard tunnels, Tailscale also employs a set of mechanisms capable of addressing network constraints which would hinder the creation of directly creating WireGuard connections. In fact, Tailscale praises itself as being able to make any two clients communicate, regardless of the network structure and security policies standing in-between them. For the scope of this project, where very few is known about \ac{ua}'s network, the ability to bypass such constraints would prove extremely valuable.
+
+Hence, this section explores how Tailscale is able to manage the WireGuard links between its clients, while dealing with network constraints preventing such communications to take place.
 
 \subsubsection{Architecture}
 
@@ -525,7 +529,7 @@ This first phase aims to build a small-scale prototype in a virtual development 
 
 This virtual environment must be composed of three entities: a public server and two clients in their own private networks. As mentioned in section \ref{sec:hs}, Headscale is an open-source implementation of Tailscale's control server. Thus, the control server in this environment is a self-hosted Headscale instance deployed in the public server. Both clients, which can reach the public server, but not each other, should then authenticate in this control server and configure their Tailscale interfaces and addresses, allowing for a direct communication to take place.
 
-Such an environment can easily be established in a single host, using virtualization software, with the use of three Linux virtual machines running on minimum resources. To achieve the networking requirements, as stated in goal (i), the client machines should be attached to individual private \ac{nat} Networks and connected via Wi-Fi to an \ac{ap}, while the server machine should be attached to a bridge on the host's Ethernet interface. Figure \ref{fig:sandbox} depicts this architecture.
+Such an environment can easily be established in a single host, using virtualization software, with the use of three Linux virtual machines running on minimum resources. To achieve the networking requirements, as stated in goal (i), the client machines should be attached to individual private \ac{nat} Networks and connected via Wi-Fi to an \ac{ap}, while the server machine should be attached to a bridge on the host's Ethernet interface. Figure \ref{fig:sandbox} depicts this architecture. This networking configuration creates a scenario where both clients have no knowledge of each other nor endpoints to communicate through, but are able to directly reach the public server.
 
 Finally, to validate goal (iii), a simple \ac{ros} application should be deployed and tested in the clients, in which communication is done through the Tailscale interfaces.
 
@@ -564,7 +568,7 @@ The tasks encompassing the phases described above can be summed up in a Gantt di
   \item \textbf{Prototype Development} - Implementation, in the development environment, of a prototype fulfilling the requirements. The end goal is to establish a \ac{p2p} connection between the two machines that can't communicate.
   \item \textbf{Deployment} - Deployment of the control server in \ac{ua}'s public services domain and configuration of clients in the robots.
   \item \textbf{Validation} - Validation of the deployed solution, ensuring encrypted communication between nodes in different geographical locations within the campus.
-  \item \textbf{Automation} - Development of configuration based scripts automating client and server configurations.
+  \item \textbf{Automation} - Development of configuration based scripts automating client and server deployment and configuration.
   \item \textbf{Final Document Writing} - Writing of the final document, presenting the development process and providing analysis of respective results.
 \end{itemize}
 
@@ -583,7 +587,7 @@ This chapter details the configuration of the development environment, as propos
 
 \subsection{Access Point}
 
-The access point used in this environment is a N600 Wireless Dual Band Gigabit router. The host machine is connected to the access point via Ethernet. With this setup, when one of the client machines wants to communicate with \textbf{VM-3}, the traffic will be routed from the client to the \ac{ap}'s Wi-Fi interface. Then the router will forward the packet through its Ethernet interface, reaching the host machine and, consequently, reaching \textbf{VM-3}, as its network adapter is bridged to the host's Ethernet interface.
+The access point used in this environment is a N600 Wireless Dual Band Gigabit router. The host machine is connected to the access point via Ethernet. With this setup, when one of the client machines wants to communicate with \textbf{VM-3}, traffic will be routed from the client to the \ac{ap}'s Wi-Fi interface. Then, the router will forward the packet through its Ethernet interface, reaching the host machine and, consequently, reaching \textbf{VM-3}, as its network adapter is bridged to the host's Ethernet interface.
 
 \subsection{Virtual Machines}
 
@@ -647,7 +651,7 @@ Table \ref{table:hstest} presents the available services and their respective li
 
 \section{Client Configuration}
 
-Initially, clients can't really establish a direct connection in a traditional way. In fact, neither client is assigned a public address which could be used as a communication's endpoint, nor do they possess any information regarding one another. They can, however, reach the outside Internet, which consequently implies the translation of their private addresses into public ones, a process carried by the adapter attached to the host machine's \ac{nat}. <TODO: explicar teoria de porque é que o tailscale vai funcionar aqui>
+Initially, clients can't really establish a direct connection in a traditional way. In fact, neither client is assigned a public address which could be used as a communication's endpoint, nor do they possess any information regarding one another. They can, however, reach the outside Internet, which consequently implies the translation of their private addresses into public ones, a process carried by the adapter attached to the host machine's \ac{nat}. In section \ref{ssec:tsnetworks}, Tailscale's \ac{nat}-Traversal process was explored. Such procedure can be applied in this scenario, where clients will obtain their public \ac{ip} by querying a \ac{stun} server. TODO: REESCREVER
 
 Using Tailscale's \ac{cli}, a client is able to authenticate in the Headscale instance previously deployed, which in turn configures its Tailscale interface with a respective Tailscale \ac{ip}, in the range previously configured in the control server. This will allow a state where \ac{p2p} WireGuard tunnels can be established freely between the registered clients.
 
