@@ -101,6 +101,7 @@
 \acrodefplural{acl}[ACLs]{Access Control Lists}
 \acrodef{mitm}[MitM]{Man in the Middle}
 \acrodef{dos}[DoS]{Denial of Service}
+\acrodef{icmp}[ICMP]{Internet Control Message Protocol}
 
 \raggedbottom
 
@@ -202,6 +203,7 @@ The \ac{iris} is a research unit operating in \ac{ua}'s premises which develops 
 Overcoming these limitations would be extremely valuable for \ac{iris}'s developments. In fact, allowing robots to communicate directly in a \ac{p2p} communication would not only enable solutions across multiple buildings but also aid researchers during development, as they would be able to interact with the robots directly through their personal machines.
 
 \section{Objectives}
+\label{sec:obj}
 
 This dissertation aims to implement a private overlay network manager to be used exclusively by \ac{ua}'s clients. The concept of an overlay network entails the creation of a communication layer built on top of an already existing network.
 
@@ -816,7 +818,7 @@ Twelve different test scenarios were run, presented on table \ref{tab:locs}. Sin
 
 \section{Campus Coverage}
 
-As mentioned above, all identified locations were able to communicate with the client running on \ac{iris} through its tunnel interface, validating the solution's ability to establish Tailscale tunnels from anywhere within the campus.
+As mentioned above, all identified locations were able to communicate with the client running on \ac{iris} through its tunnel interface, validating the solution's ability to establish Tailscale tunnels from key points within the campus. Figure \ref{fig:ualats} presents the average latencies on a Tailscale tunnel collected in these experiments. Although all scenarios present results within an acceptable range, there's some discrepancies, not necessarily associated with physical distance. In fact, there are several other factors which could justify these results, namely number of network users in the building at the time of the test and distance to the nearest \ac{ap}.
 
 
 \begin{table}[]
@@ -843,9 +845,11 @@ As mentioned above, all identified locations were able to communicate with the c
 
 \section{Network Performance}
 
-
+To evaluate communication performance, four main metrics are collected in each scenario, \textbf{\ac{tcp} throughput}, \textbf{latency} (or \ac{rtt}), \textbf{jitter} and \textbf{\ac{udp} packet loss}. Since all connections outside \ac{iris} are relayed, which means traffic is encapsulated over \ac{tcp}, this analysis focus primarily on throughput and latency as indicators.
 
 \subsection{Throughput}
+
+Throughput measures the rate at which information is transmitted through the network.
 
 \begin{figure}[h]
 \centering
@@ -856,6 +860,8 @@ As mentioned above, all identified locations were able to communicate with the c
 
 
 \subsection{Latency}
+
+Latency times dictate how long a source has to wait to receive a response from its destination. These can be calculated using the \textbf{ping} command, which calculates \ac{rtt} through \ac{icmp} packets. Experiments run measured the average latency for a total of 50 sent \ac{icmp} packets.
 
 \begin{figure}[h]
 \centering
@@ -875,6 +881,8 @@ As mentioned above, all identified locations were able to communicate with the c
 
 \subsection{Jitter}
 
+Network jitter measures the variation of packet arrival times. High jitter has an impact on the smoothness of a connection, generally having noticeable negative effects on real time communications.
+
 \begin{figure}[h]
 \centering
   \includegraphics[width=0.8\textwidth]{building-jitter.png}
@@ -887,7 +895,7 @@ As mentioned above, all identified locations were able to communicate with the c
 Packet loss is a metric associated with \ac{udp} tests, included in \textbf{iperf3}. All \ac{udp} tests resulted in a 0 \% packet loss.
 
 
-\subsection{Protocol Overhead}
+\section{Protocol Overhead}
 
 To evaluate Tailscale's overhead on communication, throughput and latency results via internal network connections were compared with the same scenario via Tailscale tunnel. For this test, both client and server were residing inside \ac{iris}. Figure \ref{fig:overhead} presents the \ac{tcp} throughputs results and figure \ref{fig:latency_overhead} shows the average latencies. As expected, communicating through Tailscale implies a loss of throughput and a slight increase in latencies.
 
@@ -941,7 +949,17 @@ Resulting in a latency increase of \textbf{35.25} \%
   \label{fig:latency_overhead}
 \end{figure}
 
+\section{Security and Confidentiality}
+
+Evaluating security
+
+\section{Chapter Summary}
+
+This chapter presented how this solution was validated and its performance analysed. To collect network performance metrics, \textbf{iperf3} was used in a range of different scenarios. First, to gain insights on Tailscale's overhead, network tests were run in the same conditions, through regular interfaces and through Tailscale tunnel. This resulted in a loss of \textbf{39.30} \% in \ac{tcp} throughput and an increase in average latencies of \textbf{35.25} \%. Regarding coverage, which refers to the campus area Tailscale can operate under, all identified key places were able to communicate via Tailscale relayed connections when using \ac{ua}'s network. Moreover, performance results from these experiments showed no particular anomalies, although, and as expected, certain areas underperform.
+
 \chapter{Future Work}
+
+This chapter aims to provide some directives on which aspects of the presented solution could be improved or should be more thoroughly analysed, even though the developments present in this document meet the goals outlined in Section \ref{sec:obj}.
 
 \chapter{Conclusion}
 
