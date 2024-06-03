@@ -198,7 +198,7 @@ Network security has become a topic of growing interest in any information syste
 
 Such is the case in the \ac{ua}, where the network, although covering most of the campus' area, enforces several constraining mechanisms that prevent, for example, the establishment of direct \ac{p2p} connections between two clients.
 
-The \ac{iris} is a research unit operating in \ac{ua}'s premises which develops projects using autonomous mobile robots, capable of communicating through a wireless network. Currently, the robots are confined to the laboratory's internal network, since, as mentioned above, \ac{ua}'s highly restrictive network prevents the robots from communicating directly using \ac{ua}'s network, also referred to as \textbf{eduroam}.
+The \ac{iris} is a research unit operating in \ac{ua}'s premises which develops projects using autonomous mobile robots, capable of communicating through a wireless network. Currently, the robots are confined to the laboratory's internal network, since, as mentioned above, \ac{ua}'s highly restrictive network prevents the robots from communicating directly.
 
 Overcoming these limitations would be extremely valuable for \ac{iris}'s developments. In fact, allowing robots to communicate directly in a \ac{p2p} communication would not only enable solutions across multiple buildings but also aid researchers during development, as they would be able to interact with the robots directly through their personal machines.
 
@@ -951,7 +951,20 @@ Resulting in a latency increase of \textbf{35.25} \%
 
 \section{Security and Confidentiality}
 
-Evaluating security
+To validate communications are secured and encrypted, the two client development Virtual Machines were used. One of the clients runs a very simple web server listening on its Tailscale interface, while the other generates traffic via \ac{http} requests.
+
+While requests are being made, two packet captures were initiated, using \textbf{tcpdump}, one on the \ac{http} client's Tailscale interface and another on the host machine's Wi-Fi interface. If traffic is properly encrypted, requests on the client capture should be shown as plain text, while on the host machine's capture should be shown as an encrypted \ac{tcp} stream.
+
+Figure \ref{fig:cipher} presents said captures side by side on \textbf{Wireshark}. By analysing these results, the \ac{http} request and response are encapsulated as a \ac{tcp} stream on the external capture, and its payload encrypted. Hence, Tailscale is effectively encrypting tunnel traffic, as only designated nodes are able to decrypt and understand the information being transmitted.
+
+
+
+\begin{figure}[h]
+\centering
+  \includegraphics[width=0.8\textwidth]{cipher.png}
+  \caption{TCP Streams from external capture (left) and Tailscale capture (right)}
+  \label{fig:cipher}
+\end{figure}
 
 \section{Chapter Summary}
 
@@ -960,6 +973,8 @@ This chapter presented how this solution was validated and its performance analy
 \chapter{Future Work}
 
 This chapter aims to provide some directives on which aspects of the presented solution could be improved or should be more thoroughly analysed, even though the developments present in this document meet the goals outlined in Section \ref{sec:obj}.
+
+Regarding
 
 \chapter{Conclusion}
 
