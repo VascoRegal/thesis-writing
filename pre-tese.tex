@@ -102,6 +102,7 @@
 \acrodef{mitm}[MitM]{Man in the Middle}
 \acrodef{dos}[DoS]{Denial of Service}
 \acrodef{icmp}[ICMP]{Internet Control Message Protocol}
+\acrodef{iac}[IaC]{Infrastructure as Code}
 
 \raggedbottom
 
@@ -782,6 +783,7 @@ Regarding clients, instead of using the official Tailscale build, which does not
 Such deployment allows any two clients connected to \ac{ua}'s network to communicate directly using Tailscale interfaces from anywhere in the campus.
 
 \chapter{Automation}
+\label{ch:auto}
 
 This chapter details the development of automation tools to speed up deployment and configuration processes. In Section \ref{sec:automethod}, two main goals were defined, related to automatic deployments of the control server and clients. First, automating the deployment of a configured Headscale instance. This implies automating software installation, configuration applying and certificate management. Regarding clients, deployments require the installation of the custom binaries, explored in Section \ref{sec:selfscale}, adding Headscale's certificate to the trust list and, finally, authenticate to a desired network.
 
@@ -981,7 +983,15 @@ This chapter presented how this solution was validated and its performance analy
 
 This chapter aims to provide some directives on which aspects of the presented solution could be improved or should be more thoroughly analysed, even though the developments present in this document meet the goals outlined in Section \ref{sec:obj}.
 
-Regarding
+\subsubsection{Improving Automation}
+
+Although the scripts presented in Chapter \ref{ch:auto} provide a configurable automated procedure to deploy both an Headscale server and Tailscale clients built with custom binaries, this logic could easily be ported to more adequate \ac{iac} frameworks. In fact, the steps taken in said scripts are easily implemented as, for example, Ansible \footnote{Ansible, https://www.ansible.com/} playbooks. This would allow a team of robots to be defined as an Ansible inventory, creating a true one-touch deployment, not requiring the scripts to be run manually in each individual peer.
+
+\subsubsection{Thorough network analysis}
+
+In Chapter \ref{chap:results}, the network tests were run for a duration of 120 seconds each. Evidently, this provides only but a glimpse of the actual network behaviour. To create a more accurate perception of the impact Tailscale has on network throughout the campus, these experiments should be redone using a more ample time frame. This could be achieved either by tweaking the python test script parameters or by setting up monitoring tools such as Grafana \footnote{Grafana, https://grafana.com/} integrated with \textbf{iperf3}'s metric collections. Using such a monitoring platform would also provide dashboards to help visualize the overall results.
+
+Additionally, this solution's scalability should also be properly analysed, by collecting network metrics as more peers are added to the overlays. In fact, the coordination server might introduce a bottleneck, especially regarding the single \ac{DERP}. As connections outside \ac{iris} network are all relayed, a single \ac{DERP} might suffer a certain degree of resource overloading, as all traffic is being relayed by this service.
 
 \chapter{Conclusion}
 
@@ -989,17 +999,17 @@ Concluding, this document presents the details for the implementation of a secur
 
 After a systematic review of general networking concepts and potential tools and services, WireGuard appeared as the most suitable protocol for encrypted communication.
 
-Although creating stand alone WireGuard overlay networks is possible, this required managing and configuring individual peers, a process raising scalability and ease of administration issues.
+Although creating stand alone WireGuard overlay networks is possible, it requires managing and configuring individual peers, a process raising scalability and ease of administration issues.
 
-Fortunately, Tailscale addresses such flaws, by offering a coordination server capable of orchestrating the creation and configuration of WireGuard peers and respective tunnels. More importantly, Tailscale employs a set of mechanisms and infrastructure which overcome network constraints that would normally prevent the direct establishment of a WireGuard connection.
+Fortunately, Tailscale addresses such flaws, by offering a coordination server capable of orchestrating the creation and configuration of WireGuard peers and respective tunnels, without sacrificing WireGuard's state of the art performance. Additionally, Tailscale employs a set of mechanisms and infrastructure which overcome network constraints that would normally prevent the direct establishment of a WireGuard connection.
 
 To confine this solution in \ac{ua}'s private network, Headscale, an open-source implementation of Tailscale's coordination server, was used alongside necessary additional services, namely a \ac{DERP} and a \ac{stun} server. Regarding clients, instead of using Tailscale's client software, which does not support the use of self-signed certificates, a fork was created implementing a command line option to accept such certificates, useful for the scenario at hand.
 
-To validate this deployment, network tests were run through the overlays, using \textbf{iperf3}. This allowed the measurement of Tailscale's protocol overhead on communication, which, as expected, resulted in a loss of throughput and increase in latencies. These experiments also provide insights on the overall network performance across multiple campus areas. Finally, the solution was tested when applied to \ac{ros} applications, with successful results.
+Regarding validation, network tests were run through the overlays, using \textbf{iperf3}. This allowed the measurement of Tailscale's protocol overhead on communication, which, as expected, resulted in a loss of throughput and increase in \ac{rtt}. These experiments also provide insights on the overall network performance across multiple campus areas. Finally, the solution was tested when applied to \ac{ros} applications, with successful results.
 
 Overall, this project delivers automated procedures to configure and deploy a self-hosted secure overlay network manager requiring minimal client configuration, accomplishing the goals outlined in Section \ref{sec:obj}.
 
-With \ac{iris}'s robots authenticated in the control server and configured with Tailscale interfaces, encrypted communication is possible from anywhere within \ac{ua}'s campus, breaking the current confinement to \ac{iris}'s internal network.
+With \ac{iris}'s robots authenticated in the self-hosted Headscale control server and, consequently, configured with Tailscale interfaces, encrypted communication is possible from anywhere within \ac{ua}'s campus, successfully enabling robot operation not confined to \ac{iris}'s internal network.
 
 %
 % The bibliography
