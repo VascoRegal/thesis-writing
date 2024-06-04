@@ -428,7 +428,7 @@ Regarding security, although all analysed providers are capable of robustly auth
 
 \subsubsection{Performance}
 
-The concept of performance in \ac{vpn} applications refers to the impact the protocol has on communications. This dimension can be empirically measured, by analysing metrics like latency, also referred to as \ac{rtt}, throughput and jitter. CPU utilization is also a valuable metric, as demanding operations can also take a toll on overall network performance, since processing traffic might stall due to the CPU overloading.
+The concept of performance in \ac{vpn} applications refers to the impact the protocol has on communications. This dimension can be empirically measured, by analysing metrics like \ac{rtt}, throughput and jitter. CPU utilization is also a valuable metric, as demanding operations can also take a toll on overall network performance, since processing traffic might stall due to the CPU overloading.
 
 The performance claims on ~\cite{donenfeld2017wireguard}, which compares WireGuard to other discussed technologies, present results in favour of WireGuard in such performance tests. This conclusion is backed by more extensive research ~\cite{mackey2020performance, osswald2020performance}, where communication is tested in a wide range of different network scenarios and CPU architectures.
 
@@ -490,7 +490,7 @@ Although this procedure is quite effective, in networks with \ac{nat} mechanisms
 
 There are, however, some \ac{nat} devices that create a completely different public address mapping for each different destination a machine communicates with, which hinders the above address discovery process. Such devices are classified as \ac{edm} (in opposition to \ac{eim}) ~\cite{rfc4787}.
 
-Networks employing \ac{edm} devices and/or really strict firewall rules, render these traversal techniques useless. To enable \ac{p2p} communications in such scenarios, Tailscale also provides a network of \ac{DERP} servers, which are responsible for relaying packets over \ac{http}. A Tailscale client is able to forward its encrypted packets to one of such \ac{DERP} servers. Since a client's private key never actually leaves its node, \ac{DERP} servers can't decrypt the traffic being relayed, performing only redirection of already encrypted packets. These relay servers are distributed geographically. However, traffic relayed by \ac{DERP} servers always carry an increase in latency and loss of bandwidth, which isn't terrible, as the alternative is not being able to communicate at all.
+Networks employing \ac{edm} devices and/or really strict firewall rules, render these traversal techniques useless. To enable \ac{p2p} communications in such scenarios, Tailscale also provides a network of \ac{DERP} servers, which are responsible for relaying packets over \ac{http}. A Tailscale client is able to forward its encrypted packets to one of such \ac{DERP} servers. Since a client's private key never actually leaves its node, \ac{DERP} servers can't decrypt the traffic being relayed, performing only redirection of already encrypted packets. These relay servers are distributed geographically. However, traffic relayed by \ac{DERP} servers always carry an increase in \ac{rtt} and loss of bandwidth, which isn't terrible, as the alternative is not being able to communicate at all.
 
 As such, Tailscale's design provides a set of directives and infrastructure that work together to ensure WireGuard tunnels can be set up between any two peers, regardless of what policies the network between them employs.
 
@@ -717,7 +717,7 @@ Since Headscale's host is also an Ubuntu Linux environment, installation of this
 
 \subsection{Self-Hosting DERP Infrastructure}
 
-Initially, Headscale was configured to use Tailscale's \ac{DERP} server fleet. However, upon testing this scenario, relayed connections implied the redirection of traffic to a \ac{DERP} server in Germany, resulting in tunnels with an average latency of 452ms, a value unacceptable for the scope of this dissertation. Moreover, as this solution is meant to be used exclusively by \ac{ua}'s clients, traffic should be contained within the campus' network. Therefore, Tailscale's \ac{DERP} fleet was discarded, opting for a self-hosted alternative.
+Initially, Headscale was configured to use Tailscale's \ac{DERP} server fleet. However, upon testing this scenario, relayed connections implied the redirection of traffic to a \ac{DERP} server in Germany, resulting in tunnels with an average \ac{rtt} of 452ms, a value unacceptable for the scope of this dissertation. Moreover, as this solution is meant to be used exclusively by \ac{ua}'s clients, traffic should be contained within the campus' network. Therefore, Tailscale's \ac{DERP} fleet was discarded, opting for a self-hosted alternative.
 
 Headscale allows the use of an embedded \ac{DERP} server, which also exposes \ac{stun} functionalities for \ac{nat}-Traversal. This server can be enabled through Headscale's configuration file, and runs alongside Headscale's main service, on the same address and port. As for the \ac{stun} endpoints, these are also configured to run in the same address, on \ac{udp} port 3478.
 
@@ -820,11 +820,11 @@ Therefore, these tests were implemented as a python script \footnote{https://git
 
 For this experiment, a Tailscale client running \textbf{iperf3} as a server was placed inside \ac{iris}'s network. Then, with another machine, the script was run in clients connected to \ac{ua}'s network, from disperse points in the campus. This procedure allows not only the collection of \textbf{iperf3}'s network metrics and latencies but also the validation of the solution's coverage, since the script connects to the \ac{iris}'s host with its Tailscale \ac{ip}. If this connection fails, Tailscale can't cover that area, possibly due to more constraining networking rules. As it will be shown in the following section, however, none of the tested areas failed to establish communication.
 
-Twelve different test scenarios were run, presented on table \ref{tab:locs}. Since the \textbf{iperf3} server is running on \ac{iris} network, tests can be executed either using the server's Wi-Fi interface or its Tailscale interface. Interpolation of the data from these two scenarios allows the visualization of Tailscale's overhead on communication. The remaining scenarios are meant to both ensure Tailscale can establish connections from any point in the campus, while also providing insights on general communication performance.
+Twelve different test scenarios were run under similar conditions, presented on table \ref{tab:locs}. Since the \textbf{iperf3} server is running on \ac{iris} network, tests can be executed either using the server's Wi-Fi interface or its Tailscale interface. Interpolation of the data from these two scenarios allows the visualization of Tailscale's overhead on communication. The remaining cases are meant to both ensure Tailscale can establish connections from any point in the campus, while also providing insights on overall network performance.
 
 \section{Campus Coverage}
 
-As mentioned above, all identified locations were able to communicate with the client running on \ac{iris} through its tunnel interface, validating the solution's ability to establish Tailscale tunnels from key points within the campus. Figure \ref{fig:ualats} presents the average latencies on a Tailscale tunnel collected in these experiments. Although all scenarios present results within an acceptable range, there's some discrepancies, not necessarily associated with physical distance. In fact, there are several other factors which could justify these results, namely number of network users in the building at the time of the test and distance to the nearest \ac{ap}.
+As mentioned above, all identified locations were able to communicate with the client running on \ac{iris} through its tunnel interface, validating the solution's ability to establish Tailscale tunnels from all identified key points within the campus.
 
 
 \begin{table}[]
@@ -851,7 +851,7 @@ As mentioned above, all identified locations were able to communicate with the c
 
 \section{Network Performance}
 
-To evaluate communication performance, four main metrics are collected in each scenario, \textbf{\ac{tcp} throughput}, \textbf{latency} (or \ac{rtt}), \textbf{jitter} and \textbf{\ac{udp} packet loss}. Since all connections outside \ac{iris} are relayed, which means traffic is encapsulated over \ac{tcp}, this analysis focus primarily on throughput and latency as indicators.
+To evaluate communication performance, four main metrics are collected in each scenario, \textbf{\ac{tcp} throughput}, \textbf{\ac{rtt}}, \textbf{jitter} and \textbf{\ac{udp} packet loss}. Since all connections outside \ac{iris} are relayed, which means traffic is encapsulated over \ac{tcp}, this analysis focus primarily on throughput and \ac{rtt} as indicators.
 
 \subsection{Throughput}
 
@@ -865,22 +865,24 @@ Throughput measures the rate at which information is transmitted through the net
 \end{figure}
 
 
-\subsection{Latency}
+\subsection{RTT}
 
-Latency times dictate how long a source has to wait to receive a response from its destination. These can be calculated using the \textbf{ping} command, which calculates \ac{rtt} through \ac{icmp} packets. Experiments run measured the average latency for a total of 50 sent \ac{icmp} packets.
+\ac{rtt} times dictate how long a source has to wait to receive a response from its destination. These can be calculated using the \textbf{ping} command, which calculates \ac{rtt} through sent and received \ac{icmp} packets. Experiments run measured the average \ac{rtt} for a total of 50 sent \ac{icmp} packets. Figure \ref{fig:buildlat} presents the average \ac{rtt} measured across the different buildings, while figure \ref{fig:ualats} provides a geographic visualization of this data.
+
+Analysing figure \ref{fig:ualats}, concludes that, although all scenarios present \ac{rtt} values within an acceptable range, there's some discrepancies, not necessarily associated with physical distance. In fact, there are several other factors which could justify these results, namely number of network users in the building at the time of the test and distance to the nearest \ac{ap}.
 
 \begin{figure}[h]
 \centering
   \includegraphics[width=0.8\textwidth]{building-latency.png}
-  \caption{Average latencies by campus location}
-  \label{fig:udptpcp}
+  \caption{Average RTT times by campus location}
+  \label{fig:buildlat}
 \end{figure}
 
 
 \begin{figure}[h]
 \centering
 \includegraphics[width=0.8\textwidth]{ua-latency.png}
-\caption{Average latency on a Tailscale connection from different UA buildings to IRIS-Lab. The numbers in the circles represent average latency values, in ms.}
+\caption{Average RTT on a Tailscale connection from different UA buildings to IRIS-Lab. The numbers in the circles represent average RTT values, in ms.}
 \label{fig:ualats}
 \end{figure}
 
@@ -903,7 +905,7 @@ Packet loss is a metric associated with \ac{udp} tests, included in \textbf{iper
 
 \section{Protocol Overhead}
 
-To evaluate Tailscale's overhead on communication, throughput and latency results via internal network connections were compared with the same scenario via Tailscale tunnel. For this test, both client and server were residing inside \ac{iris}. Figure \ref{fig:overhead} presents the \ac{tcp} throughputs results and figure \ref{fig:latency_overhead} shows the average latencies. As expected, communicating through Tailscale implies a loss of throughput and a slight increase in latencies.
+To evaluate Tailscale's overhead on communication, throughput and \ac{rtt} results via internal network connections were compared with the same scenario via Tailscale tunnel. For this test, both client and server were residing inside \ac{iris}. Figure \ref{fig:overhead} presents the \ac{tcp} throughputs results and figure \ref{fig:latency_overhead} shows the average latencies. As expected, communicating through Tailscale implies a loss of throughput and a slight increase in latencies.
 
 \subsubsection{TCP Throughput Loss}
 
@@ -938,9 +940,7 @@ Where,
     \item \( \overline{\text{RTT}}_T \) is the average \ac{rtt} for the Tailscale connection.
 \end{itemize}
 
-Resulting in a latency increase of \textbf{35.25} \%
-
-\subsubsection{Maximum Bandwidth}
+Resulting in a \ac{rtt} increase of \textbf{35.25} \%
 
 \begin{figure}[h]
 \centering
@@ -952,7 +952,7 @@ Resulting in a latency increase of \textbf{35.25} \%
 \begin{figure}[h]
 \centering
   \includegraphics[width=0.8\textwidth]{latency_overhead.png}
-  \caption{Average latency on internal and Tailscale connections}
+  \caption{Average RTT on internal and Tailscale connections}
   \label{fig:latency_overhead}
 \end{figure}
 
@@ -968,7 +968,7 @@ Figure \ref{fig:cipher} presents said captures side by side on \textbf{Wireshark
 
 \begin{figure}[h]
 \centering
-  \includegraphics[width=0.8\textwidth]{cipher.png}
+  \includegraphics[width=0.9\textwidth]{cipher.png}
   \caption{TCP Streams from external capture (left) and Tailscale capture (right)}
   \label{fig:cipher}
 \end{figure}
@@ -998,6 +998,8 @@ To confine this solution in \ac{ua}'s private network, Headscale, an open-source
 To validate this deployment, network tests were run through the overlays, using \textbf{iperf3}. This allowed the measurement of Tailscale's protocol overhead on communication, which, as expected, resulted in a loss of throughput and increase in latencies. These experiments also provide insights on the overall network performance across multiple campus areas. Finally, the solution was tested when applied to \ac{ros} applications, with successful results.
 
 Overall, this project delivers automated procedures to configure and deploy a self-hosted secure overlay network manager requiring minimal client configuration, accomplishing the goals outlined in Section \ref{sec:obj}.
+
+With \ac{iris}'s robots authenticated in the control server and configured with Tailscale interfaces, encrypted communication is possible from anywhere within \ac{ua}'s campus, breaking the current confinement to \ac{iris}'s internal network.
 
 %
 % The bibliography
