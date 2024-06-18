@@ -818,10 +818,43 @@ Running this simple script leaves a machine in a state where, given a pre-shared
 
 This chapter covered how the processes involved in deploying and configuring both the Headscale instance and Tailscale clients were automated using shell scripts. These scripts create a minimal intervention procedure, useful when adding new clients to the overlays.
 
-\chapter{Validation and Results}
+\chapter{Experiments and Results}
 \label{chap:results}
 
-To validate the solution, two dimensions must be taken into account. First, it is necessary to ensure clients can use the overlay networks from anywhere within the campus. Then, the overall network performance must also be analysed, namely communication latencies, network \ac{tcp} throughput, \ac{udp} packet loss and maximum bandwidth and network jitter. Fortunately, both scopes can be tested simultaneously! \textbf{iperf3} is an open-source tool which collects such metrics by exchanging packets on a client-server model.
+In order to validate the developed solution, several experiments were conducted which provide us with insights regarding the overlay networks' communication performance, security and usability in the context of \ac{ros} applications. Hence, this chapter details the procedures taken for results and metrics gathering, followed by their respective analysis and derived conclusions.
+
+
+\section{Network Performance and Availability}
+
+Network performance is understood as the quality of the communication in the eyes of an overlay node. Measuring network performance requires the collection  and visualization of metrics produced while data is being exchanged on the overlay networks. For the scope of our conclusions, four of such metrics were gathered, on connections happening in distinct scenarios.
+
+The metrics we chose for this experiment provide insights on three distinct dimensions ~\cite{Hanemann2006}.
+
+\subsubsection{Delay}
+
+Delay in network performance refers to the time packets take to be transmitted from a source to a destination, through its communication medium. Network congestion, insufficient computational resources and routing rules can directly influence this dimension. To measure the delay associated with a connection, two metrics are considered, Round Trip Time (\ac{rtt}) and jitter.
+
+\ac{rtt} times dictate how long a source has to wait to receive a response from its destination, while jitter measures the variation of packet arrival times. High jitter has an impact on the smoothness of a connection, generally having noticeable negative effects on real time communications and media streaming \cite{claypool1999effects}.
+
+\subsubsection{Bandwidth and Throughput}
+
+Bandwidth is a dimension perceived as the maximum amount of information capable of being transmitted through a connection in a given time interval. Throughput, while also measuring the amount of transmitted data over time, assess how much data in a given communication is actually transferred by unit of time. In other words, measuring throughput allows us to understand the rate at which data is transmitted between a source and a destination, while bandwidth measures the network's total capacity. Network throughput can be calculated by executing demanding packet transmissions between any two nodes and measuring how much information is transmitted on a given time delta.
+
+\subsubsection{Losses and Errors}
+
+Finally, this dimension tackles how much information is not correctly transmitted and is measured by calculating a communication's packet loss, the fraction of packets sent which don't arrive at a destination.
+
+\subsection{Metric Gathering}
+
+Hence, the metrics to be gathered for network performance analysis are \textbf{\ac{rtt}} and jitter regarding delays, \textbf{throughput} and maximum \textbf{bandwidth} for information transfer rate and \textbf{packet loss} to assess any packets not being properly transmitted.
+
+There are numerous open source tools allowing users to measures most of these metrics by running configurable network tests. One such example is iperf ~\cite{iperfws}. Iperf operates by exchanging packets through a client-server model and offers tests capable of collecting both \ac{tcp} and \ac{udp} throughput and bandwidth, network jitter and packet loss. \ac{rtt} times are calculated by exchanging a given number of \ac{icmp} packets, achievable with simple ping commands.
+
+\subsection{Experiments}
+
+\section{Protocol Overhead}
+
+To validate the solution's performance, two dimensions must be taken into account. First, it is necessary to ensure clients can use the overlay networks from anywhere within the campus. Then, the overall network performance must also be analysed, namely communication latencies, network \ac{tcp} throughput, \ac{udp} packet loss and maximum bandwidth and network jitter. Fortunately, both scopes can be tested simultaneously! \textbf{iperf3} is an open-source tool which collects such metrics by exchanging packets on a client-server model.
 
 Therefore, these tests were implemented as a python script \footnote{https://github.com/VascoRegal/ua-overlays-automation/blob/main/tests/network/iperf/analysis.py} which connects to a host to run \textbf{iperf3} \ac{tcp} and \ac{udp} tests for 120 seconds each and exporting the results as \ac{json}. \textbf{iperf3}'s \ac{tcp} tests collect \ac{tcp} network throughput and minimum, maximum and mean \ac{rtt} time. \ac{udp} tests collect network jitter and packet loss.
 
@@ -982,7 +1015,7 @@ Figure \ref{fig:cipher} presents said captures side by side on \textbf{Wireshark
 
 \section{Chapter Summary}
 
-This chapter presented how this solution was validated and its performance analysed. To collect network performance metrics, \textbf{iperf3} was used in a range of different scenarios. First, to gain insights on Tailscale's overhead, network tests were run in the same conditions, through regular interfaces and through Tailscale tunnel. This resulted in a loss of \textbf{39.30} \% in \ac{tcp} throughput and an increase in average latencies of \textbf{35.25} \%. Regarding coverage, which refers to the campus area Tailscale can operate under, all identified key places were able to communicate via Tailscale relayed connections when using \ac{ua}'s network. Moreover, performance results from these experiments showed no particular anomalies, although, and as expected, certain areas underperform.
+This chapter presented how this solution was validated and its performance analysed. To collect network performance metrics, \textbf{iperf3} was used in a range of different scenarios. First, to gain insights on Tailscale's overhead, network tests were run in the same conditions, through regular interfaces and through Tailscale tunnel. This resulted in a loss of \textbf{37.02} \% in \ac{tcp} throughput and an increase in average latencies of \textbf{35.25} \%. Regarding coverage, which refers to the campus area Tailscale can operate under, all identified key places were able to communicate via Tailscale relayed connections when using \ac{ua}'s network. Moreover, performance results from these experiments showed no particular anomalies, although, and as expected, certain areas underperform.
 
 \chapter{Future Work}
 
