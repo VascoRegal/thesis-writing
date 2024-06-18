@@ -824,7 +824,7 @@ This chapter covered how the processes involved in deploying and configuring bot
 In order to validate the developed solution, several experiments were conducted which provide us with insights regarding the overlay networks' communication performance, security and usability in the context of \ac{ros} applications. Hence, this chapter details the procedures taken for results and metrics gathering, followed by their respective analysis and derived conclusions.
 
 
-\section{Network Performance and Availability}
+\section{Network Performance}
 
 Network performance is understood as the quality of the communication in the eyes of an overlay node. Measuring network performance requires the collection  and visualization of metrics produced while data is being exchanged on the overlay networks. For the scope of our conclusions, four of such metrics were gathered, on connections happening in distinct scenarios.
 
@@ -850,7 +850,20 @@ Hence, the metrics to be gathered for network performance analysis are \textbf{\
 
 There are numerous open source tools allowing users to measures most of these metrics by running configurable network tests. One such example is iperf ~\cite{iperfws}. Iperf operates by exchanging packets through a client-server model and offers tests capable of collecting both \ac{tcp} and \ac{udp} throughput and bandwidth, network jitter and packet loss. \ac{rtt} times are calculated by exchanging a given number of \ac{icmp} packets, achievable with simple ping commands.
 
-\subsection{Experiments}
+These processes were automated using a python script \footnote{https://github.com/VascoRegal/ua-overlays-automation/blob/main/tests/network/iperf/run.py}. This script operates by connecting to an iperf server and running \ac{tcp} and \ac{udp} iperf tests and outputting its results as \ac{json}. Then, to the same host running the iperf server, \ac{icmp} packets are exchanged, calculating \ac{rtt} minimum, maximum, mean and deviation values, which are also appended to the previously produced \ac{json} object. These results are finally exported to a file. The duation of each iperf test and the total number of \ac{icmp} packets exchanged are both configurable variables.
+
+The result files produced by running this script allows us to build a dataset containing the necessary metrics, used to draw the conclusions present further in this section.
+
+\subsection{Running Experiments}
+
+Having outlined the relevant metrics to evaluate communication performance through the overlays and development of a script which automates the results gathering processes, experiments are ready to be run between any two overlay nodes. Since communication is possible through Tailscale relayed connections regardless of clients' physical locations, we can collect insights from multiple campus points. This will not only allow us to understand the performance of the solution and how it behaves with geographical distance but also ensure the overlays can be used from anywhere within \ac{ua}'s premises.
+
+For these experiments, an overlay node running an iperf server was deployed in \ac{iris}, connected to \ac{ua}'s network. Then, with another machine, the experiment script was run, pointing the iperf server as the \ac{iris}'s node's Tailscale \ac{ip}, from disperse campus' locations. Table \ref{tab:locs} presents the selected test case buildings.
+
+Regarding test configuration, both \ac{tcp} and \ac{udp} iperf tests were run for 10 minutes each. Regarding \ac{rtt} calculations, a total of 100 \ac{icmp} replies were used.
+
+\subsection{Analysis and Conclusions}
+
 
 \section{Protocol Overhead}
 
@@ -872,8 +885,6 @@ As mentioned above, all identified locations were able to communicate with the c
 \begin{tabular}{|c|c|c|}
 \hline
 \textbf{Location}                                                                                             & \textbf{\begin{tabular}[c]{@{}c@{}}Building\\ ID\end{tabular}} & \textbf{\begin{tabular}[c]{@{}c@{}}Connection\\ Type\end{tabular}}     \\ \hline
-\begin{tabular}[c]{@{}c@{}}IRIS-Lab\\ (IRIS)\end{tabular}                                                     & 19                                                                 & Internal                                                               \\ \hline
-\begin{tabular}[c]{@{}c@{}}IRIS-Lab\\ (IRIS)\end{tabular}                                                     & 19                                                                 & \begin{tabular}[c]{@{}c@{}}Tailscale\\ (direct)\end{tabular}  \\ \hline
 \begin{tabular}[c]{@{}c@{}}University Library\\ (BIB)\end{tabular}                                          & 17                                                                 & \begin{tabular}[c]{@{}c@{}}Tailscale\\ (relayed)\end{tabular} \\ \hline
 \begin{tabular}[c]{@{}c@{}}Political Science Department\\ (DSCPT)\end{tabular}                              & 12                                                                 & \begin{tabular}[c]{@{}c@{}}Tailscale\\ (relayed)\end{tabular} \\ \hline
 \begin{tabular}[c]{@{}c@{}}Communication and Arts Department\\ (DECA)\end{tabular}                          & 21                                                                 & \begin{tabular}[c]{@{}c@{}}Tailscale\\ (relayed)\end{tabular} \\ \hline
@@ -885,7 +896,7 @@ As mentioned above, all identified locations were able to communicate with the c
 \begin{tabular}[c]{@{}c@{}}Biology Department\\ (DBIO)\end{tabular}                                         & 8                                                                  & \begin{tabular}[c]{@{}c@{}}Tailscale\\ (relayed)\end{tabular} \\ \hline
 \begin{tabular}[c]{@{}c@{}}Economics and Management Department\\ (DEGEIT)\end{tabular}                      & 10                                                                 & \begin{tabular}[c]{@{}c@{}}Tailscale\\ (relayed)\end{tabular} \\ \hline
 \end{tabular}
-\caption{Locations and scenarios used for validation}
+\caption{Locations used for network performance analysis}
 \label{tab:locs}
 \end{table}
 
