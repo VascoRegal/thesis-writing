@@ -823,12 +823,11 @@ This chapter covered how the processes involved in deploying and configuring bot
 
 In order to validate the developed solution, several experiments were conducted which provide us with insights regarding the overlay networks' communication performance, security and usability in the context of \ac{ros} applications. Hence, this chapter details the procedures taken for results and metrics gathering, followed by their respective analysis and derived conclusions.
 
-
 \section{Network Performance}
 
 Network performance is understood as the quality of the communication in the eyes of an overlay node. Measuring network performance requires the collection  and visualization of metrics produced while data is being exchanged on the overlay networks. For the scope of our conclusions, four of such metrics were gathered, on connections happening in distinct scenarios.
 
-The metrics we chose for this experiment provide insights on three distinct dimensions ~\cite{Hanemann2006}.
+The metrics we chose for this experiment provide insights on three distinct dimensions, outlined by ~\cite{Hanemann2006}.
 
 \subsubsection{Delay}
 
@@ -842,9 +841,10 @@ Bandwidth is a dimension perceived as the maximum amount of information capable 
 
 \subsubsection{Losses and Errors}
 
-Finally, this dimension tackles how much information is not correctly transmitted and is measured by calculating a communication's packet loss, the fraction of packets sent which don't arrive at a destination.
+Finally, this dimension tackles how much information is not correctly transmitted and is measured by calculating a communication's packet loss, the fraction of packets sent which don't arrive at a destination. Losing packets implies traffic retransmissions, which contribute negatively to the overall network performance.
 
 \subsection{Metric Gathering}
+\label{ss:metrics}
 
 Hence, the metrics to be gathered for network performance analysis are \textbf{\ac{rtt}} and jitter regarding delays, \textbf{throughput} and maximum \textbf{bandwidth} for information transfer rate and \textbf{packet loss} to assess any packets not being properly transmitted.
 
@@ -863,6 +863,7 @@ For these experiments, an overlay node running an iperf server was deployed in \
 Regarding test configuration, both \ac{tcp} and \ac{udp} iperf tests were run for 10 minutes each. Regarding \ac{rtt} calculations, a total of 100 \ac{icmp} replies were used.
 
 \subsection{Analysis and Conclusions}
+
 
 
 \iffalse
@@ -897,46 +898,32 @@ Twelve different test scenarios were run under similar conditions, presented on 
 \label{tab:locs}
 \end{table}
 
-
-\begin{figure}[h]
-\centering
-  \includegraphics[width=0.8\textwidth]{biblioteca-tcp.png}
-  \caption{TCP Tailscale tunnel Network TCP Throughput (University Library)}
-  \label{fig:tcptplibrary}
-\end{figure}
-
-
-\begin{figure}[h]
-\centering
-  \includegraphics[width=0.8\textwidth]{building-latency.png}
-  \caption{Average RTT times by campus location}
-  \label{fig:buildlat}
-\end{figure}
-
-
-\begin{figure}[h]
-\centering
-\includegraphics[width=0.8\textwidth]{ua-latency.png}
-\caption{Average RTT on a Tailscale connection from different UA buildings to IRIS-Lab. The numbers in the circles represent average RTT values, in ms.}
-\label{fig:ualats}
-\end{figure}
-
-
-\begin{figure}[h]
-\centering
-  \includegraphics[width=0.8\textwidth]{building-jitter.png}
-  \caption{Network Jitter by campus location.}
-  \label{fig:uajitter}
-\end{figure}
-
-
 \section{Protocol Overhead}
 
-As expected, communicating through the Tailscale protocol implies additional computational operations on sending and receiving data, which introduces an overhead to the general network performance. In fact, data encryption, security mechanisms and transmission of specific Tailscale protocol packets produce a toll on the regular network behaviour. To understand this dimension, this section presents an experiment which provide insights on said protocol overhead, regarding network delay and throughput.
+Cmmunicating through the Tailscale protocol implies additional computational operations on sending and receiving data, which introduces an overhead to the general network performance. In fact, data encryption, security mechanisms and transmission of specific Tailscale protocol packets produce a toll on the regular network behaviour. Moreover, as connections within the university's network are relayed, meaning traffic is being redirected over \ac{http}, a degradation of network performance is expected. To understand this dimension, this section presents an experiment which provides insights on said protocol overhead, regarding network delay and throughput.
 
-This experiment
+This experiment aims to measure Tailscale's overhead on communication, by interpolating data collected, under very similar conditions, from a connection through a regular Wi-Fi interface against a connection done through Tailscale tunnel.
 
-To evaluate Tailscale's overhead on communication, throughput and \ac{rtt} results via internal network connections were compared with the same scenario via Tailscale tunnel. For this test, both client and server were residing inside \ac{iris}. Figure \ref{fig:overhead} presents the \ac{tcp} throughputs results and figure \ref{fig:latency_overhead} shows the average latencies. As expected, communicating through Tailscale implies a loss of throughput and a slight increase in latencies.
+Such a scenario can be achieved with two clients residing inside \ac{iris}. With both machines connected to \ac{iris}'s private network, they can communicate directly via private \acp{ip}, hence metrics can be collected with the process described in Section \ref{ss:metrics}. Similarly, metrics were collected for the same scenario, with one client connected to \ac{ua}'s network and communication analysed via Tailscale \acp{ip}.
+
+\subsection{Results and Analysis}
+
+The two generated datasets allow us to visualize how Tailscale impacts network performance. Figure \ref{fig:latency_overhead} presents the \ac{rtt} distribution for this experiment, while figure \ref{fig:overhead} compares the \ac{tcp} throughputs.
+
+
+\begin{figure}[h]
+\centering
+  \includegraphics[width=0.9\textwidth]{overhead.png}
+  \caption{Tailscale's toll on throughput, tested on internal and Tailscale connections inside IRIS-Lab}
+  \label{fig:overhead}
+\end{figure}
+
+\begin{figure}[h]
+\centering
+  \includegraphics[width=0.8\textwidth]{latency_overhead.png}
+  \caption{Round Trip Time distribution for internal (IRIS-I) and Tailscale (IRIS-TS) connections}
+  \label{fig:latency_overhead}
+\end{figure}
 
 \subsubsection{TCP Throughput Loss}
 
@@ -973,19 +960,38 @@ Where,
 
 Resulting in a \ac{rtt} increase of \textbf{35.25} \%
 
-\begin{figure}[h]
-\centering
-  \includegraphics[width=0.9\textwidth]{overhead.png}
-  \caption{Tailscale's toll on throughput, tested on internal and Tailscale connections inside IRIS-Lab}
-  \label{fig:overhead}
-\end{figure}
 
 \begin{figure}[h]
 \centering
-  \includegraphics[width=0.8\textwidth]{latency_overhead.png}
-  \caption{Average RTT on internal and Tailscale connections}
-  \label{fig:latency_overhead}
+  \includegraphics[width=0.8\textwidth]{biblioteca-tcp.png}
+  \caption{TCP Tailscale tunnel Network TCP Throughput (University Library)}
+  \label{fig:tcptplibrary}
 \end{figure}
+
+
+\begin{figure}[h]
+\centering
+  \includegraphics[width=0.8\textwidth]{building-latency.png}
+  \caption{Average RTT times by campus location}
+  \label{fig:buildlat}
+\end{figure}
+
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.8\textwidth]{ua-latency.png}
+\caption{Average RTT on a Tailscale connection from different UA buildings to IRIS-Lab. The numbers in the circles represent average RTT values, in ms.}
+\label{fig:ualats}
+\end{figure}
+
+
+\begin{figure}[h]
+\centering
+  \includegraphics[width=0.8\textwidth]{building-jitter.png}
+  \caption{Network Jitter by campus location.}
+  \label{fig:uajitter}
+\end{figure}
+
 
 \section{Security and Confidentiality}
 
