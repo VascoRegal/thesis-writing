@@ -206,9 +206,9 @@ Overcoming these limitations would be extremely valuable for \ac{iris}'s develop
 \section{Objectives}
 \label{sec:obj}
 
-This dissertation aims to implement a private overlay network manager to be used exclusively by \ac{ua}'s clients. The concept of an overlay network entails the creation of a communication layer built on top of an already existing network.
+This dissertation aims to implement a private overlay network manager to be used exclusively by clients connected to \ac{ua}'s network. The concept of an overlay network entails the creation of a communication layer built on top of an already existing network.
 
-In the \ac{iris} scenario, the management platform should provide operations to achieve a secure, private communication between a group of robots connected to \ac{ua}'s network, regardless of their physical location within the campus. Moreover, the authentication and connection to a desired overlay network by the robots must be a seamless operation, requiring little to no manual configuration.
+In the \ac{iris} scenario, the management platform should provide operations to achieve a secure, private communication between a group of robots, regardless of their physical location within the campus. Moreover, the authentication and connection to a desired overlay network by the robots must be a seamless operation, requiring little to no manual configuration.
 
 To reinforce privacy and confidentiality, this solution should be hosted entirely within \ac{ua}'s premises, preferably using open source tools.
 
@@ -240,7 +240,7 @@ In the last few decades, the Internet has been subjected to an exponential growt
 
 \subsection{Definition and Motivation}
 
-By definition, an overlay network is a logical network implemented on top of the links of another existing physical network ~\cite{livronet}. In other words, nodes (also called peers) in an overlay network (which also exist in the underlay network) implement their own application-defined routing and datagram processing behaviour. Hence, the Internet application running in the nodes is responsible for the creation and management of the logical links that form the overlay network. Figure \ref{fig:overlay} illustrates this concept.
+By definition, an overlay network is a logical network implemented on top of the links of another existing physical network ~\cite{livronet}. In other words, nodes (also called peers) in an overlay network, which also exist in the underlay network, implement their own application-defined routing and datagram processing behaviour. Hence, the Internet application running in the nodes is responsible for the creation and management of the logical links that form the overlay network. Figure \ref{fig:overlay} illustrates this concept.
 
 As the nodes in an overlay network are systems running Internet applications, they are generally capable of performing more computational demanding operations than simply forwarding and switching traffic. Routing traffic through an overlay node allows any application-defined forwarding and data encapsulation operations to be applied to the datagrams, creating a custom communication protocol running on top of the underlay network.
 
@@ -263,7 +263,7 @@ To add a confidentiality layer to communication, overlay networks employ securit
 
 Conceptually, a \ac{vpn} is a virtual network that provides functionalities  securing the transmission of data between any two endpoints ~\cite{HARMENING2017843}. \acp{vpn} have been a widely used technology for decades, establishing itself as the backbone to secure communications over the Internet.
 
-The following sections aim to analyse how \ac{vpn} services have evolved, from its traditional design to more recent paradigms, which are able to tackle complexity and scalability issues. Then, it presents an individual overview of notable \ac{vpn} providers and compares their respective advantages, limitations, trade-offs and suitability for the scope of this solution. This state of the art technological survey aims to pickup on similar works ~\cite{zuqueteseguranca, berger2006analysis}, which examine established protocols such as OpenVPN and IPSec, while additionally reviewing modern protocols, namely WireGuard and Tailscale. This exploration serves as the foundation for understanding which protocol is the most suitable for this project.
+The following sections aim to analyse how \ac{vpn} services have evolved, from its traditional design to more recent paradigms, which are able to tackle complexity and scalability issues. Then, it presents an individual overview of notable \ac{vpn} providers and compares their respective advantages, limitations, trade-offs and suitability for the scope of this solution. This state of the art technological survey aims to pickup on similar works ~\cite{zuqueteseguranca, berger2006analysis}, which examine established protocols such as OpenVPN and IPSec, while additionally reviewing modern protocols, focusing on WireGuard. This exploration serves as the foundation for understanding which protocol is the most suitable to secure communications for the scenario at hand.
 
 
 \iffalse
@@ -437,7 +437,7 @@ WireGuard's kernel implementation and efficient multi-threading usage contribute
 
 \subsubsection{Usability}
 
-Usability in \ac{vpn} protocols refers to the ease of use regarding service configuration and management. IPSec's configuration can be quite complex, due to its cryptographic directives and protocol negotiation. Also, the several different modes IPSec can be configured to run in might prove overwhelming for unfamiliar users. OpenVPN's GUI provides a user-friendly platform to easily administrate the software, still requiring, however, a considerable degree of technical expertise. WireGuard, however, is able to combine protocol simplicity, as it enforces a single cipher suite, with straightforward configuration. In fact, as we've seen in Section \ref{ss:wg}, configuring WireGuard peers requires no knowledge of the protocol's specification.
+Usability in \ac{vpn} protocols refers to the ease of use regarding service configuration and management. IPSec's configuration can be quite complex, due to its cryptographic directives and protocol negotiation. Also, the several different modes IPSec can be configured to run in might prove overwhelming for unfamiliar users. OpenVPN's GUI provides a user-friendly platform to easily administrate the software, still requiring, however, a considerable degree of technical expertise. WireGuard, however, is able to combine protocol simplicity, as it enforces a single cipher suite, with straightforward configuration directives. In fact, as we've seen in Section \ref{ss:wg}, configuring WireGuard peers requires no knowledge of the protocol's specification.
 
 \subsection{Summary}
 
@@ -447,9 +447,9 @@ This section presents the fundamentals of \acp{vpn} and how they are able to ens
 \section{WireGuard Coordination}
 \label{sec:coordination}
 
-In Section \ref{sec:wglimits}, the lack of a coordination entity on stand-alone WireGuard topologies was raised as a possible limitation. In fact, manually reconfiguring peers in a WireGuard network is a process that scales terribly. Moreover, on highly restrictive networks, creating direct WireGuard tunnels proves to not be that straightforward.
+In Section \ref{sec:wglimits}, the lack of a coordination entity on stand-alone WireGuard topologies was raised as a possible limitation. In fact, manually reconfiguring peers in a WireGuard network is a process that scales terribly. Moreover, on highly restrictive networks, creating direct WireGuard tunnels proves to not be as straightforward.
 
-With this in mind, this section explores applications and implementations of coordination platforms built, or with the potential to be built, on top of WireGuard, aiming to create a seamless peer orchestration and configuration process, minimizing human intervention.
+With such constraints in mind, this section explores applications and implementations of coordination platforms built, or with the potential to be built, on top of WireGuard, aiming to create a seamless peer orchestration and configuration process, minimizing human intervention.
 
 \subsection{Tailscale}
 
