@@ -585,9 +585,9 @@ The tasks encompassing the phases described above can be summed up in a Gantt di
 
 \chapter{Prototype Development}
 
-This chapter details the configuration of the development environment, as proposed in figure \ref{fig:sandbox}, and its use for the implementation of a narrow scope prototype. This environment is managed with Oracle Virtual Box. Having defined the goals for this experiment in the previous section, this prototype requires the deployment of an Headscale control server, hosted in \textbf{VM-3}, followed by the configuration, and respective authentication of both clients, \textbf{VM-1} and \textbf{VM-2}, using the Tailscale \ac{cli}. With the clients configured with Tailscale addresses, these can be used to run communication tests on \ac{ros} applications.
+This chapter details the configuration of the development environment, as proposed in figure \ref{fig:sandbox}, and its use for the implementation of a narrow scope prototype. This environment is managed with Oracle Virtual Box. Having defined the goals for this phase in the previous section, this prototype requires the deployment of an Headscale control server, hosted in \textbf{VM-3}, followed by the configuration, and respective authentication of both clients, \textbf{VM-1} and \textbf{VM-2}, using the Tailscale \ac{cli}. With the clients configured with Tailscale addresses, these can be used to run communication tests on \ac{ros} applications.
 
-\section{Development Environment}
+\section{Environment Specification}
 
 \subsection{Access Point}
 
@@ -933,7 +933,7 @@ The same procedure can be applied to the measured \ac{rtt} values:
 
 Similarly, \textbf{ \( \overline{\text{RTT}}_I \)} is the average \ac{rtt} times for the internal connection while \textbf{\( \overline{\text{RTT}}_T \)} is the average \ac{rtt} times for the Tailscale connection. This calculation results in an \ac{rtt} increase of \textbf{21.11} \%
 
-These two indicators give us a perception of Tailscale's overhead.
+These two indicators give us a perception of Tailscale's overhead. TODO: Concluir melhor
 
 \begin{figure}[h]
 \centering
@@ -982,6 +982,15 @@ These two indicators give us a perception of Tailscale's overhead.
 
 
 \section{Security and Confidentiality}
+
+As we have seen, Tailscale encrypts and secures communications with WireGuard. This experiment aims to visualize how packets in the overlays are perceived by untrusted entities. A straightforward method to verify this dimension relies on the analysis of network captures. In fact, messages in a Tailscale tunnel can only be understood by the source and destination nodes. Any other infrastructure traffic travel through is seen as an undecipherable stream of packets.
+
+Hence, this validation operates by generating traffic between two overlay nodes and simultaneously capturing the packets in the destination node's Tailscale interface and in another intermediary network link. On relayed connections, which is the case in this scenario, this intermediary capture is done through the \ac{DERP} server's interface. We can verify the encryption taking place by correlating packets from both captures using their timestamps as reference.
+
+\section{Capturing Traffic}
+
+To capture network traffic,
+
 
 To validate communications are secured and encrypted, the two client development Virtual Machines were used. One of the clients runs a very simple web server listening on its Tailscale interface, while the other generates traffic via \ac{http} requests.
 
