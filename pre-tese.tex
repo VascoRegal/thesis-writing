@@ -905,11 +905,11 @@ Cmmunicating through the Tailscale protocol implies additional operations  to ta
 
 This experiment aims to measure Tailscale's overhead on communication, by interpolating data collected, under very similar conditions, from a connection through a regular Wi-Fi interface against a connection done through Tailscale tunnel.
 
-Such a scenario can be achieved with two clients residing inside \ac{iris}. With both machines connected to \ac{iris}'s private network, they can communicate directly via private \acp{ip}, hence metrics were collected with the script described in Section \ref{ss:metrics}. Then, the same experiment was run for the same scenario, with one client connected to \ac{ua}'s network and the test run via Tailscale \acp{ip}.
+Such a scenario can be achieved with two clients residing inside \ac{iris}. With both machines connected to \ac{iris}'s private network, they can communicate directly via private \acp{ip}, hence metrics were collected with the script described in Section \ref{ss:metrics}. Then, the same metric gathering was run for the same scenario, with one of the clients connected to \ac{ua}'s network and the test done via Tailscale \acp{ip}.
 
 \subsection{Results and Analysis}
 
-The two generated datasets allow us to visualize how Tailscale impacts network performance. Figure \ref{fig:overhead} presents the the \ac{tcp} throughputs for the both experiments, while figure \ref{fig:latency_overhead} compares the \ac{rtt} distributions. Analysing the figures corroborates the idea that communicating through relayed Tailscale connections implies a considerable loss in network performance. To be able to represent this performance depletion numerically, we can calculate the relative change between the two measurements, using the percent log-change formula \cite{tornqvist1985should}.
+The two generated datasets allow us to visualize how Tailscale impacts network performance. Figure \ref{fig:overhead} presents the \ac{tcp} throughputs for the both experiments, while figure \ref{fig:latency_overhead} compares the \ac{rtt} distributions. Analysing the figures corroborates the idea that communicating through relayed Tailscale connections implies a considerable loss in network performance. To be able to represent this performance depletion numerically, we can calculate the relative change between the two measurements, using the percent log-change formula \cite{tornqvist1985should}.
 
 The percent log-change is a numerical indicator of the change between two groups of values. In the context of this analysis, the percent log-change represents how much throughput was lost and how \ac{rtt} times increased, when comparing the internal and tunnel connections. We chose to use the log-change as an indicator instead of directly calculating the percentage change as it outputs a symmetric indicator, abstracting the necessity of choosing one connection as the baseline. The percent log-change is given by the expression:
 
@@ -983,27 +983,32 @@ These two indicators give us a perception of Tailscale's overhead. TODO: Conclui
 
 \section{Security and Confidentiality}
 
-As we have seen, Tailscale encrypts and secures communications with WireGuard. This experiment aims to visualize how packets in the overlays are perceived by untrusted entities. A straightforward method to verify this dimension relies on the analysis of network captures. In fact, messages in a Tailscale tunnel can only be understood by the source and destination nodes. Any other infrastructure traffic travel through is seen as an undecipherable stream of packets.
+As we have seen, Tailscale encrypts and secures communications with WireGuard. This experiment aims to visualize how packets in the overlays are perceived by untrusted entities. A straightforward method to verify this dimension relies on the analysis of network captures. In fact, messages in a Tailscale tunnel can only be understood by the source and destination nodes. Traffic travelling through any other infrastructure is seen as an undecipherable stream of packets.
 
-Hence, this validation operates by generating traffic between two overlay nodes and simultaneously capturing the packets in the destination node's Tailscale interface and in another intermediary network link. On relayed connections, which is the case in this scenario, this intermediary capture is done through the \ac{DERP} server's interface. We can verify the encryption taking place by correlating packets from both captures using their timestamps as reference.
+Hence, this validation operates by generating traffic between two overlay nodes and simultaneously capturing the packets in the destination node's Tailscale interface and in another intermediary network link's interface. On relayed connections, which is the case in this scenario, this intermediary capture is done in the \ac{DERP} server's interface. We can verify the encryption taking place by correlating packets from both captures using their timestamps as reference.
 
-\section{Capturing Traffic}
+\subsection{Capturing and Visualising Traffic}
 
-To capture network traffic,
+To capture packets on a network interface, \textbf{Tcpdump} \cite{tcpdump}, an open source command-line tool, was used. With this tool, we can initiate a capture by using the \textbf{tcpdump} command and pointing to a desired interface. Results from a capture can be exported to a file, which then allows a user friendly visualisation using \textbf{Wireshark} \cite{wireshark}, also an open source tool. Wireshark facilitates analysing and correlating the captures.
 
+\subsection{Generating Traffic}
 
-To validate communications are secured and encrypted, the two client development Virtual Machines were used. One of the clients runs a very simple web server listening on its Tailscale interface, while the other generates traffic via \ac{http} requests.
+For the scope of this experiment, a client server scenario was created using two overlay nodes. One of the nodes runs a simple \ac{http} server, listening on its Tailscale interface, while the other generates traffic by executing requests to this server using \textbf{curl} \cite{curl}. Both nodes are connected to \ac{ua}'s network, hence the Tailscale communication is relayed.
 
-While requests are being made, two packet captures were initiated, using \textbf{tcpdump}, one on the \ac{http} client's Tailscale interface and another on the host machine's Wi-Fi interface. If traffic is properly encrypted, requests on the client capture should be shown as plain text, while on the host machine's capture should be shown as an encrypted \ac{tcp} stream.
+\subsection{Running the experiment}
 
-Figure \ref{fig:cipher} presents said captures side by side on \textbf{Wireshark}. By analysing these results, the \ac{http} request and response are encapsulated as a \ac{tcp} stream on the external capture, and its payload encrypted. Hence, Tailscale is effectively encrypting tunnel traffic, as only designated nodes are able to decrypt and understand the information being transmitted.
+Having defined how traffic is generated and captured, the experiment starts by initiating two captures, one on the \ac{http} server's Tailscale interface and one on the \ac{DERP} server's Wi-Fi interface. Traffic associated with the generated \ac{http} requests will travel through both these interfaces, as all Tailscale traffic requires relaying by the \ac{DERP} server to its respective destination.
 
+With the captures running, \ac{http} requests were done by the client node, using cURL. After closing the captures, this process generates two capture files, which are loaded in Wireshark and correlated manually by analysing packets' timestamps.
 
+\subsection{Results}
+
+Figure \ref{fig:cipher} presents said captures side by side on Wireshark. By analysing these results, the \ac{http} request and response are encapsulated as a \ac{tcp} stream on the \ac{DERP} capture, and its payload encrypted, while the corresponding packets in the \ac{http} server's capture shows the same request and response as plain-text. Hence, Tailscale is effectively encrypting tunnel traffic, as only communication end nodes are able to decrypt and understand the information being transmitted.
 
 \begin{figure}[h]
 \centering
   \includegraphics[width=0.9\textwidth]{cipher.png}
-  \caption{TCP Streams from external capture (left) and Tailscale capture (right)}
+  \caption{TCP Streams from external capture (left) and destination node capture (right)}
   \label{fig:cipher}
 \end{figure}
 
