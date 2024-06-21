@@ -925,6 +925,16 @@ Where \textbf{y} and \textbf{x} are the two set of values under comparison. Usin
 
 Where \textbf{ \( \overline{\text{TP}}_I \)} is the average throughput for the internal connection and \textbf{\( \overline{\text{TP}}_T \)} is the average throughput for the Tailscale connection, which results in a throughput loss of \textbf{46.23} \%
 
+The same procedure can be applied to the measured \ac{rtt} values:
+
+\[
+\text{RTT Increase (\%)} = \ln\left(\frac{\overline{\text{RTT}}_I}{\overline{\text{RTT}}_T}\right) \times 100
+\]
+
+Similarly, \textbf{ \( \overline{\text{RTT}}_I \)} is the average \ac{rtt} times for the internal connection while \textbf{\( \overline{\text{RTT}}_T \)} is the average \ac{rtt} times for the Tailscale connection. This calculation results in an \ac{rtt} increase of \textbf{21.11} \%
+
+These two indicators give us a perception of Tailscale's overhead.
+
 \begin{figure}[h]
 \centering
   \includegraphics[width=0.9\textwidth]{overhead.png}
@@ -938,25 +948,6 @@ Where \textbf{ \( \overline{\text{TP}}_I \)} is the average throughput for the i
   \caption{Round Trip Time distribution for internal (IRIS-I) and Tailscale (IRIS-TS) connections}
   \label{fig:latency_overhead}
 \end{figure}
-
-
-\subsubsection{Latency Increase}
-
-Latency increase is measured with a similar approach, calculated with:
-
-\[
-\text{RTT Increase (\%)} = \left( \frac{ \overline{\text{RTT}}_T - \overline{\text{RTT}}_I}{ \overline{\text{RTT}}_I }\right) \times 100
-\]
-
-Where,
-
-\begin{itemize}
-    \item \( \overline{\text{RTT}}_I \) is the average \ac{rtt} for the internal connection.
-    \item \( \overline{\text{RTT}}_T \) is the average \ac{rtt} for the Tailscale connection.
-\end{itemize}
-
-Resulting in a \ac{rtt} increase of \textbf{35.25} \%
-
 
 \begin{figure}[h]
 \centering
