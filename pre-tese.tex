@@ -827,7 +827,7 @@ In order to validate the developed solution, several experiments were conducted 
 
 Network performance is understood as the quality of the communication in the eyes of an overlay node. Measuring network performance requires the collection  and visualization of metrics produced while data is being exchanged on the overlay networks. For the scope of our conclusions, four of such metrics were gathered, on connections happening in distinct scenarios.
 
-The metrics we chose for this experiment provide insights on three distinct dimensions, outlined by ~\cite{Hanemann2006}.
+The metrics we chose for this experiment provide insights on three distinct dimensions, outlined in ~\cite{livronet, Hanemann2006}.
 
 \subsubsection{Delay}
 
@@ -848,9 +848,9 @@ Finally, this dimension tackles how much information is not correctly transmitte
 
 Hence, the metrics to be gathered for network performance analysis are \textbf{\ac{rtt}} and jitter regarding delays, \textbf{throughput} and maximum \textbf{bandwidth} for information transfer rate and \textbf{packet loss} to assess any packets not being properly transmitted.
 
-There are numerous open source tools allowing users to measures most of these metrics by running configurable network tests. One such example is iperf ~\cite{iperfws}. Iperf operates by exchanging packets through a client-server model and offers tests capable of collecting both \ac{tcp} and \ac{udp} throughput and bandwidth, network jitter and packet loss. \ac{rtt} times are calculated by exchanging a given number of \ac{icmp} packets, achievable with simple ping commands.
+There are numerous open source tools allowing users to measures most of these metrics by running configurable network tests. One such example is iperf ~\cite{iperfws}. Iperf operates by exchanging packets through a client-server model and offers tests capable of collecting both \ac{tcp} and \ac{udp} throughput and bandwidth, network jitter and packet loss. \ac{rtt} times are calculated by exchanging a given number of \ac{icmp} packets and measuring communication delays, achievable with simple \textbf{ping} commands.
 
-These processes were automated using a python script \footnote{https://github.com/VascoRegal/ua-overlays-automation/blob/main/tests/network/iperf/run.py}. This script operates by connecting to an iperf server and running \ac{tcp} and \ac{udp} iperf tests and outputting its results as \ac{json}. Then, to the same host running the iperf server, \ac{icmp} packets are exchanged, calculating \ac{rtt} minimum, maximum, mean and deviation values, which are also appended to the previously produced \ac{json} object. These results are finally exported to a file. The duation of each iperf test and the total number of \ac{icmp} packets exchanged are both configurable variables.
+These processes were automated using a python script \footnote{https://github.com/VascoRegal/ua-overlays-automation/blob/main/tests/network/iperf/run.py}. This script starts by connecting to an iperf server and running \ac{tcp} and \ac{udp} iperf tests, outputting its results as \ac{json}. Then, to the same host running the iperf server, \ac{icmp} packets are exchanged, calculating \ac{rtt} minimum, maximum, mean and deviation values, which are also appended to the previously produced \ac{json} object. These results are finally exported to a file for later processing. The duation of each iperf test and the total number of \ac{icmp} packets exchanged are both configurable variables.
 
 The result files produced by running this script allows us to build a dataset containing the necessary metrics, used to draw the conclusions present further in this section.
 
@@ -863,6 +863,7 @@ For these experiments, an overlay node running an iperf server was deployed in \
 Regarding test configuration, both \ac{tcp} and \ac{udp} iperf tests were run for 10 minutes each. Regarding \ac{rtt} calculations, a total of 100 \ac{icmp} replies were used.
 
 \subsection{Analysis and Conclusions}
+
 
 
 
@@ -900,15 +901,15 @@ Twelve different test scenarios were run under similar conditions, presented on 
 
 \section{Protocol Overhead}
 
-Cmmunicating through the Tailscale protocol implies additional computational operations on sending and receiving data, which introduces an overhead to the general network performance. In fact, data encryption, security mechanisms and transmission of specific Tailscale protocol packets produce a toll on the regular network behaviour. Moreover, as connections within the university's network are relayed, meaning traffic is being redirected over \ac{http}, a degradation of network performance is expected. To understand this dimension, this section presents an experiment which provides insights on said protocol overhead, regarding network delay and throughput.
+Cmmunicating through the Tailscale protocol implies additional operations  to take place on sending and receiving data, which introduces an overhead to the general network performance. In fact, data encryption, security mechanisms and transmission of additional Tailscale protocol packets produce a toll on the regular network behaviour. Moreover, as connections within the university's network are relayed, meaning traffic is being redirected over \ac{http}, a degradation of network performance is also expected. To understand this dimension, this section presents an experiment which provides insights on said protocol overhead, regarding network delay and throughput.
 
 This experiment aims to measure Tailscale's overhead on communication, by interpolating data collected, under very similar conditions, from a connection through a regular Wi-Fi interface against a connection done through Tailscale tunnel.
 
-Such a scenario can be achieved with two clients residing inside \ac{iris}. With both machines connected to \ac{iris}'s private network, they can communicate directly via private \acp{ip}, hence metrics can be collected with the process described in Section \ref{ss:metrics}. Similarly, metrics were collected for the same scenario, with one client connected to \ac{ua}'s network and communication analysed via Tailscale \acp{ip}.
+Such a scenario can be achieved with two clients residing inside \ac{iris}. With both machines connected to \ac{iris}'s private network, they can communicate directly via private \acp{ip}, hence metrics were collected with the script described in Section \ref{ss:metrics}. Then, the same experiment was run for the same scenario, with one client connected to \ac{ua}'s network and the test run via Tailscale \acp{ip}.
 
 \subsection{Results and Analysis}
 
-The two generated datasets allow us to visualize how Tailscale impacts network performance. Figure \ref{fig:latency_overhead} presents the \ac{rtt} distribution for this experiment, while figure \ref{fig:overhead} compares the \ac{tcp} throughputs.
+The two generated datasets allow us to visualize how Tailscale impacts network performance. Figure \ref{fig:latency_overhead} presents the \ac{rtt} distribution for the both experiments, while figure \ref{fig:overhead} compares the \ac{tcp} throughputs. Analysing the figures corroborates the idea that communicating through relayed Tailscale connections implies a considerable loss in network performance.
 
 
 \begin{figure}[h]
