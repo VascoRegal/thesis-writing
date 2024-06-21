@@ -451,53 +451,36 @@ In Section \ref{sec:wglimits}, the lack of a coordination entity on stand-alone 
 
 With this in mind, this section explores applications and implementations of coordination platforms built, or with the potential to be built, on top of WireGuard, aiming to create a seamless peer orchestration and configuration process, minimizing human intervention.
 
-
-\iffalse
-\subsection{OOR Map Server Implementation}
-
-An implementation with said requirements is proposed in \cite{paillisse2021control}. The core architecture of this solution is composed by a centralized \ac{oor} Map Server, containing peer identification data, which provides devices with on-demand information regarding any other peer in the network to setup a direct connection.  From a client perspective, a peer wanting to communicate with another should first establish a secure WireGuard connection to this server and request a connection with a destination node. The server, with the source \ac{ip} and public key of the requesting client, redirects this data to the destination node, reaching a state where both peers contain all necessary information to begin the WireGuard tunnel.
-
-This prototype successfully tackles one of the main limitations of WireGuard, offering a mechanism capable of dynamically configuring peers, without the need to reconfigure every device every time a new client joins the network. Also, it reduces routing table complexity, as peers are not required to keep all other peers' information locally. However, the addition of such a centralized entity also introduces a new attack vector. Effectively, if the private key of the central server, crucial in creating the first secure channel between a peer and the server, is compromised, a man-in-the-middle attack could be mounted, since an attacker could impersonate the centralized server.
-
-Regarding performance, there is, as expected, an overhead compared to native OOR benchmarks, as requests to \ac{oor} Map Server are themselves conducted through a WireGuard channel.
-\fi
-
 \subsection{Tailscale}
 
-Tailscale is a \ac{vpn} service operating with a Golang user-space WireGuard variant as its data plane ~\cite{tailscale2020online}. Tailscale operates under a hybrid \ac{vpn} model. Although a central entity is present, resembling hub-and-spoke architectures, its main purpose is to aid clients in configuring themselves to form a mesh network, serving nearly no traffic.
+Tailscale ~\cite{tailscale2020online} is a \ac{vpn} service operating with a Golang user-space WireGuard variant as its data plane. Tailscale operates under a hybrid \ac{vpn} model. Although a central entity is present, resembling hub-and-spoke architectures, its main purpose is to aid clients in configuring themselves to form a mesh network, serving nearly no traffic.
 
 In addition to orchestrating the configuration and establishment of WireGuard tunnels, Tailscale also employs a set of mechanisms capable of addressing network constraints which would hinder the process of directly creating WireGuard connections. In fact, Tailscale praises itself as being able to make any two clients communicate, regardless of the network structure and security policies standing in-between them. For the scope of this project, where very few is known about \ac{ua}'s network, the ability to bypass such constraints would prove extremely valuable.
 
-Hence, this section explores how Tailscale is able to manage the WireGuard links between its clients, creating a secure overlay network while dealing with security constraints preventing such communications to take place.
+This section explores how Tailscale is able to manage the WireGuard links between its clients, creating a WireGuard encrypted overlay network while dealing with security constraints preventing such communications to take place.
 
 \subsubsection{Architecture}
 
-Tailscale's central entity, referred to as the \textbf{coordination server}, functions as a shared repository of peer information, used by clients to retrieve data regarding other nodes and establish on-demand \ac{p2p} connections among each other.
+Tailscale's central entity, referred to as the \textbf{coordination server}, functions as a shared repository of peer information, used by clients to retrieve data regarding other nodes and establish on-demand WireGuard connections among each other.
 
-Tailscale's client authenticates in this coordination server and retrieves information regarding the state of the network, peer information and available \ac{DERP} servers.
-
-This approach differs from traditional hub-and-spoke since the coordination server carries nearly no traffic, it only serves encryption keys and peer information. Tailscale's architecture provides the best of both worlds, benefiting from the advantages of a centralized entity facilitating dynamic configurations and peer discovery without bottlenecking its data exchanging performance.
+This approach differs from traditional hub-and-spoke since the coordination server carries nearly no traffic, it only serves encryption keys and peer information. Tailscale's architecture provides the best of both worlds, benefiting from the advantages of a centralized entity facilitating dynamic reconfigurations and peer discovery without bottlenecking WireGuard's data exchanging performance.
 
 In practical terms, a Tailscale client will store, in the coordination server, its own public key and where it can currently be found. Then, it downloads a list of public keys and addresses that have been stored on the server previously by other clients. With this information, the client node is able to configure its Tailscale interface and start communicating with any other node in its domain.
 
 \subsubsection{Overcoming restrictive networks}
 \label{ssec:tsnetworks}
 
-There are, however, some network security configurations which prevent WireGuard tunnels from being established. For example, firewalls blocking \ac{udp} traffic entirely prevent the creation of direct WireGuard tunnels between two peers (as WireGuard is a \ac{udp} only protocol). In addition to orchestrating WireGuard peers, Tailscale is also able to overcome such constrained networks.
+There are, however, some network security configurations which prevent WireGuard tunnels from being established. For example, firewalls blocking \ac{udp} traffic entirely prevent the creation of direct WireGuard tunnels between two peers. In addition to orchestrating WireGuard peers, Tailscale is also able to overcome such constrained networks.
 
-Regarding stateful firewalls, where, generally, inbound traffic for a given source address on a non-open port is only accepted if the firewall has recently seen an outgoing packet with such \emph{ip:port} as destination (essentially assuming that, if outbound traffic flowed to a destination, the source expects to receive an answer from that same destination), Tailscale keeps, in its coordination server, the \emph{ip:port} of each node in its network. With this information, if both peers send an outgoing packet to each other at approximately the same time (a time delta inferior to the firewall's cache expiration), then the firewalls at each end will be expecting the reception of packets from the opposite peer. Hence, packets can flow bidirectionally and a \ac{p2p} communication is established. To ensure this synchronism of attempting communication at approximate times, Tailscale uses its coordination server and \ac{DERP} servers (explored further in the following paragraphs) as a side channel.
+Regarding stateful firewalls, where, generally, inbound traffic for a given source address on a non-open port is only accepted if the firewall has recently seen an outgoing packet with such \emph{ip:port} as destination, Tailscale keeps, in its coordination server, the public address of each node in its network. With this information, if both peers send an outgoing packet to each other at approximately the same time (a time delta inferior to the firewall's cache expiration), then the firewalls at each end will be expecting the reception of packets from the opposite peer. Hence, packets can flow bidirectionally and a \ac{p2p} communication is established. To ensure this synchronism of attempting communication at approximate times, Tailscale uses its coordination server and \ac{DERP} servers (explored further in the following paragraphs) as a side channel.
 
-Although this procedure is quite effective, in networks with \ac{nat} mechanisms, where source and destination addresses are tampered with, this process is not as straightforward, since peers don't know the public addresses \ac{nat} will translate their private addresses to. The \ac{stun} protocol offers aid in performing \ac{nat}-traversal operations ~\cite{rfc8489} and can solve this problem. For a peer to discover and store in the coordination server its own public \emph{ip:port}, it first sends an \ac{udp} packet to a \ac{stun} server. Upon receiving this packet, the \ac{stun} server can see which public source address was used (the address \ac{nat} translated to) and replies this value to the peer.
+Although this procedure is quite effective, in networks with \ac{nat} mechanisms, where source and destination addresses are tampered with, this process is not as straightforward, since peers don't know the public addresses \ac{nat} will translate their private addresses to. The \ac{stun} protocol offers aid in performing \ac{nat}-traversal operations ~\cite{rfc8489} and can solve this problem. For a peer to discover and store in the coordination server its own public \emph{ip:port}, it first sends an \ac{udp} \ac{ip} binding request to a \ac{stun} server. Upon receiving this packet, the \ac{stun} server can see which public source address was used (the address \ac{nat} translated to) and replies this value to the peer.
 
 There are, however, some \ac{nat} devices that create a completely different public address mapping for each different destination a machine communicates with, which hinders the above address discovery process. Such devices are classified as \ac{edm} (in opposition to \ac{eim}) ~\cite{rfc4787}.
 
-Networks employing \ac{edm} devices and/or really strict firewall rules, render these traversal techniques useless. To enable \ac{p2p} communications in such scenarios, Tailscale also provides a network of \ac{DERP} servers, which are responsible for relaying packets over \ac{http}. A Tailscale client is able to forward its encrypted packets to one of such \ac{DERP} servers. Since a client's private key never actually leaves its node, \ac{DERP} servers can't decrypt the traffic being relayed, performing only redirection of already encrypted packets. These relay servers are distributed geographically. However, traffic relayed by \ac{DERP} servers always carry an increase in \ac{rtt} and loss of bandwidth, which isn't terrible, as the alternative is not being able to communicate at all.
+Networks employing \ac{edm} \ac{nat} devices and/or really strict firewall rules, render these traversal techniques useless. To enable \ac{p2p} communications in such scenarios, Tailscale also provides a network of \ac{DERP} servers, which are responsible for relaying packets over \ac{http}. A Tailscale client is able to forward its encrypted packets to one of such \ac{DERP} servers. Since a client's private key never actually leaves its node, \ac{DERP} servers can't decrypt the traffic being relayed, performing only redirection of already encrypted data. Tailscale offers a geographically distributed fleet of such servers. However, since traffic is encapsulated as an \ac{http} stram, relayed communications always imply a degradation of network performance, which isn't terrible, as the alternative is not being able to communicate at all.
 
-As such, Tailscale's design provides a set of directives and infrastructure that work together to ensure WireGuard tunnels can be set up between any two peers, regardless of what policies the network between them employs.
-
-\subsubsection{Direct vs Relayed Connections}
-
-Tailscale connections can be of two types: either \textbf{direct} or \textbf{relayed}. Tailscale will always attempt to create direct connections. In fact, if \ac{nat}-traversal succeeds on both endpoints, a direct WireGuard tunnel can be established. However, on networks employing \ac{edm} \ac{nat} mappings and/or \ac{udp} blocking firewalls, direct connections cannot be formed. That's where relayed connections are created. Clients on relayed connections encapsulate WireGuard \ac{udp} packets as \ac{tcp} streams and forwards them through \ac{http} to the closest \ac{DERP} server available, which in turn delivers them to its destination.
+Hence, Tailscale connections can be of two types: either \textbf{direct} or \textbf{relayed}. Tailscale will always attempt to create direct connections. In fact, if \ac{nat}-traversal succeeds on both endpoints and there are no restrictions to \ac{udp} traffic, a direct WireGuard tunnel can be established. However, on networks employing \ac{edm} \ac{nat} mappings and/or \ac{udp} blocking firewalls, direct connections cannot be formed. That's where relayed connections are created. Clients on relayed connections encapsulate WireGuard \ac{udp} packets as \ac{tcp} streams and forwards them through \ac{http} to the closest \ac{DERP} server available, which in turn delivers them to its destination.
 
 \subsubsection{Headscale}
 \label{sec:hs}
@@ -634,26 +617,6 @@ Headscale includes in its software a configuration YAML used to tweak parameters
 
 With the service running, \textbf{VM-3} is now listening for Tailscale clients to connect and start using the protocol. To authenticate, clients are required to login under a user. By default, Headscale does not create any users automatically. Hence, for development purposes, an Headscale user, \textbf{dev}, was created in the instance and shall be the user the clients will register themselves with.
 
-\iffalse
-\subsection{Services}
-
-Table \ref{table:hstest} presents the available services and their respective listening configuration produced by the running Headscale instance. Besides the metrics and gRPC services, which are not required by clients to use the Tailscale protocol, are listening privately, on the server's localhost interface. The remaining services are exposed in the defined ports, reachable by the clients.
-
-\begin{table}[]
-\centering
-\resizebox{\textwidth}{!}{
-     \begin{tabular}{|c|c|c|c|}
-     \hline
-     \textbf{Service}                                                 & \textbf{Listen Address} & \textbf{Port} & \textbf{Description}                                         \\ \hline
-     Control Server                                                   & 192.168.10.214          & 8080          & Main service implementing Tailscale's coordination mechanisms \\ \hline
-     Metrics                                                          & 127.0.0.1               & 9090          & Exposes the /metrics endpoints, for monitoring               \\ \hline
-     \end{tabular}
-}
-\caption{Services running in the Headscale instance}
-\label{table:hstest}
-\end{table}
-\fi
-
 \section{Client Configuration}
 
 Initially, clients can't really establish a direct connection in a traditional way. In fact, neither client is assigned a public address which could be used as a communication's endpoint, nor do they possess any information regarding one another. They can, however, reach the outside Internet, which consequently implies the translation of their private addresses into public ones, a process carried by the adapter attached to the host machine's \ac{nat}. In section \ref{ssec:tsnetworks}, Tailscale's \ac{nat}-Traversal process was explored. Such procedure can be applied in this scenario, where clients will obtain their public \ac{ip} by querying a \ac{stun} server. TODO: REESCREVER
@@ -732,44 +695,6 @@ To use the self-hosted \ac{DERP} server, Headscale is required to be exposed on 
 Using self-signed certificates requires additional client certificate trust configurations, which are covered in the following sections.
 
 \section{Client Deployment}
-
-
-\iffalse
-\subsection{Tailscale and Self-Signed Certificates}
-\label{sec:selfscale}
-
-Tailscale's client does not support the use of self-signed certificates, even if the system trusts the certificate. Figure \ref{fig:tscert} presents the logic behind Tailscale's certificate validation. However, as an open-source codebase, this code can be freely modified and the binaries rebuilt to suit this entirely private solution . Therefore, a fork of Tailscale was created, which shall be referred to as Selfscale \footnote{Selfscale's repository: https://github.com/VascoRegal/selfscale}.
-
-Selfscale implements a new command-line option to the \textbf{tailscale} command, --\emph{allow-self-signed}, which stores a boolean value. When true, the certificate validation method will not run the self-signed validation condition.
-
-With the use of this option, a self-signed certificate needs only to be trusted by the system to be valid in the eyes of Tailscale's client. Hence, this solution requires clients to run the binaries generated from Selfscale's source code.
-
-\begin{figure}
-\centering
-\begin{lstlisting}
-conf.VerifyConnection = func(cs tls.ConnectionState) error {
-     // Perform some health checks on this certificate before we do
-     // any verification.
-     if ht != nil {
-          if certIsSelfSigned(cs.PeerCertificates[0]) {
-               // Self-signed certs are never valid.
-               ht.SetTLSConnectionError(
-                    cs.ServerName,
-                    fmt.Errorf("certificate is self-signed")
-               )
-
-          } else {
-               // Ensure we clear any error state for
-               // this ServerName.
-               ht.SetTLSConnectionError(cs.ServerName, nil)
-          }
-     }
-     ...
-\end{lstlisting}
-\label{fig:tscert}
-\caption{Snippet from Tailscale's client certificate verification method. Self-signed certificates are always considered invalid. /net/tlsdial/tlsdial.go, lines 79-90 }
-\end{figure}
-\fi
 
 \subsection{Trusting Headscale}
 
