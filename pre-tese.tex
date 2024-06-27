@@ -570,6 +570,28 @@ To self-host a Tailscale coordination server, Headscale, explored in section \re
 
 Clients will run the open-source Tailscale's node software, a package composed by a \ac{cli} and a daemon. Tailscale's daemon is the entity responsible for communicating with the orchestrator, while the \ac{cli} offers an interface to control and execute operations through the daemon.
 
+Figure \ref{fig:arch} depicts the solution's architecture.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=1\textwidth]{arch.png}
+\caption{Solution's Architecture}
+\label{fig:arch}
+\end{figure}
+
+\section{Coordination Server}
+
+\subsection{Orchestrator}
+
+\subsection{Embedded Relay Server (DERP)}
+
+\subsection{STUN Server}
+
+\section{Client}
+
+\subsection{Command Line Interface}
+
+\subsection{Daemon}
 
 
 \chapter{Implementation}
