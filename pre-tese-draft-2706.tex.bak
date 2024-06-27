@@ -561,18 +561,188 @@ The tasks encompassing the phases described above can be summed up in a Gantt di
 \label{fig:gantt}
 \end{figure}
 
+\chapter{Prototype Development}
 
-\chapter{Architecture}
+This chapter details the configuration of a virtual development environment and its use for the implementation of a narrow scope prototype. Having defined the goals for this phase in the previous section, this prototype requires the deployment of an Headscale control server, followed by the configuration, and respective authentication, of both clients, using the Tailscale \ac{cli}. With the clients configured with Tailscale addresses, these can be used to run communication tests on \ac{ros} applications, through the Tailscale tunnel.
 
-This chapter details the architectural specification of our solution. In the previous section, Tailscale was explored as a WireGuard orchestrator, capable of establishing \ac{p2p} tunnels regardless of the security mechanisms present in the network. It was also noted that, although Tailscale's client is open source, its coordination server isn't. As this solution is meant to be entirely deployed within the university's premises, self-hosting Tailscale's central entity and related infrastructure, namely \ac{stun} and \ac{DERP} servers, is required. Moreover, these services must be made available to any client even before joining the overlays, as the coordination server handles operations such as authentication and address advertisement.
+\section{Environment Specification}
 
-To self-host a Tailscale coordination server, Headscale, explored in section \ref{sec:hs}, will function as the solution's central entity. In addition to providing a Tailscale orchestrator alternative, Headscale allows the configuration and deployment of an embedded \ac{DERP} server, which also exposes \ac{stun} endpoints. As such, all necessary central services are configured and managed with Headscale.
+Such an environment was established in a single host, using Oracle Virtual Box \cite{vbox}, a general purpose virtualizer, using three Linux virtual machines running on minimum resources. To achieve an analogous networking scenario, as stated in goal (i), the client machines are attached to individual private \ac{nat} Networks and connected via Wi-Fi to an \ac{ap}, while the server machine is attached to a network bridge on the host's Ethernet interface. Figure \ref{fig:sandbox} depicts this architecture. This networking configuration creates a situation where both clients have no knowledge of each other nor endpoints to communicate through, but are able to directly reach the public server.
 
-Clients will run the open-source Tailscale's node software, a package composed by a \ac{cli} and a daemon. Tailscale's daemon is the entity responsible for communicating with the orchestrator, while the \ac{cli} offers an interface to control and execute operations through the daemon.
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.5\textwidth]{dev.png}
+\caption{Development Environment Architecture}
+\label{fig:sandbox}
+\end{figure}
 
 
+\subsection{Access Point}
 
-\chapter{Implementation}
+The access point used in this environment is a N600 Wireless Dual Band Gigabit router. The host machine is connected to the access point via Ethernet. With this setup, when one of the client machines wants to communicate with \textbf{VM-3}, traffic will be routed from the client to the \ac{ap}'s Wi-Fi interface. Then, the router will forward the packet through its Ethernet interface, reaching the host machine and, consequently, reaching \textbf{VM-3}, as its network adapter is bridged to the host's Ethernet interface.
+
+\subsection{Virtual Machines}
+
+The three virtual machines composing the environment run \emph{Ubuntu Server 22.04} as their operating system. Due to the nature of the goals to be achieved in this phase, which focus on an extremely narrow scope, the machines require very little resources. Regarding networking, \textbf{VM-3} is attached to a bridge network on the Ethernet interface of the host machine. As for \textbf{VM-1} and \textbf{VM-2}, each respective network adapter is attached to a \ac{nat}, isolating clients on their own private networks, inaccessible from the outside. All machines can access the internet through the access point, described in the previous paragraph. Both \textbf{VM-1} and \textbf{VM-2} are assigned the same private \ac{ip} address since they are residing in distinct private networks.
+
+Table \ref{table:vmspecs} summarizes the virtual machines' configuration.
+
+\begin{table}[]
+\centering
+\resizebox{\textwidth}{!}{
+     \begin{tabular}{c|c|c|c|c|}
+     \cline{2-4}
+     \multicolumn{1}{l|}{}                           & \textbf{VM-1}        & \textbf{VM-2}        & \textbf{VM-3}        \\ \hline
+     \multicolumn{1}{|c|}{\textbf{Operating System}} & Ubuntu Server 22.04 & Ubuntu Server 22.04 & Ubuntu Server 22.04 \\ \hline
+     \multicolumn{1}{|c|}{\textbf{Memory (Mb)}}      & 1024                & 1024                & 1024                \\ \hline
+     \multicolumn{1}{|c|}{\textbf{Storage (Gb)}}     & 10                  & 10                  & 10                  \\ \hline
+     \multicolumn{1}{|c|}{\textbf{CPUs}}             & 1                   & 1                   & 1                   \\ \hline
+     \multicolumn{1}{|c|}{\textbf{Network Adapter}}  & NAT                 & NAT                 & Bridged (ethernet)  \\ \hline
+     \multicolumn{1}{|c|}{\textbf{Address}}          & 10.0.2.15           & 10.0.2.15           & 192.168.10.214      \\ \hline
+     \end{tabular}
+}
+\caption{Development Virtual Machines specification}
+\label{table:vmspecs}
+\end{table}
+
+\section{Headscale Instance Deployment}
+\label{sec:devhs}
+
+Headscale provides a configurable open-source implementation of Tailscale's coordination server. At the time of writing, the latest stable Headscale release is \emph{v0.22.3} \footnote{Headscale's official releases, hosted in GitHub. https://github.com/juanfont/headscale/releases.}, which is the version of the software referred to in the rest of this document.
+
+The Headscale instance must be made available to all clients. In this environment, that means Headscale is running in \textbf{VM-3}, since the two other Virtual Machines can communicate with it directly. Hence, in this public server, Headscale was downloaded and installed, following the official documentation's guidelines \footnote{Headscale's online documentation. https://headscale.net/running-headscale-linux/ }
+
+\subsection{Configuring Headscale}
+
+Headscale includes in its software package a YAML file used to configure parameters of the coordination server. First, the \textbf{server\_url} field, which dictates the address clients should connect to for authentication, points to \textbf{VM-3}'s \ac{ip} address, 192.168.10.214, on port 8080. Regarding Tailscale \ac{ip} assignments, this instance uses the default subnet prefixes, 100.64.0.0/10 for ipv4 and fd7a:115c:a1e0::/48 for ipv6. Registered clients will be assigned \ac{ip} addresses in these ranges. For the scope of this environment, no other additional configurations are necessary.
+
+\subsection{Development Users}
+
+With the service running, \textbf{VM-3} is now listening for Tailscale clients to connect and start using the protocol. To perform authentication, clients are required to login under a user. By default, Headscale does not create any users automatically. For development purposes, an Headscale user, \textbf{dev}, was created in the instance and shall be the user clients will register themselves under.
+
+\section{Client Deployment}
+
+Initially, clients can't really establish a direct connection in a traditional way. In fact, neither client is assigned a public address which could be used as a communication's endpoint, nor do they possess any information regarding one another. They can, however, reach the outside Internet, which consequently implies the translation of their private addresses into public ones, a process carried by the adapter attached to the host machine's \ac{nat}. In section \ref{ssec:tsnetworks}, Tailscale's support for \ac{nat}-Traversal was explored. Thus, a Tailscale client is able to obtain its public \ac{ip} by querying a \ac{stun} server and announce it to the control server. With both clients' public addresses stored, when communications is attempted, Tailscale will keep \ac{nat} holes open, allowing for a bidirectional flow of packets to be possible, through the public \acp{ips}.
+
+Hence, the Tailscale binaries were installed in each client, using Tailscale's install shell script \footnote{Tailscale's install script, publicly available online. https://tailscale.com/install.sh}.
+
+At this point, clients are ready to perform authentication in the control server using the software's \ac{cli} and start communicating through Tailscale tunnels.
+
+\section{Authentication}
+
+Authenticating in the Headscale instance can be done either using a pre-authenticated key, generated by the control sever and shared with a client, or by accessing the instance through the browser in the client side. For automation purposes, the authentication keys provide a much more useful mechanism.
+
+With that said, reusable keys were generated in the control server with Headscale's \textbf{headscale preauthkeys create}, an utility included in the software's \ac{cli}, and shared with its respective clients. The client machines are now able to authenticate by using the \textbf{tailscale up} command. Two additional command-line parameters are set, the \emph{login-server}, which points to the address previously defined in Headscale's config's \textbf{server\_url}, and the \emph{authkey}, where the shared pre-authenticated key is injected.
+
+With the clients authenticated, both devices are respectively assigned a Tailscale IP and hostname. Table \ref{tab:tsips} presents the clients' Tailscale configurations. At this state, clients can form a direct connection via Tailscale interfaces.
+
+\begin{table}[]
+\centering
+\begin{tabular}{c|c|c|}
+\cline{2-3}
+\textbf{}                                         & \textbf{VM-1} & \textbf{VM-2} \\ \hline
+\multicolumn{1}{|c|}{\textbf{Tailscale Hostname}} & dev-1         & dev-2         \\ \hline
+\multicolumn{1}{|c|}{\textbf{Tailscale IP (v4)}}  & 100.64.0.1    & 100.64.0.2    \\ \hline
+\multicolumn{1}{|c|}{\textbf{Tailscale IP (v6)}}  & fd7a:115c:a1e0::1     & fd7a:115c:a1e0::2         \\ \hline
+\end{tabular}
+\caption{Clients' Tailscale configuration after authentication}
+\label{tab:tsips}
+\end{table}
+
+\section{Communication with ROS}
+
+With both clients up and communicating, our last validation in this environment aims to ensure the connections are compatible with the \ac{ros} middleware. Therefore, a very simple \ac{ros} scenario was deployed in the clients. As the scope for this experiment lies solely on validating communication through Tailscale in a \ac{ros} context, clients are only required to run a very basic \ac{ros} distribution, hence, a no-GUI package, \textbf{ros-noetic-ros-base} \footnote{ROS-Base (Bare Bones). Basic ROS packaging, build and communication libraries. No GUI. Pulled from public repositories.} was installed in both clients.
+
+The experiment starts by configuring \textbf{VM-1} as a \ac{ros} Master, with the \textbf{ros-core} command which automatically assigns the client as the new master, listening on port 11311, under the \textbf{ROS\_HOSTNAME} dev-1, matching its Tailscale hostname for convenience. Then, \textbf{VM-2} must acknowledge \textbf{VM-1} as the \ac{ros} master. The \textbf{ROS\_MASTER\_URI} environment variable points to where the \ac{ros} Master is listening. So, \textbf{VM-2} sets this variable with \textbf{VM-1}'s \ac{ros} \ac{uri}, which is composed by \textbf{VM-1}'s Tailscale hostname, dev-1 and the previously established \ac{ros} port, 11311.
+
+\textbf{VM-2} successfully configures its \ac{ros} ecosystem acknowledging \textbf{VM-1} as its master, effectively validating the use of Tailscale tunnels in conjunction with the \ac{ros} middleware.
+
+\section{Chapter Summary}
+
+This chapter detailed a successful implementation of a minimal configuration prototype which simulates, in an analogous environment, the interactions between a self-hosted Headscale control server and its clients. In fact, the configured environment presented a situation where two nodes which, due to their network topology, couldn't immediately establish a \ac{p2p} connection, but could both reach a third node.
+
+Headscale was deployed in the public node as a self-hosted Tailscale control server, which, after authentication operations via pre-shared keys, made it possible to connect the client directly through the Tailscale interfaces. Finally, this tunnel was tested when used with a simple \ac{ros} scenario, operating as expected. The procedure taken in this phase meets the goals outlined in section \ref{sec:protodev}.
+
+\chapter{Production Deployment}
+
+The following chapter presents the configuration and deployment of a solution capable of being used by any client in the campus. As such, and as mentioned in previous sections, this implies that the Headscale instance must be available regardless of a client's physical location within \ac{ua}'s premises.
+
+\section{Headscale Deployment}
+
+In this solution, the Headscale instance is hosted within \ac{iris}'s network. This, however, only allows communications from clients residing in the laboratory's private network. For clients to be able to reach the instance from any location in the campus, port forwarding rules were created on an exposed server in \ac{iris}'s network, available to any client connected to \ac{ua}'s network. This server forwards traffic on ports \ac{tcp}/8080, for the main Headscale service and the embedded \ac{DERP} and \ac{udp}/3478, for the \ac{stun} protocol, to the Headscale server. With this configuration, clients within the campus, which can directly reach the public facing proxy machine, can communicate with the Headscale instance. Figure \ref{fig:prodsolution} presents such architecture.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\textwidth]{prod.png}
+\caption{Production Deployment Architecture}
+\label{fig:prodsolution}
+\end{figure}
+
+Since Headscale's host is also an Ubuntu Linux environment, installation of this service followed the process described in the development environment (see Section \ref{sec:devhs}). Regarding configuration, however, the \textbf{server\_url} parameter, which points to the endpoint clients should use to authenticate, is now the \ac{fqdn} of the proxy server, \emph{iris-lab.ua.pt}.
+
+\subsection{Self-Hosting DERP Infrastructure}
+
+Initially, Headscale was configured to use Tailscale's \ac{DERP} server fleet. However, upon testing this scenario, relayed connections implied the redirection of traffic to a \ac{DERP} server in Germany, resulting in tunnels with an average \ac{rtt} of 452ms, a value unacceptable for the scope of this dissertation. Moreover, as this solution is meant to be used exclusively by \ac{ua}'s clients, traffic should be contained within the campus' network. Therefore, Tailscale's \ac{DERP} fleet was discarded, opting for a self-hosted alternative.
+
+Headscale allows the use of an embedded \ac{DERP} server, which also exposes \ac{stun} functionalities for \ac{nat}-Traversal. This server can be enabled through Headscale's configuration file, and runs alongside Headscale's main service, on the same address and port. As for the \ac{stun} endpoints, these are also configured to run in the same address, on \ac{udp} port 3478.
+
+Using the embedded self-hosted \ac{DERP} allows relayed communication between clients to be much more efficient, with much more appealing latencies, discussed in Chapter \ref{chap:results}.
+
+
+\subsection{Adding server certificates}
+
+To use the self-hosted \ac{DERP} server, Headscale is required to be exposed on an \ac{https} server, hence it needs a valid X509 certificate. Although Headscale's configuration allows a seamless integration with certification tools such as \ac{le} or Caddy, in this scenario, where Headscale's \ac{fqdn} is not public, such methods aren't as straightforward. Alas, to certify Headscale, self-signed certificates were generated using the \textbf{openssl} \ac{cli} and added manually to the instance, by pointing to both certificate and key file paths through Headscale's configuration file. TODO: JUSTIFICAR PORQUE É QUE NAO HA ATTACK VECTOR.
+
+Using self-signed certificates requires additional client certificate trust configurations, which are covered in the following sections.
+
+\section{Client Deployment}
+
+\subsection{Trusting Headscale}
+
+As the Tailscale client can now accept self-signed certificates, Headscale's certificate needs only to be added to the client machine's trusted list. On Debian distributions, this required moving the certificate to the \emph{/usr/local/share/ca-certificates} directory and updating the list with the command \textbf{update-ca-certificates}.
+
+\section{Chapter Summary}
+
+This chapter presented how a production solution was achieved. Headscale was deployed on a server inside \ac{iris}'s private network. Since using Tailscale's \ac{DERP} servers resulted in unacceptable latencies, this server also hosts an embedded \ac{DERP} server and a \ac{stun} server. To make the Headscale instance available to any client within the campus while deployed in \ac{iris}, forwarding rules were configured on an \ac{iris} server exposed to \ac{ua}'s network clients.
+
+To certificate Headscale and run it on \ac{https}, required when using self-hosted \ac{DERP} servers, self-signed certificates were generated, as the forwarding server is not exposed to the Internet.
+
+Regarding clients, instead of using the official Tailscale build, which does not allow the use of self-signed certificates, a custom version was built, Selfscale, implementing an option to handle this scenario. Finally, Headscale's certificate was added to the client's trust system. Hence, clients can login by accessing the \ac{fqdn} of the forwarding server and using this new option.
+
+Such deployment allows any two clients connected to \ac{ua}'s network to communicate directly using Tailscale interfaces from anywhere in the campus.
+
+\chapter{Automation}
+\label{ch:auto}
+
+This chapter details the development of automation tools to speed up deployment and configuration processes. In Section \ref{sec:automethod}, two main goals were defined, related to automatic deployments of the control server and clients. First, automating the deployment of a configured Headscale instance. This implies automating software installation, configuration applying and certificate management. Regarding clients, deployments require Tailscale client installation, adding Headscale's certificate to the trust list and, finally, authenticate to a desired network.
+
+All script discussed in the following sections are available online on GitHub repository \footnote{UA Overlays Automation repository: https://github.com/VascoRegal/ua-overlays-automation}
+
+\iffalse
+\section{Distributing Selfscale binaries}
+
+Tailscale's codebase provides a script to build the binaries, which is also used to build Selfscale. Additionally, a configuration file is provided to setup Tailscale's daemon as a service.
+
+Regarding distribution, these are hosted as a compressed file in the GitHub repository. TODO: This is (obviously) not the best solution to distribute software.
+
+To generate the compressed package, a shell script was developed, \textbf{build\_selfscale.sh}, which builds both the tailscale and tailscale daemon binaries and zips them with the aforementioned configuration file. This zip is hosted on the \textbf{selfscale} folder of the repository. Currently this script is used to release a new version.
+\fi
+
+\section{Headscale Deployment}
+
+Headscale's deployment requires both the installation of the software and its configuration, namely the configuration YAML and the server certificate. These last files are publicly available in the automation repository.
+
+Hence, the \textbf{install\_headscale.sh} shell script starts by downloading a desired Headscale package, where version and system architecture are specified with command-line arguments. Then, the script fetches the Headscale's configuration YAML, publicly available in the automation repository, and applies it to the instance. Finally, a x509 self-signed certificate is generated with the \textbf{openssl} \ac{cli} and placed, along with the certificate's key, in its respective path (matching what was defined in the the YAML).
+
+\section{Client Deployment}
+
+A shell script was also created for the clients. Here, configuring a client requires the installation of the Tailscale binaries, which can be downloaded as a zip from Selfscale's GitHub repository. Then, the package is extracted and files are placed accordingly. Finally, Headscale's server certificate is fetched and added to the system's trust mechanisms.
+
+Running this simple script leaves a machine in a state where, given a pre-shared key, authentication can be performed with the \textbf{tailscale up} command, passing the additional \emph{allow-self-signed} option.
+
+\section{Chapter Summary}
+
+This chapter covered how the processes involved in deploying and configuring both the Headscale instance and Tailscale clients were automated using shell scripts. These scripts create a minimal intervention procedure, useful when adding new clients to the overlays.
 
 \chapter{Experiments and Results}
 \label{chap:results}
