@@ -277,6 +277,7 @@ To avoid the congestion associated with hub-and-spoke architectures, decentraliz
 \fi
 
 \subsubsection{VPNs on NAT Networks}
+\label{ss:nat-t}
 
 A \ac{nat} is a networking mechanism responsible for translating \ac{ip} addresses in private networks to public addresses when packets sent from a private network are routed to the public Internet. In the context of \ac{vpn} communications, this process can prove to be a major constraint, not only due to \ac{nat}'s tampering of \ac{ip} packets' fields, namely destination and source addresses, which could potentially compromise its integrity in the eyes of a \ac{vpn} protocol, but also regarding the dynamically changing public \ac{ip} addresses which \ac{nat} decides to translate private addresses to. In other words, without additional tools, a host in a private network has no knowledge regarding which public \ac{ip} it will be assigned.
 
@@ -564,9 +565,9 @@ The tasks encompassing the phases described above can be summed up in a Gantt di
 
 \chapter{Architecture}
 
-This chapter details the architectural specification of our solution. In the previous section, Tailscale was explored as a WireGuard orchestrator, capable of establishing \ac{p2p} tunnels regardless of the security mechanisms present in the network. It was also noted that, although Tailscale's client is open source, its coordination server isn't. As this solution is meant to be entirely deployed within the university's premises, self-hosting Tailscale's central entity and related infrastructure, namely \ac{stun} and \ac{DERP} servers, is required. Moreover, these services must be made available to any client even before joining the overlays, as the coordination server handles operations such as authentication and address advertisement.
+This chapter details the architectural specification of our solution. In the previous section, Tailscale was explored as a WireGuard orchestrator, capable of establishing \ac{p2p} tunnels regardless of the security mechanisms present in the network. It was also noted that, although Tailscale's client is open source, its coordination server isn't. As this solution is meant to be entirely deployed within the university's premises, we are required to self-host Tailscale's central entity and related infrastructure, namely \ac{stun} and \ac{DERP} servers. Finally, these services must be made available to any client even before joining the overlays, as the coordination server handles operations such as authentication and address advertisement.
 
-To self-host a Tailscale coordination server, Headscale, explored in section \ref{sec:hs}, will function as the solution's central entity. In addition to providing a Tailscale orchestrator alternative, Headscale allows the configuration and deployment of an embedded \ac{DERP} server, which also exposes \ac{stun} endpoints. As such, all necessary central services are configured and managed with Headscale.
+To self-host a Tailscale coordination server, Headscale, explored in section \ref{sec:hs}, will function as the solution's central entity. In addition to providing a Tailscale orchestrator alternative, Headscale allows the configuration and deployment of an embedded \ac{DERP} server, which also exposes \ac{stun} endpoints. As such, all necessary central services are configured and managed via Headscale.
 
 Clients will run the open-source Tailscale's node software, a package composed by a \ac{cli} and a daemon. Tailscale's daemon is the entity responsible for communicating with the orchestrator, while the \ac{cli} offers an interface to control and execute operations through the daemon.
 
@@ -581,11 +582,23 @@ Figure \ref{fig:arch} depicts the solution's architecture.
 
 \section{Coordination Server}
 
+The coordination server is the central entity responsible for offering clients functionalities to configure themselves and aid in establishing communications when dealing with highly restrictive networks. It is composed of three main services, an orchestrator, a packet relaying service and an endpoint to perform \ac{nat}-traversal. This section explores the operations of each of these components and their respective roles in the protocol.
+
 \subsection{Orchestrator}
 
-\subsection{Embedded Relay Server (DERP)}
+The orchestrator implements most configuration and coordination operations.
 
-\subsection{STUN Server}
+\subsection{Relay Server (DERP)}
+
+In Section \ref{ssec:tsnetworks}, two types of Tailscale connections were presented, direct and relayed. While the Tailscale protocol always attempts to establish direct connections first, on highly constrained networks, where \ac{nat}-traversal is unsuccessful or \ac{udp} traffic is entirely forbidden, Tailscale encapsulates encrypted WireGuard packets as \ac{tcp} and transmits them to a relay server, refered to as a \ac{DERP} server, over \ac{http}. In other words, an overlay node communicating through one of such networks is able to perform this encapsulation process and forward packets to a relay. The relay server is then responsible for delivering the message to its destination. Hence, for relayed communications to be established, the orchestrator must advertise which \ac{DERP} servers are available for clients to transmit packets to.
+
+While Tailscale's official coordination server offers a fleet of geographically distributed \ac{DERP} servers, the coordination server in this solution is also a self-hosted instance, as our scope is to exclusively serve \ac{ua}'s clients. Fortunately, Headscale supports the deployment of an embedded \ac{DERP} server, which runs alongside the orchestrator's main service.
+
+\subsection{NAT-Traversal Server (STUN)?}
+
+Finally, the coordination server is also required to expose an endpoint for clients to discover which public \ac{ip} they should advertise to the orchestrator and to perform \ac{nat}-traversal, a fundamental operation explored in Section \ref{ss:nat-t}. Headscale performs \ac{nat}-traversal using the \ac{stun} protocol.
+
+Clients will perform \ac{ip} binding requests to a \ac{stun} server through \ac{udp} messages and receives its public \ac{ip} and port (generated by \ac{nat}) as a response.
 
 \section{Client}
 
