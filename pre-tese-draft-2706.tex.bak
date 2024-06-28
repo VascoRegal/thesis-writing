@@ -673,8 +673,8 @@ In this solution, the Headscale instance is hosted within \ac{iris}'s network. T
 
 \begin{figure}[h]
 \centering
-\includegraphics[width=\textwidth]{prod.png}
-\caption{Production Deployment Architecture}
+\includegraphics[width=\textwidth]{pilot.png}
+\caption{Pilot Environment Deployment}
 \label{fig:prodsolution}
 \end{figure}
 
