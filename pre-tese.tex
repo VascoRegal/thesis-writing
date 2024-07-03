@@ -560,9 +560,9 @@ When a connection is established between two overlay peers, three different scen
 \label{fig:absarch}
 \end{figure}
 
-To self-host a Tailscale coordination server, Headscale, overviewed in section \ref{sec:hs}, will function as the solution's central entity. In addition to providing a Tailscale orchestrator alternative, Headscale allows the configuration and deployment of an embedded \ac{DERP} server, which also exposes \ac{stun} endpoints. As such, all necessary central services are made available to clients through Headscale.
+To self-host a Tailscale coordination server, Headscale, overviewed in section \ref{sec:hs}, functions as the solution's central entity. In addition to providing a Tailscale orchestrator alternative, Headscale allows the configuration and deployment of an embedded \ac{DERP} server, which also exposes \ac{stun} endpoints. As such, all necessary central services are made available to clients through Headscale.
 
-Clients will run the open-source Tailscale's node software, a package composed by a \ac{cli} and a daemon. Tailscale's daemon is the entity responsible for establishing and managing the communications both with the orchestrator and other overlay nodes, while the \ac{cli} offers an interface to control and execute operations through the daemon.
+Clients run the open-source Tailscale's node software, a package containing a \ac{cli} and a daemon. Tailscale's daemon is the entity responsible for establishing and managing a client's communications both with the orchestrator and other overlay nodes, while the \ac{cli} offers an interface to control and execute operations through the daemon.
 
 Figure \ref{fig:arch} presents the components forming both the Headscale coordination server and a Tailscale client.
 
