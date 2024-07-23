@@ -103,6 +103,7 @@
 \acrodef{dos}[DoS]{Denial of Service}
 \acrodef{icmp}[ICMP]{Internet Control Message Protocol}
 \acrodef{iac}[IaC]{Infrastructure as Code}
+\acrodef{xmlrpc}[XMLRPC]{XML-Remote Procedure Call}
 
 \raggedbottom
 
@@ -505,11 +506,22 @@ At its core, \ac{ros} is a combination of hardware abstraction operations, intra
 
 \subsection{\ac{ros} Master-Slave model}
 
-Any \ac{ros} application is composed of one or more nodes. A \ac{ros} node is perceived as the most basic processing unit, generally serving a specific single purpose. A \ac{ros} application also implies the existence of a master node, responsible for providing other nodes (called slaves) with on-demand information regarding each other. Slave nodes store their information in the master node and retrieve information regarding other slaves when necessary. Hence, a \ac{ros} master will act as a disocvery server, allowing nodes to learn the services running in other application peers and the addresses they should request connections to in order to use them.        
+Any \ac{ros} application is composed of one or more nodes. A \ac{ros} node is perceived as the most basic program execution unit, generally serving a specific single purpose in order to optimize reusability. A \ac{ros} application also implies the existence of a master node, responsible for providing other nodes (called slaves) with on-demand information regarding each other. Slave nodes store their information in the master node and retrieve information regarding other slaves when necessary. Hence, a \ac{ros} master will act as a disocvery server, allowing nodes to learn the services running in other application peers and the addresses they should request connections to in order to use them. Communication between a master and its slaves is done using the \ac{xmlrpc} protocol, a lightweight \ac{http} based protocol.       
+
+\subsection{Messages}
+
+Nodes in a \ac{ros} application exchange data through messages. A \ac{ros} message is essentially a set of fields, each defined by a data type and value pair. Message fields can be defined as basic data types, arrays or even nest other messages. Messages are serialized and trasmitted using variations of \ac{tcp} and \ac{udp}. 
 
 \subsection{Communication}
 
-Having described how nodes in a \ac{ros} application discover themselves, the following paragraphs overview three distinct communication scenarios.  
+Having described how nodes in a \ac{ros} application discover themselves and how data is represented, the following paragraphs overview three distinct communication scenarios. For asynchronous communication, useful for data streams such as infromation captured by sensors, \ac{ros} supports a topic based publish-subscribe channel. In these communications, nodes can act as either publisher or subscribers. Publisher nodes, after registering their information and topic in the master, are responsible for pushing messages associated with such topic, delivering them to registered subscriber nodes. Subscriber nodes interested in a topic query the master node for the addresses of publishers registered under that topic. Then, to consume the information, a subscriber node establishes a direct connection with a publisher, where the message stream is made available.
+
+In scenarios where a request-response communication is more suitable, \ac{ros} implements a mechanism refered to as services, which operate as a classic client-server model. In fact, a \ac{ros} service implies the existence of a server node, which listens and handles client node requests. As a synchronous communication, clients are able to perform requests to such a node server and receive its result as a response. Both request and response are defined as \ac{ros} messages, previously explored.
+
+Finally, \ac{ros} introduces the concept of actions. Actions can be perceived as an extension of services, suitable for long running tasks where feedback about operation status is required. Similarly to services, a client will request an action server to execute a set of tasks. However, instead of solely responding with the output for a given requests, action servers are able to report to clients the status of the procedure. Moreover, clients can issue an action cancel to a server, which aborts the server's action entirely.
+
+\subsection{Basic \ac{ros} Application}
+
 
 
 \iffalse
