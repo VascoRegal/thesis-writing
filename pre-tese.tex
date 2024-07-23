@@ -499,12 +499,17 @@ Any other specification of \ac{ua}'s network is unknown. Moreover, the network's
 
 \section{Robot Operating System}
 
-\ac{ros} \footnote{https:www.ros.org/} is an open-source meta-operating system which provides an ecosystem for the development and distribution of standarized robot software. \ac{ros} is considered a meta-operating system as it operates alongside a regular operating system, introducing a virtualization layer between applications and computational resources ~\cite{pyo_ros_en_2017}. In other words, \ac{ros} abstracts developers from the hardware specification the applications will run on. Hence, \ac{ros} applications can be ported and reused across multiple devices, without requiring additional hardware-specific configurations or implementations. Moreover, communicating through \ac{ros} is possible when dealing with distinct hardware implementations.
+\ac{ros} \footnote{https:www.ros.org/} is an open-source meta-operating system which provides an ecosystem for the development and distribution of robot software. \ac{ros} is considered a meta-operating system as it operates alongside a standard operating system, introducing a virtualization layer between applications and computational resources ~\cite{pyo_ros_en_2017}. In other words, \ac{ros} abstracts developers from the hardware specification the applications will run on. Hence, \ac{ros} applications can be ported and reused across multiple devices, without requiring additional hardware-specific configurations or implementations. Moreover, communication through \ac{ros} is possible when dealing with devices employing distinct hardware implementations.
 
-At its core, \ac{ros} is a combination of hardware abstraction operations, intra-process communication, device controllers and package management. Additionally, a set of applications are included which implement common desired robot functionalities, such as navigation and object recognition. Due to its design focused on reusability, \ac{ros} packages developed by the community can easily be integrated    
+At its core, \ac{ros} is a combination of hardware abstraction operations, intra-process communication, device controllers and package management. Additionally, \ac{ros} includes a set of applications which implement common desired robot functionalities, such as navigation and object recognition. Due to its design focused on reusability and modularity, \ac{ros} packages developed by the community can easily be integrated in new applications.    
 
-\subsection{\ac{ros} Ecosystem}
+\subsection{\ac{ros} Master-Slave model}
 
+Any \ac{ros} application is composed of one or more nodes. A \ac{ros} node is perceived as the most basic processing unit, generally serving a specific single purpose. A \ac{ros} application also implies the existence of a master node, responsible for providing other nodes (called slaves) with on-demand information regarding each other. Slave nodes store their information in the master node and retrieve information regarding other slaves when necessary. Hence, a \ac{ros} master will act as a disocvery server, allowing nodes to learn the services running in other application peers and the addresses they should request connections to in order to use them.        
+
+\subsection{Communication}
+
+Having described how nodes in a \ac{ros} application discover themselves, the following paragraphs overview three distinct communication scenarios.  
 
 
 \iffalse
