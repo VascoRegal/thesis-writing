@@ -499,7 +499,12 @@ Any other specification of \ac{ua}'s network is unknown. Moreover, the network's
 
 \section{Robot Operating System}
 
-TODO
+\ac{ros} \footnote{https:www.ros.org/} is an open-source meta-operating system which provides an ecosystem for the development and distribution of standarized robot software. \ac{ros} is considered a meta-operating system as it operates alongside a regular operating system, introducing a virtualization layer between applications and computational resources ~\cite{pyo_ros_en_2017}. In other words, \ac{ros} abstracts developers from the hardware specification the applications will run on. Hence, \ac{ros} applications can be ported and reused across multiple devices, without requiring additional hardware-specific configurations or implementations. Moreover, communicating through \ac{ros} is possible when dealing with distinct hardware implementations.
+
+At its core, \ac{ros} is a combination of hardware abstraction operations, intra-process communication, device controllers and package management. Additionally, a set of applications are included which implement common desired robot functionalities, such as navigation and object recognition. Due to its design focused on reusability, \ac{ros} packages developed by the community can easily be integrated    
+
+\subsection{\ac{ros} Ecosystem}
+
 
 
 \iffalse
