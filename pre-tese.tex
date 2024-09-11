@@ -21,6 +21,7 @@
 \usepackage{graphicx}
 \usepackage{acronym}
 \usepackage[acronym]{glossaries}
+\usepackage{svg}
 
 % optional (comment to use default)s
 %   depth of the table of contents
@@ -334,7 +335,7 @@ This process is analogous when dealing with TAP devices, differing, as mentioned
 \subsection{WireGuard}
 \label{ss:wg}
 
-WireGuard ~\cite{donenfeld2017wireguard} is an open-source \ac{UDP}-only layer 3 network tunnel implemented as a kernel virtual network interface. WireGuard offers both a robust cryptographic suite and transparent session management, based on the fundamental principle of secure tunnels: peers in a WireGuard communication are registered as an association between a public key (analogous to the OpenSSH keys mechanism) and a tunnel source \ac{ip} address.
+WireGuard ~\cite{donenfeld2017wireguard} is an open-source \ac{udp}-only layer 3 network tunnel implemented as a kernel virtual network interface. WireGuard offers both a robust cryptographic suite and transparent session management, based on the fundamental principle of secure tunnels: peers in a WireGuard communication are registered as an association between a public key (analogous to the OpenSSH keys mechanism) and a tunnel source \ac{ip} address.
 
 One of WireGuard's selling points is its simplicity. In fact, compared to similar protocols, which generally support a wide range of cryptographic suites, WireGuard settles for a singular one. Although one may consider the lack of cipher agility as a disadvantage, this approach minimizes protocol complexity and increases security robustness by avoiding vulnerabilities commonly originating from such protocol negotiation ~\cite{curguz2016vulnerabilities}.
 
