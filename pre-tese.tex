@@ -520,9 +520,7 @@ In scenarios where a request-response communication is more suitable, \ac{ros} i
 
 Finally, \ac{ros} introduces the concept of actions. Actions can be perceived as an extension of services, suitable for long running tasks where feedback about operation status is required. Similarly to services, a client will request an action server to execute a set of tasks. However, instead of solely responding with the output for a given requests, action servers are able to report to clients the status of the procedure. Moreover, clients can issue an action cancel to a server, which aborts the server's action entirely.
 
-\subsection{Basic \ac{ros} Application}
-
-
+%\subsection{Basic \ac{ros} Application}
 
 \iffalse
 \chapter{Methodology}
@@ -646,13 +644,6 @@ Clients will periodically perform \ac{ip} binding requests to a \ac{stun} server
 
 The Tailscale client runs a daemon and a \ac{cli} to control it. Tailscale's daemon is responsible for managing a client's network connections and respective configurations, while also interacting directly with the coordination server.
 
-\subsubsection{Daemon}
-
-
-
-\subsubsection{Command Line Interface}
-
-
 \section{Implementation Details}
 
 With the components required to self-host a complete Tailscale solution defined, this section details the implementation process. A solution was developed and deployed in two different environments, serving distinct goals. First, to obtain a better grasp of the requirements associated with self-hosting a complete Tailscale solution and to ensure compatability when using the protocol with \ac{ros} applications, a virtual environment, configured in a single host, was used. Then, for validation and performance experiments, a solution was deployed within \ac{ua}'s premises, available to any client connected to the university's network.
@@ -770,7 +761,7 @@ In this solution, the Headscale instance is hosted within \ac{iris}'s network. T
 
 \begin{figure}[h]
 \centering
-\includegraphics[width=0.8\textwidth]{pilot.png}
+\includegraphics[width=\textwidth]{pilot.png}
 \caption{Pilot Environment Deployment Diagram}
 \label{fig:prodsolution}
 \end{figure}
