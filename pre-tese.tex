@@ -775,7 +775,7 @@ Headscale allows the use of an embedded \ac{DERP} server, which also exposes \ac
 
 Using the embedded self-hosted \ac{DERP} allows relayed communication between clients to be much more efficient, with more appealing latencies, discussed further in Chapter \ref{chap:results}.
 
-To use the self-hosted \ac{DERP} server, Headscale is required to be exposed on an \ac{https} server, hence it needs a valid X509 certificate. Although Headscale's configuration allows a seamless integration with certification tools such as \ac{le} or Caddy, in this scenario, where Headscale's \ac{fqdn} is not public, such methods aren't as straightforward. Alas, to certify Headscale, self-signed certificates were generated using the \textbf{openssl} \ac{cli} and added manually to the instance, by pointing to both certificate and key file paths through Headscale's configuration file. TODO: JUSTIFICAR PORQUE É QUE NAO HA ATTACK VECTOR.
+To use the self-hosted \ac{DERP} server, Headscale is required to be exposed on an \ac{https} server, hence it needs a valid X509 certificate. Although Headscale's configuration allows a seamless integration with certification tools such as \ac{le} or Caddy, in this scenario, where Headscale's \ac{fqdn} is not public, such methods aren't as straightforward. Alas, to certify Headscale, self-signed certificates were generated using the \textbf{openssl} \ac{cli} and added manually to the instance, by pointing to both certificate and key file paths through Headscale's configuration file.
 
 Using self-signed certificates requires additional client certificate trust configurations, covered in the following sections.
 
@@ -791,9 +791,9 @@ All scripts discussed in the following paragraphs are available online on a GitH
 
 \subsubsection{Headscale Deployment}
 
-Headscale's deployment requires both the installation of the software and its configuration, namely the configuration YAML and the server certificate. These last files are publicly available in the automation repository.
+Headscale's deployment requires both the installation of the software and its configuration, namely the configuration YAML and the server certificate.
 
-Hence, the \textbf{install\_headscale.sh} shell script starts by downloading a desired Headscale package, where version and system architecture are specified with command-line arguments. Then, the script fetches the Headscale's configuration YAML, publicly available in the automation repository, and applies it to the instance. Finally, a self-signed certificate is generated with the \textbf{openssl} \ac{cli} and placed, along with the certificate's key, in its respective path (matching what was defined in the the YAML).
+Hence, the \textbf{install\_headscale.sh} shell script starts by downloading a desired Headscale package, where version and system architecture are specified with command-line arguments. Then, the script fetches the Headscale's configuration YAML, publicly available in the automation repository, and applies it to the instance. Finally, the certificate is generated with the \textbf{openssl} \ac{cli} and placed, along with the certificate's key, in its respective path (matching what was defined in the the YAML).
 
 \subsubsection{Client Deployment}
 
@@ -820,7 +820,7 @@ Delay in network performance is a dimension refering to the time packets take to
 
 \subsubsection{Bandwidth and Throughput}
 
-Bandwidth is a dimension perceived as the maximum amount of information capable of being transmitted through a connection in a given time interval. Throughput, while also measuring the amount of transmitted data over time, assess how much data in a given communication is actually transferred by unit of time. In other words, measuring throughput allows us to understand the rate at which data is transmitted between a source and a destination, while bandwidth measures the network's total capacity. Network throughput can be calculated by executing several packet transmissions between any two nodes and measuring how much information is successfully transmitted over a given time delta.
+Bandwidth is a dimension perceived as the maximum amount of information capable of being transmitted through a connection in a given time interval. Throughput, while also measuring the amount of transmitted data over time, represents how much data in a given communication is actually transferred by unit of time. In other words, measuring throughput allows us to understand the rate at which data is transmitted between a source and a destination, while bandwidth measures the network's total capacity. Network throughput can be calculated by executing several packet transmissions between any two nodes and measuring how much information is successfully transmitted over a given time delta.
 
 \subsubsection{Losses and Errors}
 
@@ -829,9 +829,9 @@ Finally, this dimension tackles how much information is not correctly transmitte
 \subsection{Metric Gathering}
 \label{ss:metrics}
 
-The metrics to be gathered for network performance analysis are \textbf{\ac{rtt}} and \textbf{jitter} regarding delays, \textbf{throughput} and maximum \textbf{bandwidth} for information transfer rate and \textbf{packet loss} to assess any issues regarding packets not being properly transmitted.
+The metrics to be gathered for network performance analysis are \textbf{\ac{rtt}} and \textbf{jitter} regarding delays, \ac{TCP} \textbf{throughput} for information transfer rate and \textbf{packet loss} to assess any issues regarding packets not being properly transmitted.
 
-There are numerous open source tools which measure most of these metrics by running configurable network tests. One such example is iperf ~\cite{iperfws}. Iperf operates by exchanging packets through a client-server model and offers tests capable of collecting both \ac{tcp} and \ac{udp} throughput and bandwidth, network jitter and packet loss. \ac{rtt} times can be calculated by exchanging a given number of \ac{icmp} packets and measuring communication travel times, achievable with simple \textbf{ping} commands.
+There are numerous open source tools which measure most of these metrics by running configurable network tests. One such example is iperf \footnote{iPerf - The TCP, UDP and SCTP network bandwidth measurement tool, \url{https://iperf.fr/}}. Iperf operates by exchanging packets through a client-server model and offers tests capable of collecting both \ac{tcp} and \ac{udp} throughput and bandwidth, network jitter and packet loss. \ac{rtt} times can be calculated by exchanging a given number of \ac{icmp} packets and measuring communication travel times, achievable with simple \textbf{ping} commands.
 
 These processes were automated using a python script \footnote{https://github.com/VascoRegal/ua-overlays-automation/blob/main/tests/network/iperf/run.py}. This script starts by connecting to an iperf server and running \ac{tcp} and \ac{udp} iperf tests, outputting its results as \ac{json}. Then, to the same host running the iperf server, \ac{icmp} packets are exchanged, calculating \ac{rtt} minimum, maximum, mean and deviation values, which are also appended to the previously produced \ac{json} object. These results are finally exported to a file for later processing. The duration of each iperf test and the total number of \ac{icmp} packets exchanged for \ac{rtt} calculations are both configurable variables.
 
@@ -845,10 +845,6 @@ For these experiments, an overlay node running an iperf server was deployed in \
 
 Regarding test configuration, both \ac{tcp} and \ac{udp} iperf tests were run for 10 minutes each. Regarding \ac{rtt} calculations, a total of 100 \ac{icmp} replies were used.
 
-\subsection{Results}
-
-
-TODO
 
 \begin{table}[]
   \centering
@@ -856,11 +852,7 @@ TODO
 \hline
 \textbf{Location}                                                                                             & \textbf{\begin{tabular}[c]{@{}c@{}}Building\\ ID\end{tabular}} & \textbf{\begin{tabular}[c]{@{}c@{}}Connection\\ Type\end{tabular}}     \\ \hline
 \begin{tabular}[c]{@{}c@{}}University Library\\ (BIB)\end{tabular}                                          & 17                                                                 & \begin{tabular}[c]{@{}c@{}}Tailscale\\ (relayed)\end{tabular} \\ \hline
-\begin{tabular}[c]{@{}c@{}}Political Science Department\\ (DSCPT)\end{tabular}                              & 12                                                                 & \begin{tabular}[c]{@{}c@{}}Tailscale\\ (relayed)\end{tabular} \\ \hline
-\begin{tabular}[c]{@{}c@{}}Communication and Arts Department\\ (DECA)\end{tabular}                          & 21                                                                 & \begin{tabular}[c]{@{}c@{}}Tailscale\\ (relayed)\end{tabular} \\ \hline
-\begin{tabular}[c]{@{}c@{}}Student's Bar\\ (BE)\end{tabular}                                                  & N                                                                  & \begin{tabular}[c]{@{}c@{}}Tailscale\\ (relayed)\end{tabular} \\ \hline
 \begin{tabular}[c]{@{}c@{}}Eletronics, Telecomunications and Informatics\\ Department\\ (DETI)\end{tabular} & 4                                                                  & \begin{tabular}[c]{@{}c@{}}Tailscale\\ (relayed)\end{tabular} \\ \hline
-\begin{tabular}[c]{@{}c@{}}Exhibition Hall\\ (EXPO)\end{tabular}                                              & 24                                                                 & \begin{tabular}[c]{@{}c@{}}Tailscale\\ (relayed)\end{tabular} \\ \hline
 \begin{tabular}[c]{@{}c@{}}Pedagogical Complex\\ (CP)\end{tabular}                                            & 23                                                                 & \begin{tabular}[c]{@{}c@{}}Tailscale\\ (relayed)\end{tabular} \\ \hline
 \begin{tabular}[c]{@{}c@{}}Mathematics Department\\ (DMAT)\end{tabular}                                     & 11                                                                 & \begin{tabular}[c]{@{}c@{}}Tailscale\\ (relayed)\end{tabular} \\ \hline
 \begin{tabular}[c]{@{}c@{}}Biology Department\\ (DBIO)\end{tabular}                                         & 8                                                                  & \begin{tabular}[c]{@{}c@{}}Tailscale\\ (relayed)\end{tabular} \\ \hline
@@ -869,6 +861,26 @@ TODO
 \caption{Locations used for network performance analysis}
 \label{tab:locs}
 \end{table}
+
+\subsection{Results}
+
+The metrics collected from each building are presented in Table \ref{tab:perfres}.
+
+\begin{table}[h!]
+\centering
+\begin{tabular}{|c|c|c|c|c|c|}
+\hline
+\multirow{Building} & \multicolumn{3}{c|}{\begin{tabular}[c]{@{}c@{}}Round-Trip Time \\ (ms)\end{tabular}} & \multirow{\begin{tabular}[c]{@{}c@{}}Average TCP Throughput \\ (Mbit/s)\end{tabular}} & \multirow{\begin{tabular}[c]{@{}c@{}c@{}}Average \\ Network Jitter\\ (ms)\end{tabular}} \\ \cline{2-4}
+                            & Min & Mean & Max &                       &                         \\ \hline
+DMAT & 8.24 & 22.37 & 240.9 & 45.874 & 0.859  \\ \hline
+DEGEIT & 7.85 & 19.23 & 244.05 & 49.615 & 1.119  \\ \hline
+CP & 7.63 & 19.43 & 239.96 & 43.061 & 0.834  \\ \hline
+BIB & 7.94 & 12.88 & 45.17 & 46.849 & 0.764  \\ \hline
+\end{tabular}
+\caption{Solution's network performance results from various campus' buildings.}
+\label{tab:perfres}
+\end{table}
+
 
 \section{Protocol Overhead}
 
@@ -982,6 +994,14 @@ Figure \ref{fig:cipher} presents both captures side by side in Wireshark. By ana
   \caption{TCP Streams from external capture (left) and destination node capture (right)}
   \label{fig:cipher}
 \end{figure}
+
+\section{Robotic Arm Operation}
+
+\subsection{ROS Environment}
+
+\subsection{Configuring Clients}
+
+\subsection{Results}
 
 \section{Chapter Summary}
 
