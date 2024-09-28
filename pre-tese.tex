@@ -743,7 +743,7 @@ The following section presents the configuration and deployment of a solution ca
 \subsubsection{Headscale Deployment}
 \label{ssec:hs}
 
-In this solution, the Headscale instance is hosted within \ac{iris}'s network. Table \ref{tab:hsresources} presents the server machine's resources. This, however, only allows communications from clients residing in the laboratory's private network. For clients to be able to reach the instance from any location in the campus, port forwarding rules were created on an exposed server in \ac{iris}'s network, available to any client connected to \ac{ua}'s network. This server forwards traffic on ports \ac{tcp}/8080, for the main Headscale service and the embedded \ac{DERP} and \ac{udp}/3478, for the \ac{stun} protocol, to the Headscale server. With this configuration, clients within the campus, which can directly reach the public facing proxy machine via \ac{http}, can perform authentication in the Headscale instance. Figure \ref{fig:prodsolution} depicts such architecture.
+In this solution, the Headscale instance is hosted within \ac{iris}'s network. Table \ref{tab:hsresources} presents the server machine's resources. This, however, only allows communications from clients residing in the laboratory's private network. For clients to be able to reach the instance from any location in the campus, port forwarding rules were created on an exposed server in \ac{iris}'s network, available to any client connected to \ac{ua}'s network. This server forwards traffic on ports \ac{tcp}/8080, for the main Headscale service and the embedded \ac{DERP} and \ac{udp}/3478, for the \ac{stun} protocol, to the Headscale server. With this configuration, clients within the campus, which can directly reach the public facing relay machine via \ac{http}, can perform authentication in the Headscale instance. Figure \ref{fig:prodsolution} depicts such architecture.
 
 \begin{table}[]
 \centering
@@ -829,7 +829,7 @@ Finally, this dimension tackles how much information is not correctly transmitte
 \subsection{Metric Gathering}
 \label{ss:metrics}
 
-The metrics to be gathered for network performance analysis are \textbf{\ac{rtt}} and \textbf{jitter} regarding delays, \ac{TCP} \textbf{throughput} for information transfer rate and \textbf{packet loss} to assess any issues regarding packets not being properly transmitted.
+The metrics to be gathered for network performance analysis are \textbf{\ac{rtt}} and \textbf{jitter} regarding delays, \ac{tcp} \textbf{throughput} for information transfer rate and \textbf{packet loss} to assess any issues regarding packets not being properly transmitted.
 
 There are numerous open source tools which measure most of these metrics by running configurable network tests. One such example is iperf \footnote{iPerf - The TCP, UDP and SCTP network bandwidth measurement tool, \url{https://iperf.fr/}}. Iperf operates by exchanging packets through a client-server model and offers tests capable of collecting both \ac{tcp} and \ac{udp} throughput and bandwidth, network jitter and packet loss. \ac{rtt} times can be calculated by exchanging a given number of \ac{icmp} packets and measuring communication travel times, achievable with simple \textbf{ping} commands.
 
@@ -876,6 +876,8 @@ DMAT & 8.24 & 22.37 & 240.9 & 45.874 & 0.859  \\ \hline
 DEGEIT & 7.85 & 19.23 & 244.05 & 49.615 & 1.119  \\ \hline
 CP & 7.63 & 19.43 & 239.96 & 43.061 & 0.834  \\ \hline
 BIB & 7.94 & 12.88 & 45.17 & 46.849 & 0.764  \\ \hline
+DBIO & 0 & 0 & 0 & 0 & 0 \\ \hline
+DETI & 0 & 0 & 0 & 0 & 0 \\ \hline
 \end{tabular}
 \caption{Solution's network performance results from various campus' buildings.}
 \label{tab:perfres}
@@ -884,7 +886,7 @@ BIB & 7.94 & 12.88 & 45.17 & 46.849 & 0.764  \\ \hline
 
 \section{Protocol Overhead}
 
-Cmmunicating with the Tailscale protocol implies additional operations  to take place on sending and receiving data, which introduces an overhead to the general network performance. In fact, data encryption, security mechanisms and transmission of additional Tailscale protocol packets produce a toll on the regular network behaviour. Moreover, as connections within the university's network are relayed, meaning traffic is being redirected over \ac{http}, also contributes to the degradation of network performance. To understand this dimension, this section presents an experiment which provides insights on said protocol overhead, regarding network delay and throughput.
+Communicating with the Tailscale protocol implies additional operations  to take place on sending and receiving data, which introduces an overhead to the general network performance. In fact, data encryption, security mechanisms and transmission of additional Tailscale protocol packets produce a toll on the regular network behaviour. Moreover, as connections within the university's network are relayed, meaning traffic is being redirected over \ac{http}, also contributes to the degradation of network performance. To understand this dimension, this section presents an experiment which provides insights on said protocol overhead, regarding network delay and throughput.
 
 This experiment aims to measure Tailscale's overhead on communication, by interpolating data collected, under very similar conditions, from a connection through a regular Wi-Fi interface against a connection done through Tailscale tunnel.
 
@@ -934,33 +936,9 @@ These two indicators give us a perception of Tailscale's overhead. TODO: Conclui
 
 \begin{figure}[h]
 \centering
-  \includegraphics[width=0.8\textwidth]{biblioteca-tcp.png}
-  \caption{TCP Tailscale tunnel Network TCP Throughput (University Library)}
-  \label{fig:tcptplibrary}
-\end{figure}
-
-
-\begin{figure}[h]
-\centering
-  \includegraphics[width=0.8\textwidth]{building-latency.png}
-  \caption{Average RTT times by campus location}
-  \label{fig:buildlat}
-\end{figure}
-
-
-\begin{figure}[h]
-\centering
 \includegraphics[width=0.8\textwidth]{ua-latency.png}
 \caption{Average RTT on a Tailscale connection from different UA buildings to IRIS-Lab. The numbers in the circles represent average RTT values, in ms.}
 \label{fig:ualats}
-\end{figure}
-
-
-\begin{figure}[h]
-\centering
-  \includegraphics[width=0.8\textwidth]{building-jitter.png}
-  \caption{Network Jitter by campus location.}
-  \label{fig:uajitter}
 \end{figure}
 
 
@@ -972,7 +950,7 @@ Hence, this validation operates by generating traffic between two overlay nodes 
 
 \subsection{Capturing and Visualising Traffic}
 
-To capture packets on a network interface, \textbf{Tcpdump} \footnote{Tcpdump, \url{https://www.tcpdump.org/}}, an open source command-line tool, was used. With this tool, we can initiate a capture by using the \textbf{tcpdump} command and pointing to a desired interface. Results from a capture can be exported to a file, which then allows a user friendly visualisation using \textbf{Wireshark} \footnote{Wireshark, \url{https://www.wireshark.org/}}, also an open source tool. Wireshark facilitates analysing and correlating the captures.
+To capture packets on a network interface, \textbf{tcpdump} \footnote{Tcpdump, \url{https://www.tcpdump.org/}}, an open source command-line tool, was used. With this tool, we can initiate a capture by using the \textbf{tcpdump} command and pointing to a desired interface. Results from a capture can be exported to a file, which then allows a user friendly visualisation using \textbf{Wireshark} \footnote{Wireshark, \url{https://www.wireshark.org/}}, also an open source tool. Wireshark facilitates analysing and correlating the captures.
 
 \subsection{Generating Traffic}
 
@@ -997,11 +975,16 @@ Figure \ref{fig:cipher} presents both captures side by side in Wireshark. By ana
 
 \section{Robotic Arm Operation}
 
-\subsection{ROS Environment}
+The last experiment conducted aims to analyse how \ac{ros} applications operate when using the overlay networks. For that, a \ac{ros} application which publishes a camera feed is launched in a machine connected to \ac{iris}'s network. Then, in another \ac{ros} node, the output of the camera is accessed, from outside the laboratory, connected to the campus' network. With this experiment, we are able to compare metrics such as the video's bandwidth and framerate from the source against what a client actually consumes.
+
+\subsection{Camera and ROS Setup}
+
 
 \subsection{Configuring Clients}
 
+
 \subsection{Results}
+
 
 \section{Chapter Summary}
 
@@ -1017,9 +1000,9 @@ After a systematic review of general networking concepts and potential tools and
 
 Although creating stand alone WireGuard overlay networks is possible, it requires managing and configuring individual peers, a process raising scalability and ease of administration issues.
 
-Fortunately, Tailscale addresses such flaws by offering a coordination server capable of orchestrating the creation and configuration of WireGuard peers and respective tunnels, without sacrificing WireGuard's state of the art performance. Additionally, Tailscale employs a set of mechanisms and infrastructure which overcome network constraints that would normally prevent the direct establishment of a WireGuard connection.
+Fortunately, Tailscale addresses such flaws by offering a coordination server capable of orchestrating the creation and configuration of WireGuard peers and respective tunnels, without sacrificing WireGuard's state of the art performance. Additionally, Tailscale employs a set of mechanisms and infrastructure which are able to overcome network constraints that would normally prevent the direct establishment of a WireGuard connection.
 
-To confine this solution in \ac{ua}'s private network, Headscale, an open-source implementation of Tailscale's coordination server, was used alongside necessary additional services, namely a \ac{DERP} and a \ac{stun} server. Regarding clients, these are required to trust Headscale's server certificate and run Tailscale's open source client software.
+To confine this solution to \ac{ua}'s network, Headscale, an open-source self-hosted implementation of Tailscale's coordination server, was used alongside necessary additional services, namely a \ac{DERP} and a \ac{stun} server. Regarding clients, these are required to trust Headscale's server certificate and run Tailscale's open source client software.
 
 Regarding validation, network tests were run through the overlays, using \textbf{iperf3}. This allowed the measurement of Tailscale's protocol overhead on communication, which, as expected, resulted in a loss of throughput and increase in \ac{rtt}. These experiments also provide insights on the overall network performance across multiple campus areas. Finally, the solution was tested when applied to \ac{ros} applications, with successful results.
 
@@ -1027,11 +1010,11 @@ Overall, this project delivers automated procedures to configure and deploy a se
 
 With \ac{iris}'s robots authenticated in the self-hosted Headscale control server and, consequently, configured with Tailscale interfaces, encrypted communication is possible from anywhere within \ac{ua}'s campus through \ac{http} relayed connections, successfully enabling robot operation outside \ac{iris}'s internal network.
 
-Even though the developments present in this document meet the goals outlined in Section \ref{sec:obj}, serveral aspects of this solution could be improved or should be more thoroughly analysed.
+Even though the developments presented in this document meet the goals as expected, serveral aspects of this solution could be improved or should be more thoroughly analysed.
 
 First, regarding deployment automations, although the scripts presented in Chapter \ref{ch:auto} provide a configurable procedure to deploy both an Headscale server and Tailscale clients, this logic could easily be ported to more adequate \ac{iac} frameworks. In fact, the steps taken in said scripts are easily implemented as, for example, Ansible \footnote{Ansible, https://www.ansible.com/} playbooks. This would allow a team of robots to be defined as an Ansible inventory, creating a true one-touch deployment, not requiring the scripts to be run manually in each individual peer.
 
-An \ac{acl} or Access Control List is a Tailscale functionality capable of adding an extra security layer to overlay networks by defining policies allowing or denying traffic between nodes. These policies can be applied to Tailscale users, tags, or client groups. Ideally, when deploying a team of robots, these should be grouped and traffic restricted to that specific group, creating an additional logical segmentation to the network, furthering the confidentiality and privacy of the solution.
+An \ac{acl} is a Tailscale functionality capable of adding an extra security layer to overlay networks by defining policies allowing or denying traffic between nodes. These policies can be applied to Tailscale users, tags, or client groups. Ideally, when deploying a team of robots, these should be grouped and traffic restricted to that specific group, creating an additional logical segmentation to the network, furthering the confidentiality and privacy of the solution.
 
 Regarding implementation, such an \ac{acl} system could easily be built on top of the previous automation improvements. In other words, a one touch deployment of a team of robots through \ac{iac} software would allow the creation of Tailscale groups, associating a team's clients to that group and, finally, applying the \ac{acl}.
 
