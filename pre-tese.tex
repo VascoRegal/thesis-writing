@@ -521,50 +521,6 @@ In scenarios where a request-response communication is more suitable, \ac{ros} i
 
 Finally, \ac{ros} introduces the concept of actions. Actions can be perceived as an extension of services, suitable for long running tasks where feedback about operation status is required. Similarly to services, a client will request an action server to execute a set of tasks. However, instead of solely responding with the output for a given requests, action servers are able to report to clients the status of the procedure. Moreover, clients can issue an action cancel to a server, which aborts the server's action entirely.
 
-%\subsection{Basic \ac{ros} Application}
-
-\iffalse
-\chapter{Methodology}
-\label{chapter:method}
-
-Having outlined the relevant research, background and technologies for this dissertation's context, this chapter aims to present a work proposal for the solution implementation. The approach to be taken is segmented in three main stages: Prototype Development, Production Deployment and, finally, Automation.
-
-\section{Technology Stack}
-
-Based on the research done in the previous section, WireGuard seems the most adequate encrypted communication protocol for this project. However, to avoid the already covered added complexity of managing a stand-alone WireGuard network, Tailscale will function as the core of this solution. Ideally, all Tailscale related infrastructure should be self-hosted, which can be achieved using Headscale's open-source implementation of Tailscale's coordination server.
-
-Therefore, our overlay networks are formed by a group of Tailscale clients, running in the robots, which are managed and coordinated by a self-hosted Headscale coordination server.
-
-
-\section{Prototype Development}
-\label{sec:protodev}
-
-This first phase aims to build a small-scale prototype in a development environment. The prototype should, using Headscale as the coordination server and Tailscale as clients, be able to establish a \ac{p2p} connection between two sample machines, which couldn't communicate beforehand. Hence, this phase's main goals are to (i) create a virtual environment which simulates the scenario being tackled, (ii) establish \ac{p2p} connections between clients behind private \ac{nat} networks  and (iii) validate the communication through the \ac{ros} middleware. Obviously, regarding goal (i), the simulation of the networking conditions can't be entirely accurate, since, as referenced in section \ref{sec:uanet}, details regarding \ac{ua}'s network mechanisms are vastly unknown. It is possible, however, to create an analogous situation, where clients can't immediately form \ac{p2p} communications with each other but can all communicate with an external, public server. Moreover, as stated in previous sections, Tailscale's protocol efficiently deals with most network constraints preventing direct communication. In other words, it is only known clients can't communicate, the reasons behind why they can't are abstracted by Tailscale.
-
-This environment must be composed of three entities: a public server and two clients in their own isolated networks. As mentioned in section \ref{sec:hs}, Headscale is an open-source implementation of Tailscale's control server. Thus, the control server in this environment shall be a self-hosted Headscale instance deployed in the public server. Both clients, which can reach the public server, but not each other, should then authenticate in this control server and configure their Tailscale interfaces and addresses, allowing for a direct communication to take place.
-
-In order to validate goal (iii), a simple \ac{ros} application should be deployed and tested in the clients, in which communication is done through the Tailscale interfaces.
-
-\section{Deployment}
-
-After achieving and configuring the prototype previously developed, the next phase focuses on the deployment of the solution within \ac{ua}'s premises. As already mentioned, the Headscale instance should be hosted in a server accessible from anywhere within the campus. Here, the configuration should be based on the research done during the previous phase, with few eventual changes to ports and/or addresses. Regarding clients, ideally, each team of robots should have its own user, which individual robots will use for authentication.
-
-Hence, this phase aims to (i) deploy an Headscale server available to any client connected to \ac{ua}'s network, (ii) configure robots to act as Tailscale clients and (iii) establish secure communication between a team of robots spread throughout the campus.
-
-
-\section{Validation}
-\label{sec:metvalidation}
-
-Validating the solution requires an analysis of Tailscale's overhead on  network performance, which should ensure suitable results to use in \ac{ros} applications. This includes collecting metrics like \ac{rtt}, throughput, jitter and packet loss both on regular and Tailscale connections. Also, clients should be able to join the overlay networks from anywhere in the campus. So, the goals for these experiments are to (i) measure network performance on regular vs Tailscale connections, (ii) validate connections spread out through various campus points and (iii) test the solution with demanding apps, such as live video streaming, through Tailscale interfaces.
-
-\section{Automation}
-\label{sec:automethod}
-
-This final development phase aims to create automation processes to aid in the deployment and configuration of the solution.
-
-So, the automation process has two main goals in mind: First, to (i) provide a minimal configuration script to install and deploy an Headscale instance and provision its respective resources (auth keys, users, \acp{acl}) and (ii) provide a script installing Tailscale's client and configuring the system to be ready to join a desired network.
-\fi
-
 \chapter{Proposed Overlay Network Manager}
 
 Having outlined the relevant research, background and technologies for this dissertation's scope, this chapter details the development of a WireGuard based overlay network manager.
@@ -804,7 +760,7 @@ Running this simple script leaves a machine in a state where, given a pre-shared
 \chapter{Experiments and Results}
 \label{chap:results}
 
-In order to validate the developed solution, several experiments were conducted which provide us with insights regarding the overlay networks' communication performance, security and usability in the context of \ac{ros} applications. Hence, this chapter details the procedures taken for results and metrics gathering, followed by their respective analysis and derived conclusions.
+In order to validate the developed solution, several experiments were conducted which provide insights regarding the overlay networks' communication performance, security and usability in the context of \ac{ros} applications. Hence, this chapter details the procedures taken for results and metrics gathering, followed by their respective analysis and derived conclusions.
 
 \section{Network Performance}
 
@@ -883,10 +839,17 @@ DETI & 0 & 0 & 0 & 0 & 0 \\ \hline
 \label{tab:perfres}
 \end{table}
 
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.8\textwidth]{ua-latency.png}
+\caption{Average RTT on a Tailscale connection from different UA buildings to IRIS-Lab. The numbers in the circles represent average RTT values, in ms.}
+\label{fig:ualats}
+\end{figure}
+
 
 \section{Protocol Overhead}
 
-Communicating with the Tailscale protocol implies additional operations  to take place on sending and receiving data, which introduces an overhead to the general network performance. In fact, data encryption, security mechanisms and transmission of additional Tailscale protocol packets produce a toll on the regular network behaviour. Moreover, as connections within the university's network are relayed, meaning traffic is being redirected over \ac{http}, also contributes to the degradation of network performance. To understand this dimension, this section presents an experiment which provides insights on said protocol overhead, regarding network delay and throughput.
+Communicating with the Tailscale protocol implies additional operations  to take place on sending and receiving data, which introduces an overhead to the general network performance. In fact, data encryption, security mechanisms and transmission of additional Tailscale protocol packets produce a toll on the regular network behaviour. Moreover, since connections within the university's network are relayed, meaning traffic is being redirected over \ac{http}, an additional degradation of network performance is also expected. To understand this dimension, this section presents an experiment which provides insights on said protocol overhead, regarding network delay and throughput.
 
 This experiment aims to measure Tailscale's overhead on communication, by interpolating data collected, under very similar conditions, from a connection through a regular Wi-Fi interface against a connection done through Tailscale tunnel.
 
@@ -932,13 +895,6 @@ These two indicators give us a perception of Tailscale's overhead. TODO: Conclui
   \includegraphics[width=0.8\textwidth]{latency_overhead.png}
   \caption{Round Trip Time distribution for internal (IRIS-I) and Tailscale (IRIS-TS) connections}
   \label{fig:latency_overhead}
-\end{figure}
-
-\begin{figure}[h]
-\centering
-\includegraphics[width=0.8\textwidth]{ua-latency.png}
-\caption{Average RTT on a Tailscale connection from different UA buildings to IRIS-Lab. The numbers in the circles represent average RTT values, in ms.}
-\label{fig:ualats}
 \end{figure}
 
 
