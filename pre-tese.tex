@@ -938,6 +938,7 @@ The last experiment conducted aims to analyse how \ac{ros} applications operate 
 \subsection{Camera and ROS Setup}
 
 For this experiment, a two node \ac{ros} environment is created where the master node, running inside \ac{iris}'s network, publishes the feed from an external Astra camera to a topic. Then, using the Tailscale \acp{ip}, another node, from outside the laboratory, subscribes this topic, being able to consume the camera feed.
+
 Figure \ref{fig:camera} presents said setup.
 
 
@@ -948,8 +949,9 @@ Figure \ref{fig:camera} presents said setup.
   \label{fig:camera}
 \end{figure}
 
-\subsection{Configuring Clients}
+\subsection{Collecting Metrics}
 
+The raw camera feed is published to the \textbf{$/$camera$/$color$/$image$_\_$raw} topic. Image bandwidth and frame rate can be calculated at both ends with the \textbf{rostopic} command. These two metrics are used to evaluate the solution's performance in this context.
 
 \subsection{Results}
 
