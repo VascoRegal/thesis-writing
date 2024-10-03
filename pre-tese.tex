@@ -834,7 +834,7 @@ DEGEIT & 7.85 & 19.23 & 244.05 & 49.615 & 1.119  \\ \hline
 CP & 7.63 & 19.43 & 239.96 & 43.061 & 0.834  \\ \hline
 BIB & 7.94 & 12.88 & 45.17 & 46.849 & 0.764  \\ \hline
 DBIO & 0 & 0 & 0 & 0 & 0 \\ \hline
-DETI & 0 & 0 & 0 & 0 & 0 \\ \hline
+DETI & 8.41 & 20.01 & 265.88 & 31.744 & 11.854  \\ \hline
 EXPO & 7.63 & 17.06 & 219.88 & 33.685 & 2.843  \\ \hline
 \end{tabular}
 \caption{Solution's network performance results from various campus' buildings.}
@@ -931,12 +931,22 @@ Figure \ref{fig:cipher} presents both captures side by side in Wireshark. By ana
   \label{fig:cipher}
 \end{figure}
 
-\section{Robotic Arm Operation}
+\section{Live Camera Feed Application}
 
 The last experiment conducted aims to analyse how \ac{ros} applications operate when using the overlay networks. For that, a \ac{ros} application which publishes a camera feed is launched in a machine connected to \ac{iris}'s network. Then, in another \ac{ros} node, the output of the camera is accessed, from outside the laboratory, connected to the campus' network. With this experiment, we are able to compare metrics such as the video's bandwidth and framerate from the source against what a client actually consumes.
 
 \subsection{Camera and ROS Setup}
 
+For this experiment, a two node \ac{ros} environment is created where the master node, running inside \ac{iris}'s network, publishes the feed from an external Astra camera to a topic. Then, using the Tailscale \acp{ip}, another node, from outside the laboratory, subscribes this topic, being able to consume the camera feed.
+Figure \ref{fig:camera} presents said setup.
+
+
+\begin{figure}[h]
+\centering
+  \includegraphics[width=\textwidth]{camera.png}
+  \caption{Camera setup. The ROS node inside IRIS-lab's network publishes the camera feed.}
+  \label{fig:camera}
+\end{figure}
 
 \subsection{Configuring Clients}
 
