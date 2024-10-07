@@ -440,6 +440,26 @@ WireGuard's kernel implementation and efficient multi-threading usage contribute
 
 Usability in \ac{vpn} protocols refers to the ease of use regarding service configuration and management. IPSec's configuration can be quite complex, due to its cryptographic directives and protocol negotiation. Also, the several different modes IPSec can be configured to run in might prove overwhelming for unfamiliar users. OpenVPN's GUI provides a user-friendly platform to easily administrate the software, still requiring, however, a considerable degree of technical expertise. WireGuard, however, is able to combine protocol simplicity, as it enforces a single cipher suite, with straightforward configuration directives. In fact, as we've seen in Section \ref{ss:wg}, configuring WireGuard peers requires no knowledge of the protocol's specification.
 
+Table \ref{tab:protocomp} summarizes the above analysis.
+
+
+\begin{table}[]
+\centering
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{c|c|c|c|}
+\cline{2-4}
+                                             & \textbf{IPSec}                    & \textbf{OpenVPN}                                                                          & \textbf{WireGuard}                    \\ \hline
+\multicolumn{1}{|c|}{\textbf{Security}}      & Robust, but complex               & \begin{tabular}[c]{@{}c@{}}Generally robust,\\ requires proper configuration\end{tabular} & Modern, state of the art cryptography \\ \hline
+\multicolumn{1}{|c|}{\textbf{Usability}}     & Requires expertise                & Requires expertise                                                                        & Minimal configuration                 \\ \hline
+\multicolumn{1}{|c|}{\textbf{Performance}}   & Strong                            & Generally implies higher latencies                                                        & Overall, outperforms other protocols  \\ \hline
+\multicolumn{1}{|l|}{\textbf{NAT-Traversal}} & Supported, requires configuration & Supported, requires configuration                                                         & Seamless integration                  \\ \hline
+\end{tabular}%
+}
+\caption{VPN protocol's performance and features comparison}
+\label{tab:protocomp}
+\end{table}
+
+
 \subsection{Summary}
 
 This section presents the fundamentals of \acp{vpn} and how they are able to ensure integrity and confidentiality to communication through insecure mediums. Then, some of the most notable \ac{vpn} providers were reviewed and compared, regarding functionalities and overall performance. The result of this analysis suggests WireGuard as the most promising \ac{vpn} protocol, due to its ease of management and configuration, security mechanisms and verified cryptography.
@@ -883,7 +903,20 @@ The same procedure can be applied to the measured \ac{rtt} values:
 
 Similarly, \textbf{ \( \overline{\text{RTT}}_I \)} is the average \ac{rtt} times for the internal connection while \textbf{\( \overline{\text{RTT}}_T \)} is the average \ac{rtt} times for the Tailscale connection. This calculation results in an \ac{rtt} increase of \textbf{21.11} \%
 
-These two indicators give us a perception of Tailscale's overhead. TODO: Concluir melhor
+Table \ref{tab:loss} summarizes the collected results. Corroborating the initial performance degradation assumptions related to the relayed tunnel's \ac{http} encapsulation, these two performance loss indicators give us a qunatification of this solution's overhead.
+
+\begin{table}[]
+\centering
+\begin{tabular}{c|c|c|}
+\cline{2-3}
+                                                                                                  & \textbf{\begin{tabular}[c]{@{}c@{}}Average\\ TCP Throughput\\ (Mbit/s)\end{tabular}} & \textbf{\begin{tabular}[c]{@{}c@{}}RTT\\  mean\\ (ms)\end{tabular}} \\ \hline
+\multicolumn{1}{|c|}{\textbf{Internal Connection}}                                                & 45                                                                                   & 10.1                                                                \\ \hline
+\multicolumn{1}{|c|}{\textbf{\begin{tabular}[c]{@{}c@{}}Tailscale Relayed\\ Tunnel\end{tabular}}} & 32                                                                                   & 19                                                                  \\ \hline
+\multicolumn{1}{|c|}{\textbf{Loss (\%)}}                                                          & 21.5                                                                                 & 35.1                                                                \\ \hline
+\end{tabular}
+\caption{Internal and Tailscale connections' performance comparison}
+\label{tab:loss}
+\end{table}
 
 \begin{figure}[h]
 \centering
