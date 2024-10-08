@@ -451,7 +451,7 @@ Table \ref{tab:protocomp} summarizes the above analysis.
                                              & \textbf{IPSec}                    & \textbf{OpenVPN}                                                                          & \textbf{WireGuard}                    \\ \hline
 \multicolumn{1}{|c|}{\textbf{Security}}      & Robust, but complex               & \begin{tabular}[c]{@{}c@{}}Generally robust,\\ requires proper configuration\end{tabular} & Modern, state of the art cryptography \\ \hline
 \multicolumn{1}{|c|}{\textbf{Usability}}     & Requires expertise                & Requires expertise                                                                        & Minimal configuration                 \\ \hline
-\multicolumn{1}{|c|}{\textbf{Performance}}   & Strong                            & Generally implies higher latencies                                                        & Overall, outperforms other protocols  \\ \hline
+\multicolumn{1}{|c|}{\textbf{Performance}}   & \begin{tabular}[c]{@{}c@{}}Good, but underperforms \\ compared to WireGuard \end{tabular}                         & Generally implies higher latencies                                                        & Overall, outperforms other protocols  \\ \hline
 \multicolumn{1}{|l|}{\textbf{NAT-Traversal}} & Supported, requires configuration & Supported, requires configuration                                                         & Seamless integration                  \\ \hline
 \end{tabular}%
 }
@@ -861,13 +861,14 @@ EXPO & 7.63 & 17.06 & 219.88 & 33.685 & 2.843  \\ \hline
 \label{tab:perfres}
 \end{table}
 
+\iffalse
 \begin{figure}[h]
 \centering
 \includegraphics[width=0.8\textwidth]{ua-latency.png}
 \caption{Average RTT on a Tailscale connection from different UA buildings to IRIS-Lab. The numbers in the circles represent average RTT values, in ms.}
 \label{fig:ualats}
 \end{figure}
-
+\fi
 
 \section{Protocol Overhead}
 
