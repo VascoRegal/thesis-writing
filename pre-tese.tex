@@ -993,15 +993,30 @@ Table \ref{tab:cam}.
 
 \begin{table}[]
 \centering
-\begin{tabular}{c|c|c|}
-\cline{2-3}
-                                                                                                        & \textbf{\begin{tabular}[c]{@{}c@{}}Source Camera\\  Feed\end{tabular}} & \textbf{\begin{tabular}[c]{@{}c@{}}Consumed Camera\\ Feed\end{tabular}} \\ \hline
-\multicolumn{1}{|c|}{\textbf{\begin{tabular}[c]{@{}c@{}}Average Bandwidth\\ (MBytes / s)\end{tabular}}} & 27.85                                                                & 6.26                                                                    \\ \hline
-\multicolumn{1}{|c|}{\textbf{\begin{tabular}[c]{@{}c@{}}Frame Rate\\ (frames / s)\end{tabular}}}        & 30.058                                                                   & 6.515                                                                      \\ \hline
+\begin{tabular}{c|c|c|c|}
+\cline{2-4}
+                                                                                                         & \textbf{\begin{tabular}[c]{@{}c@{}}Source Camera\\  Feed\end{tabular}} & \textbf{\begin{tabular}[c]{@{}c@{}}Internal Consumer\\  Camera Feed\end{tabular}} & \textbf{\begin{tabular}[c]{@{}c@{}}Tailscale Consumer\\ Camera Feed\end{tabular}} \\ \hline
+\multicolumn{1}{|c|}{\textbf{\begin{tabular}[c]{@{}c@{}}Average Bandwidth\\ (MBytes / s)\end{tabular}}}  & 27.76                                                                  & 14.53                                                                             & 6.25                                                                              \\ \hline
+\multicolumn{1}{|c|}{\textbf{\begin{tabular}[c]{@{}c@{}}Average Frame Rate\\ (frames / s)\end{tabular}}} & 30.060                                                                 & 14.582                                                                            & 6.515                                                                             \\ \hline
 \end{tabular}
-\caption{Streaming performance from both source and consumer's end}
+\caption{Streaming performance from source and consumer's end on internal and Tailscale connections}
 \label{tab:cam}
 \end{table}
+
+\section{Robotic Arm Operation}
+
+\subsection{ROS Setup}
+
+Figure \ref{fig:roboarm}
+
+\subsection{Results}
+
+\begin{figure}[h]
+\centering
+  \includegraphics[width=\textwidth]{roboarm.png}
+  \caption{Robotic Arm setup. The camera feed captures the robotic arm. The robot is operated through the ROS node residing in the University Network}
+  \label{fig:roboarm}
+\end{figure}
 
 \section{Chapter Summary}
 
