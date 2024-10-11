@@ -22,6 +22,8 @@
 \usepackage{acronym}
 \usepackage[acronym]{glossaries}
 \usepackage{svg}
+\usepackage{subcaption}
+
 
 % optional (comment to use default)s
 %   depth of the table of contents
@@ -967,11 +969,11 @@ Figure \ref{fig:cipher} presents both captures side by side in Wireshark. By ana
 
 \section{Live Camera Feed Application}
 
-The last experiment conducted aims to analyse how \ac{ros} applications operate when using the overlay networks. For that, a \ac{ros} application which publishes a camera feed is launched in a machine connected to \ac{iris}'s network. Then, in another \ac{ros} node, the output of the camera is accessed, from outside the laboratory, connected to the campus' network. With this experiment, we are able to compare metrics such as the video's bandwidth and framerate from the source against what a client actually consumes.
+The next experiment conducted aims to analyse how \ac{ros} applications operate when using the overlay networks. For that, a \ac{ros} application which publishes a camera feed is launched in a machine connected to \ac{iris}'s network. Then, in another \ac{ros} node, the output of the camera is accessed, from outside the laboratory, connected to the campus' network. With this experiment, we are able to compare metrics such as the video's bandwidth and framerate from the source against what a client actually consumes both when connected to the laboratory's internal network and when using the overlays.
 
 \subsection{Camera and ROS Setup}
 
-For this experiment, a two node \ac{ros} environment is created where the master node, running inside \ac{iris}'s network, publishes the feed from an external Astra camera to a topic. Then, using the Tailscale \acp{ip}, another node, from outside the laboratory, subscribes this topic, being able to consume the camera feed.
+For this experiment, a two node \ac{ros} environment is created where the master node, running inside \ac{iris}'s network, publishes the feed from an external Astra camera to a topic. Then, another node subscribes this topic, being able to consume the camera feed.
 
 Figure \ref{fig:camera} presents said setup.
 
@@ -985,7 +987,9 @@ Figure \ref{fig:camera} presents said setup.
 
 \subsection{Collecting Metrics}
 
-The raw camera feed is published to the \textbf{$/$camera$/$color$/$image$_\_$raw} topic. Image bandwidth and frame rate can be calculated at both ends with the \textbf{rostopic} command. These two metrics are used to evaluate the solution's performance in this context.
+The raw, uncompressed camera feed is published to the \textbf{$/$camera$/$color$/$image$_\_$raw} topic. Image bandwidth and frame rate can be calculated at both ends with the \textbf{rostopic bw} and \textbf{rostopic hz} commands. These two metrics are used to evaluate the solution's performance in this context.
+
+Metrics were collected on two different scenarios. One with the consumer node also connected to \ac{iris}'s network and communicating through private \acp{ip} and one connected to \ac{ua}'s network, accessing the feed via Tailscale interfaces.
 
 \subsection{Results}
 
@@ -995,7 +999,7 @@ Table \ref{tab:cam}.
 \centering
 \begin{tabular}{c|c|c|c|}
 \cline{2-4}
-                                                                                                         & \textbf{\begin{tabular}[c]{@{}c@{}}Source Camera\\  Feed\end{tabular}} & \textbf{\begin{tabular}[c]{@{}c@{}}Internal Consumer\\  Camera Feed\end{tabular}} & \textbf{\begin{tabular}[c]{@{}c@{}}Tailscale Consumer\\ Camera Feed\end{tabular}} \\ \hline
+                                                                                                         & \textbf{\begin{tabular}[c]{@{}c@{}}Source Camera\\  Feed\end{tabular}} & \textbf{\begin{tabular}[c]{@{}c@{}}Internal \\  Consumer\end{tabular}} & \textbf{\begin{tabular}[c]{@{}c@{}}Tailscale \\ Consumer\end{tabular}} \\ \hline
 \multicolumn{1}{|c|}{\textbf{\begin{tabular}[c]{@{}c@{}}Average Bandwidth\\ (MBytes / s)\end{tabular}}}  & 27.76                                                                  & 14.53                                                                             & 6.25                                                                              \\ \hline
 \multicolumn{1}{|c|}{\textbf{\begin{tabular}[c]{@{}c@{}}Average Frame Rate\\ (frames / s)\end{tabular}}} & 30.060                                                                 & 14.582                                                                            & 6.515                                                                             \\ \hline
 \end{tabular}
@@ -1005,9 +1009,39 @@ Table \ref{tab:cam}.
 
 \section{Robotic Arm Operation}
 
+The last conducted experiment also aims to analyse the performance of \ac{ros} applications through the overlays. For this experiment, a robotic arm connected to a \ac{ros} Master residing in \ac{iris} is controlled by another \ac{ros} node, connected to \ac{ua}'s network.
+
 \subsection{ROS Setup}
 
-Figure \ref{fig:roboarm}
+The robotic arm is directly connected to the master node and the \ac{ros} application is launched. The camera from the previous experiment is also setup, in order to have a visual feed of the robot movement when controlling it remotely. Figure \ref{fig:roboarm} presents this configuration.
+
+
+\subsection{Operating the Robotic Arm}
+
+Moving the robot is achieved by maniuplating the robot's \textbf{joint\_states}, a \ac{ros} topic which contains the information regarding the arm's position.
+
+To make the robot operation smoother, RViz \footnote{http://wiki.ros.org/rviz}, a \ac{ros} 3D visualization tool, was installed in the slave node. RViz provides an interface containing a 3D model of the robot, where movement can be planned by moving the joints on the 3D model. Then, executing such a plan will generate the set of \ac{ros} messages responsible for updating the real robot's joints to match the position defined in the model.
+
+Figure \ref{fig:armoperation} presents an example of operating the robot through RViz.
+
+\begin{figure}[h!]
+    \centering
+    \begin{subfigure}[b]{0.45\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{robot_initial.png}
+        \caption{Robot's initial state. The orange outline represents the desired postion.}
+        \label{fig:image1}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.45\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{robot_final.png}
+        \caption{Robot's state after executing the planned movement.}
+        \label{fig:image2}
+    \end{subfigure}
+    \caption{Moving the robotic arm using RViz.}
+    \label{fig:armoperation}
+\end{figure}
 
 \subsection{Results}
 
@@ -1020,7 +1054,7 @@ Figure \ref{fig:roboarm}
 
 \section{Chapter Summary}
 
-This chapter presented how this solution was validated and its performance analysed. To collect network performance metrics, \textbf{iperf3} was used in a range of different scenarios. First, to gain insights on Tailscale's overhead, network tests were run in the same conditions, through regular interfaces and through Tailscale tunnel. This resulted in a loss of \textbf{37.02} \% in \ac{tcp} throughput and an increase in average latencies of \textbf{35.25} \%. Regarding coverage, which refers to the campus area Tailscale can operate under, all identified key places were able to communicate via Tailscale relayed connections when using \ac{ua}'s network. Moreover, performance results from these experiments showed no particular anomalies, although, and as expected, certain areas underperform.
+This chapter presented how this solution was validated and its performance analysed. To collect network performance metrics, \textbf{iperf3} was used in a range of different scenarios. First, to gain insights on Tailscale's overhead, network tests were run in the same conditions, through regular interfaces and through Tailscale tunnel. This resulted in a loss of \textbf{46.23} \% in \ac{tcp} throughput and an increase in average latencies of \textbf{21.11} \%. Regarding coverage, which refers to the campus area Tailscale can operate under, all identified key places were able to communicate via Tailscale relayed connections when using \ac{ua}'s network. Moreover, performance results from these experiments showed no particular anomalies, although, and as expected, certain areas underperform.
 
 \chapter{Conclusion and Future Work}
 
