@@ -815,7 +815,8 @@ These processes were automated using a python script \footnote{https://github.co
 
 The result files produced by running this script allows us to build a dataset containing necessary metrics, used to draw the conclusions present further in this chapter.
 
-\subsection{Performance Experiments}
+\subsection{Network Performance Experiments}
+\label{ss:netperf}
 
 Having defined the relevant metrics to evaluate communication performance through the overlays and development of a script which automates the results gathering processes, experiments are ready to be run between any two overlay nodes. Since communication is possible through Tailscale relayed connections regardless of clients' physical locations, we can collect insights from multiple campus points. This will not only allow us to understand the performance of the solution and how it behaves with geographical distance but also ensure the overlays can be used from anywhere within \ac{ua}'s premises.
 
@@ -1013,14 +1014,20 @@ The last conducted experiment also aims to analyse the performance of \ac{ros} a
 
 \subsection{ROS Setup}
 
-The robotic arm is directly connected to the master node and the \ac{ros} application is launched. The camera from the previous experiment is also setup, in order to have a visual feed of the robot movement when controlling it remotely. Figure \ref{fig:roboarm} presents this configuration.
+The robotic arm is directly connected to the master node and the \ac{ros} application is launched. Then, the slave node acknowledges the master node through its Tailscale \ac{ip}. The camera from the previous experiment is also setup, in order to have a visual feed of the robot movement when controlling it remotely. Figure \ref{fig:roboarm} presents this configuration.
 
+\begin{figure}[h]
+\centering
+  \includegraphics[width=\textwidth]{roboarm.png}
+  \caption{Robotic Arm setup. The camera feed captures the robotic arm. The robot is operated through the ROS node residing in the University Network}
+  \label{fig:roboarm}
+\end{figure}
 
 \subsection{Operating the Robotic Arm}
 
 Moving the robot is achieved by maniuplating the robot's \textbf{joint\_states}, a \ac{ros} topic which contains the information regarding the arm's position.
 
-To make the robot operation smoother, RViz \footnote{http://wiki.ros.org/rviz}, a \ac{ros} 3D visualization tool, was installed in the slave node. RViz provides an interface containing a 3D model of the robot, where movement can be planned by moving the joints on the 3D model. Then, executing such a plan will generate the set of \ac{ros} messages responsible for updating the real robot's joints to match the position defined in the model.
+To facilitate the operation of the robot, RViz \footnote{http://wiki.ros.org/rviz}, a 3D \ac{ros} visualization tool, was installed in the slave node. RViz provides an interface containing a 3D model of the robot, where movement can be planned by moving the joints on the model. Then, executing such a plan will generate and transmit the set of \ac{ros} messages responsible for updating the real robot's joints to match the position defined in the model.
 
 Figure \ref{fig:armoperation} presents an example of operating the robot through RViz.
 
@@ -1045,18 +1052,15 @@ Figure \ref{fig:armoperation} presents an example of operating the robot through
 
 \subsection{Results}
 
-Since the messages involved in moving the robot <alguma cena de serem pequenas>, calculated with the \textbf{rostopic bw joint\_states} command, operating the robot through the overlays performs very similarly to the usual robot operation. In fact, the loss of throughput associated with the overlays is negligible when dealing with messages of such size.
+Operating the robot through the overlays performs very similarly to the usual robot operation, with no noticeable performance degradation. Since the messages involved in manipulating the robot's joints present an average bandwidth of around 148 KB/s, measured using the \textbf{rostopic bw} command, the loss of throughput associated with the overlays is negliable for this use case.
 
-\begin{figure}[h]
-\centering
-  \includegraphics[width=\textwidth]{roboarm.png}
-  \caption{Robotic Arm setup. The camera feed captures the robotic arm. The robot is operated through the ROS node residing in the University Network}
-  \label{fig:roboarm}
-\end{figure}
+Due to safety precautions associated with unsupervised operation of the robot, this experiment was only conducted with the slave node (the one who plans and executes the movement) placed inside \ac{iris}, while connected to \ac{ua}'s network. However, a similar performance is expected from any other point in the campus, as suggested by the measured throughputs in experiment \ref{ss:netperf}.
 
 \section{Chapter Summary}
 
-This chapter presented how this solution was validated and its performance analysed. To collect network performance metrics, \textbf{iperf3} was used in a range of different scenarios. First, to gain insights on Tailscale's overhead, network tests were run in the same conditions, through regular interfaces and through Tailscale tunnel. This resulted in a loss of \textbf{46.23} \% in \ac{tcp} throughput and an increase in average latencies of \textbf{21.11} \%. Regarding coverage, which refers to the campus area Tailscale can operate under, all identified key places were able to communicate via Tailscale relayed connections when using \ac{ua}'s network. Moreover, performance results from these experiments showed no particular anomalies, although, and as expected, certain areas underperform.
+This chapter presented how this solution was validated and its performance analysed. To collect network performance metrics, \textbf{iperf3} was used in a range of different scenarios. First, to gain insights on Tailscale's overhead, network tests were run in the same conditions, through regular interfaces and through Tailscale tunnel. The analysis of these two sets of values presented a loss of \textbf{46.23} \% in \ac{tcp} throughput and an increase in average latencies of \textbf{21.11} \% when using the overlays. Regarding camous coverage, which refers to the physical area the overlays can operate under, all identified key places were able to communicate via Tailscale relayed connections when connected to \ac{ua}'s network. Moreover, performance results from these experiments showed no particular anomalies, although, and as expected, certain areas overperform others.
+
+Regarding the solution's suitability for \ac{iris}'s use cases, two \ac{ros} applications were analysed, where communication is done through Tailscale interfaces. First, a live camera streaming application, which published its uncompressed raw data, proved to be too demanding for the associated protocol overhead, resulting in a poor consumed food for real-time video standards. However, applications which require fewer network resources, such as the control of a robotic arm by updating its joint$_$states, operated smoothly, with no perceivable performance degradation.
 
 \chapter{Conclusion and Future Work}
 
@@ -1078,6 +1082,10 @@ Overall, this project delivers automated procedures to configure and deploy a se
 
 With \ac{iris}'s robots authenticated in the self-hosted Headscale control server and, consequently, configured with Tailscale interfaces, encrypted communication is possible from anywhere within \ac{ua}'s campus through \ac{http} relayed connections, successfully enabling robot operation outside \ac{iris}'s internal network.
 
+The protocol's suitability for \ac{iris}'s applications was also studied. As expected, due to the losss of performance associated with relayed connections, applications with high network demand might prove unreliable  when used through the overlays
+
+\section{Future Work}
+
 Even though the developments presented in this document meet the goals as expected, serveral aspects of this solution could be improved or should be more thoroughly analysed.
 
 First, regarding deployment automations, although the scripts presented in Chapter \ref{ch:auto} provide a configurable procedure to deploy both an Headscale server and Tailscale clients, this logic could easily be ported to more adequate \ac{iac} frameworks. In fact, the steps taken in said scripts are easily implemented as, for example, Ansible \footnote{Ansible, https://www.ansible.com/} playbooks. This would allow a team of robots to be defined as an Ansible inventory, creating a true one-touch deployment, not requiring the scripts to be run manually in each individual peer.
@@ -1088,7 +1096,7 @@ Regarding implementation, such an \ac{acl} system could easily be built on top o
 
 In Chapter \ref{chap:results}, the network tests were run for a duration of 15 minutes each. Evidently, this provides only but a glimpse of the actual network behaviour. To create a more accurate perception of the impact Tailscale has on network throughout the campus, these experiments should be redone using a more ample time frame. This could be achieved either by tweaking the python test script parameters or by setting up monitoring tools such as Grafana \footnote{Grafana, https://grafana.com/} integrated with \textbf{iperf3}'s metric collections. Using such a monitoring platform would also provide dashboards to help visualize the overall results.
 
-Finally, this solution's scalability should also be properly analysed, by collecting network metrics as more peers are added to the overlays. In fact, the coordination server might introduce a bottleneck, especially regarding the single \ac{DERP}. As connections outside \ac{iris} network are all relayed, a single \ac{DERP} might suffer a degree of resource overloading, as all traffic is being relayed by this service.
+Finally, this solution's scalability should also be properly analysed, by collecting network metrics as more peers are added to the overlays. In fact, the solution's coordination server introduces a bottleneck, namely  the single \ac{DERP}. As connections outside \ac{iris} network are all relayed, a single \ac{DERP} might suffer a degree of resource overloading, as all traffic is being relayed by this service.
 
 %
 % The bibliography
