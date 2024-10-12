@@ -440,7 +440,7 @@ WireGuard's kernel implementation and efficient multi-threading usage contribute
 
 \subsubsection{Usability}
 
-Usability in \ac{vpn} protocols refers to the ease of use regarding service configuration and management. IPSec's configuration can be quite complex, due to its cryptographic directives and protocol negotiation. Also, the several different modes IPSec can be configured to run in might prove overwhelming for unfamiliar users. OpenVPN's GUI provides a user-friendly platform to easily administrate the software, still requiring, however, a considerable degree of technical expertise. WireGuard, however, is able to combine protocol simplicity, as it enforces a single cipher suite, with straightforward configuration directives. In fact, as we've seen in Section \ref{ss:wg}, configuring WireGuard peers requires no knowledge of the protocol's specification.
+Usability in \ac{vpn} protocols refers to the ease of use regarding service configuration and management. IPSec's configuration can be quite complex, due to its cryptographic directives and protocol negotiation. Also, the several different modes IPSec can be configured to run in might prove overwhelming for unfamiliar users. OpenVPN's GUI provides a user-friendly platform to easily administrate the software, still requiring, however, a considerable degree of technical expertise. WireGuard, however, is able to combine protocol simplicity, as it enforces a single cipher suite, with straightforward configuration directives. In fact, as seen in Section \ref{ss:wg}, configuring WireGuard peers requires no knowledge of the protocol's specification.
 
 Table \ref{tab:protocomp} summarizes the above analysis.
 
@@ -788,7 +788,7 @@ In order to validate the developed solution, several experiments were conducted 
 
 Network performance is understood as the quality of the communication in the eyes of an overlay node. Measuring network performance requires the collection  and visualization of metrics produced while data is being exchanged on the overlay networks. For the scope of our conclusions, four of such metrics were gathered, on connections happening in distinct scenarios.
 
-The metrics we chose for this experiment provide insights on three distinct dimensions, outlined in ~\cite{livronet, Hanemann2006}.
+The metrics chosen for this experiment provide insights on three distinct dimensions, outlined in ~\cite{livronet, Hanemann2006}.
 
 \subsubsection{Delay}
 
@@ -818,7 +818,7 @@ The result files produced by running this script allows us to build a dataset co
 \subsection{Network Performance Experiments}
 \label{ss:netperf}
 
-Having defined the relevant metrics to evaluate communication performance through the overlays and development of a script which automates the results gathering processes, experiments are ready to be run between any two overlay nodes. Since communication is possible through Tailscale relayed connections regardless of clients' physical locations, we can collect insights from multiple campus points. This will not only allow us to understand the performance of the solution and how it behaves with geographical distance but also ensure the overlays can be used from anywhere within \ac{ua}'s premises.
+Having defined the relevant metrics to evaluate communication performance through the overlays and development of a script which automates the results gathering processes, experiments are ready to be run between any two overlay nodes. Since communication is possible through Tailscale relayed connections regardless of clients' physical locations, insights can be collected from multiple campus points. This will not only allow us to understand the performance of the solution and how it behaves with geographical distance but also ensure the overlays can be used from anywhere within \ac{ua}'s premises.
 
 For these experiments, an overlay node running an iperf server was deployed in \ac{iris}, connected to \ac{ua}'s network. Then, with another machine, the experiment script was run, pointing the iperf server as the \ac{iris}'s node's Tailscale \ac{ip}, from disperse campus' locations. Table \ref{tab:locs} presents the selected test case buildings.
 
@@ -883,7 +883,7 @@ Such a scenario can be achieved with two clients residing inside \ac{iris}. With
 
 \subsection{Results}
 
-The two generated datasets allow us to visualize how Tailscale impacts network performance. Figure \ref{fig:overhead} presents the \ac{tcp} throughputs for the both experiments, while figure \ref{fig:latency_overhead} compares the \ac{rtt} distributions. Analysing the figures corroborates the idea that communicating through relayed Tailscale connections implies a considerable loss in network performance. To be able to represent this performance depletion numerically, we can calculate the relative change between the two measurements, using the percent log-change formula \cite{tornqvist1985should}.
+The two generated datasets allow us to visualize how Tailscale impacts network performance. Figure \ref{fig:overhead} presents the \ac{tcp} throughputs for the both experiments, while figure \ref{fig:latency_overhead} compares the \ac{rtt} distributions. Analysing the figures corroborates the idea that communicating through relayed Tailscale connections implies a considerable loss in network performance. To be able to represent this performance depletion numerically, the relative change between the two measurements can be calculated, using the percent log-change formula \cite{tornqvist1985should}.
 
 The percent log-change is a numerical indicator of the change between two groups of values. In the context of this analysis, the percent log-change represents how much throughput was lost and how \ac{rtt} times increased, when comparing the internal and tunnel connections. We chose to use the log-change as an indicator instead of directly calculating the percentage change as it outputs a symmetric indicator, abstracting the necessity of choosing one connection as the baseline. The percent log-change is given by the expression:
 
@@ -970,7 +970,7 @@ Figure \ref{fig:cipher} presents both captures side by side in Wireshark. By ana
 
 \section{Live Camera Feed Application}
 
-The next experiment conducted aims to analyse how \ac{ros} applications operate when using the overlay networks. For that, a \ac{ros} application which publishes a camera feed is launched in a machine connected to \ac{iris}'s network. Then, in another \ac{ros} node, the output of the camera is accessed, from outside the laboratory, connected to the campus' network. With this experiment, we are able to compare metrics such as the video's bandwidth and framerate from the source against what a client actually consumes both when connected to the laboratory's internal network and when using the overlays.
+The next experiment conducted aims to analyse how \ac{ros} applications operate when using the overlay networks. For that, a \ac{ros} application which publishes a camera feed is launched in a machine connected to \ac{iris}'s network. Then, in another \ac{ros} node, the output of the camera is accessed, both from inside the laboratory, using the internal \acp{ip} and from outside the laboratory, connected to the campus' network. With this experiment, we are able to compare metrics such as the video's bandwidth and frame rate from the source against what a client actually consumes both when connected to the laboratory's internal network and when using the overlays.
 
 \subsection{Camera and ROS Setup}
 
