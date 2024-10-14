@@ -834,7 +834,6 @@ Regarding test configuration, both \ac{tcp} and \ac{udp} iperf tests were run fo
 \begin{tabular}[c]{@{}c@{}}Eletronics, Telecomunications and Informatics\\ Department\\ (DETI)\end{tabular} & 4                                                                  & \begin{tabular}[c]{@{}c@{}}Tailscale\\ (relayed)\end{tabular} \\ \hline
 \begin{tabular}[c]{@{}c@{}}Pedagogical Complex\\ (CP)\end{tabular}                                            & 23                                                                 & \begin{tabular}[c]{@{}c@{}}Tailscale\\ (relayed)\end{tabular} \\ \hline
 \begin{tabular}[c]{@{}c@{}}Mathematics Department\\ (DMAT)\end{tabular}                                     & 11                                                                 & \begin{tabular}[c]{@{}c@{}}Tailscale\\ (relayed)\end{tabular} \\ \hline
-\begin{tabular}[c]{@{}c@{}}Biology Department\\ (DBIO)\end{tabular}                                         & 8                                                                  & \begin{tabular}[c]{@{}c@{}}Tailscale\\ (relayed)\end{tabular} \\ \hline
 \begin{tabular}[c]{@{}c@{}}Economics and Management Department\\ (DEGEIT)\end{tabular}                      & 10                                                                 & \begin{tabular}[c]{@{}c@{}}Tailscale\\ (relayed)\end{tabular} \\ \hline
 \begin{tabular}[c]{@{}c@{}}Exhibition Hall\\ (EXPO)\end{tabular}                                              & 24                                                                 & \begin{tabular}[c]{@{}c@{}}Tailscale\\ (relayed)\end{tabular} \\ \hline
 \end{tabular}
@@ -856,7 +855,6 @@ DMAT & 8.24 & 22.37 & 240.9 & 45.874 & 0.859  \\ \hline
 DEGEIT & 7.85 & 19.23 & 244.05 & 49.615 & 1.119  \\ \hline
 CP & 7.63 & 19.43 & 239.96 & 43.061 & 0.834  \\ \hline
 BIB & 7.94 & 12.88 & 45.17 & 46.849 & 0.764  \\ \hline
-DBIO & 0 & 0 & 0 & 0 & 0 \\ \hline
 DETI & 8.41 & 20.01 & 265.88 & 31.744 & 11.854  \\ \hline
 EXPO & 7.63 & 17.06 & 219.88 & 33.685 & 2.843  \\ \hline
 \end{tabular}
@@ -909,6 +907,7 @@ Similarly, \textbf{ \( \overline{\text{RTT}}_I \)} is the average \ac{rtt} times
 
 Table \ref{tab:loss} summarizes the collected results. Corroborating the initial performance degradation assumptions related to the relayed tunnel's \ac{http} encapsulation, these two performance loss indicators give us a qunatification of this solution's overhead.
 
+\iffalse
 \begin{table}[]
 \centering
 \begin{tabular}{c|c|c|}
@@ -921,6 +920,7 @@ Table \ref{tab:loss} summarizes the collected results. Corroborating the initial
 \caption{Internal and Tailscale connections' performance comparison}
 \label{tab:loss}
 \end{table}
+\fi
 
 \begin{figure}[h]
 \centering
@@ -1058,7 +1058,7 @@ Due to safety precautions associated with unsupervised operation of the robot, t
 
 \section{Chapter Summary}
 
-This chapter presented how this solution was validated and its performance analysed. To collect network performance metrics, \textbf{iperf3} was used in a range of different scenarios. First, to gain insights on Tailscale's overhead, network tests were run in the same conditions, through regular interfaces and through Tailscale tunnel. The analysis of these two sets of values presented a loss of \textbf{46.23} \% in \ac{tcp} throughput and an increase in average latencies of \textbf{21.11} \% when using the overlays. Regarding camous coverage, which refers to the physical area the overlays can operate under, all identified key places were able to communicate via Tailscale relayed connections when connected to \ac{ua}'s network. Moreover, performance results from these experiments showed no particular anomalies, although, and as expected, certain areas overperform others.
+This chapter presented how this solution was validated and its performance analysed. To collect network performance metrics, \textbf{iperf3} was used in a range of different scenarios. First, to gain insights on Tailscale's overhead, network tests were run in the same conditions, through regular interfaces and through Tailscale tunnel. The analysis of these two sets of values presented a loss of \textbf{46.23} \% in \ac{tcp} throughput and an increase in average latencies of \textbf{21.11} \% when using the overlays. Regarding campus coverage, which refers to the physical area the overlays can operate under, all identified key places were able to communicate via Tailscale relayed connections when connected to \ac{ua}'s network. Moreover, performance results from these experiments showed no particular anomalies, although, and as expected, certain areas overperform others.
 
 Regarding the solution's suitability for \ac{iris}'s use cases, two \ac{ros} applications were analysed, where communication is done through Tailscale interfaces. First, a live camera streaming application, which published its uncompressed raw data, proved to be too demanding for the associated protocol overhead, resulting in a poor consumed food for real-time video standards. However, applications which require fewer network resources, such as the control of a robotic arm by updating its joint$_$states, operated smoothly, with no perceivable performance degradation.
 
