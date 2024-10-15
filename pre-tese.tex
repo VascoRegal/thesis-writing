@@ -517,7 +517,7 @@ Headscale also supports the self-hosting of \ac{DERP} and \ac{stun} servers. Thi
 
 Due to security and privacy concerns, the specification of \ac{ua}'s network topology is not publicly available nor is it made available for this dissertation. As such, it is perceived as a black box. There are, however, a few reachable conclusions drawn from observing its behaviour.
 
-In fact, \ac{ua}'s network is highly segmented, where clients are grouped according to their roles. When clients connect to an \ac{ap} within the campus, they are connected to a \ac{vlan} shared by several other clients, in which the private resources are accessible. Regarding \ac{nat}, the present mechanisms in the network are unknown, as are their mappings' \ac{ttl}, which is an important variable mentioned in Section \ref{ssec:tsnetworks} to perform \ac{nat}-traversal techniques.
+In fact, \ac{ua}'s network is highly segmented, where clients are grouped according to their roles. When clients connect to an \ac{ap} within the campus, they are connected to a \ac{vlan} shared by several other clients, in which the private resources are accessible. Regarding \ac{nat}, the present mechanisms in the network are unknown, as are their mappings' \ac{ttl}, which is an important variable mentioned in Section \ref{ssec:tsnetworks} to perform \ac{nat}-traversal techniques. Moreover, clients connected to the university's wireless network stand behind a firewall allowing incoming traffic only from already established connections. This means clients can't directly establish a connection with each other.
 
 Any other specification of \ac{ua}'s network is unknown. Moreover, the network's firewall rules can't be altered to suit our needs.
 
@@ -1004,7 +1004,7 @@ Table \ref{tab:cam}.
 \multicolumn{1}{|c|}{\textbf{\begin{tabular}[c]{@{}c@{}}Average Bandwidth\\ (MBytes / s)\end{tabular}}}  & 27.76                                                                  & 14.53                                                                             & 6.25                                                                              \\ \hline
 \multicolumn{1}{|c|}{\textbf{\begin{tabular}[c]{@{}c@{}}Average Frame Rate\\ (frames / s)\end{tabular}}} & 30.060                                                                 & 14.582                                                                            & 6.515                                                                             \\ \hline
 \end{tabular}
-\caption{Streaming performance from source and consumer's end on internal and Tailscale connections}
+\caption{Streaming performance on internal and Tailscale connections}
 \label{tab:cam}
 \end{table}
 
