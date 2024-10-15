@@ -843,7 +843,7 @@ Regarding test configuration, both \ac{tcp} and \ac{udp} iperf tests were run fo
 
 \subsection{Results}
 
-The metrics collected from each building are presented in Table \ref{tab:perfres}. TODO: CONCLUIR
+The metrics collected from each building are presented in Table \ref{tab:perfres}. This experiment, while assuring the use of the overlays across disperse points within the campus, also provides insights on the overall solution performance. Regarding the maximum \ac{rtt} values, these generally occur during the connection establishment phase. In fact, since communications while clients are connected to \ac{ua}'s network are relayed, Tailscale's overhead of first attempting to create a direct connection and only then falling back to a relayed one introduce an additional delay before packets are actually exchanged.
 
 \begin{table}[h!]
 \centering
@@ -900,12 +900,12 @@ Where \textbf{ \( \overline{\text{TP}}_I \)} is the average throughput for the i
 The same procedure can be applied to the measured \ac{rtt} values:
 
 \[
-\text{RTT Increase (\%)} = \ln\left(\frac{\overline{\text{RTT}}_I}{\overline{\text{RTT}}_T}\right) \times 100
+\text{RTT Increase (\%)} = \ln\left(\frac{\overline{\text{RTT}}_T}{\overline{\text{RTT}}_I}\right) \times 100
 \]
 
 Similarly, \textbf{ \( \overline{\text{RTT}}_I \)} is the average \ac{rtt} times for the internal connection while \textbf{\( \overline{\text{RTT}}_T \)} is the average \ac{rtt} times for the Tailscale connection. This calculation results in an \ac{rtt} increase of \textbf{21.11} \%
 
-Table \ref{tab:loss} summarises the collected results. Corroborating the initial performance degradation assumptions related to the relayed tunnel's \ac{http} encapsulation, these two performance loss indicators give us a quantification of this solution's overhead.
+Corroborating the initial performance degradation assumptions related to the relayed tunnel's \ac{http} encapsulation, these two performance loss indicators give us a quantification of the solution's overhead.
 
 \iffalse
 \begin{table}[]
@@ -994,7 +994,9 @@ Metrics were collected on two different scenarios. One with the consumer node al
 
 \subsection{Results}
 
-Table \ref{tab:cam}. TODO
+Table \ref{tab:cam} presents the measured performance for both internal and Tailscale consumers, compared to the published source feed. Since the camera feed has no compression, the associated losses in frame rate and bandwidth are expected, even when not using the overlays. Additionally, on Tailscale consumers, where the protocol's overhead, namely loss of throughput and increased network jitter, degrade the application's performance even further.
+
+This experiment concludes that high network demand applications configured to use the overlays perform poorly. Hence, without further exploration on how to optimise the solution's performance, such applications are not suited to be used with the overlays.
 
 \begin{table}[]
 \centering
