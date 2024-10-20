@@ -447,19 +447,21 @@ Table \ref{tab:protocomp} summarizes the above analysis.
 
 \begin{table}[]
 \centering
+\LARGE
 \resizebox{\textwidth}{!}{%
-\begin{tabular}{c|c|c|c|}
+\begin{tabular}{c|c|c|c|l}
 \cline{2-4}
-                                             & \textbf{IPSec}                    & \textbf{OpenVPN}                                                                          & \textbf{WireGuard}                    \\ \hline
-\multicolumn{1}{|c|}{\textbf{Security}}      & Robust, but complex               & \begin{tabular}[c]{@{}c@{}}Generally robust,\\ requires proper configuration\end{tabular} & Modern, recently verified cryptography \\ \hline
-\multicolumn{1}{|c|}{\textbf{Usability}}     & Requires expertise                & Requires expertise                                                                        & Minimal configuration                 \\ \hline
-\multicolumn{1}{|c|}{\textbf{Performance}}   & \begin{tabular}[c]{@{}c@{}}Good, but underperforms \\ compared to WireGuard \end{tabular}                         & Generally implies higher latencies                                                        & Overall, outperforms other protocols  \\ \hline
-\multicolumn{1}{|l|}{\textbf{NAT-Traversal}} & Supported, requires configuration & Supported, requires configuration                                                         & Seamless integration                  \\ \hline
+\multicolumn{1}{l|}{}                        & \textbf{IPSec}         & \textbf{OpenVPN}              & \textbf{WireGuard}            &  \\ \cline{1-4}
+\multicolumn{1}{|c|}{\textbf{Security}}      & Robust, but complex    & Requires proper configuration & Modern, verified cryptography &  \\ \cline{1-4}
+\multicolumn{1}{|c|}{\textbf{Usability}}     & Requires expertise     & Requires expertise            & Minimal configuration         &  \\ \cline{1-4}
+\multicolumn{1}{|c|}{\textbf{Performance}}   & Underperforms          & Higher latencies implied      & Outperforms other protocols   &  \\ \cline{1-4}
+\multicolumn{1}{|c|}{\textbf{NAT-Traversal}} & Requires configuration & Requires configuration        & Seamless integration          &  \\ \cline{1-4}
 \end{tabular}%
 }
 \caption{VPN protocol's performance and features comparison}
 \label{tab:protocomp}
 \end{table}
+
 
 
 \subsection{Summary}
@@ -484,7 +486,7 @@ This section explores how Tailscale is able to manage the WireGuard links betwee
 
 \subsubsection{Architecture}
 
-Tailscale's central entity, referred to as the \textbf{coordination server}, functions as a shared repository of peer information, used by clients to retrieve data regarding other nodes and establish on-demand WireGuard connections among each other.
+Tailscale's central entity, referred to as the coordination server, functions as a shared repository of peer information, used by clients to retrieve data regarding other nodes and establish on-demand WireGuard connections among each other.
 
 This approach differs from traditional hub-and-spoke since the coordination server carries nearly no traffic, it only serves encryption keys and peer information. Tailscale's architecture provides the best of both worlds, benefiting from the advantages of a centralised entity facilitating dynamic reconfigurations and peer discovery without bottlenecking WireGuard's data exchanging performance.
 
