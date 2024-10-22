@@ -387,7 +387,7 @@ In a practical scenario, given two peers, \emph{A} and \emph{B}, with pre-genera
 
 \begin{figure}
 \begin{multicols}{2}
-\begin{lstlisting}[language=sh, frame=single, breaklines=true, breakatwhitespace=true, basicstyle=\small]
+\begin{lstlisting}[language=bash, frame=single, breaklines=true, breakatwhitespace=true, basicstyle=\small]
 # Peer A - interface setup
 $ ip link add wg0 type WireGuard
 $ ip addr add 10.0.0.1/24 dev wg0
@@ -400,7 +400,7 @@ $
 
 \end{lstlisting}
 \columnbreak
-\begin{lstlisting}[language=sh, frame=single, breaklines=true, breakatwhitespace=true, basicstyle=\small]
+\begin{lstlisting}[language=bash, frame=single, breaklines=true, breakatwhitespace=true, basicstyle=\small]
 # Peer B - interface setup
 $ ip link add wg0 type WireGuard
 $ ip addr add 10.0.0.2/24 dev wg0
@@ -442,8 +442,10 @@ WireGuard's kernel implementation and efficient multi-threading usage contribute
 
 Usability in \ac{vpn} protocols refers to the ease of use regarding service configuration and management. IPSec's configuration can be quite complex, due to its cryptographic directives and protocol negotiation. Also, the several different modes IPSec can be configured to run in might prove overwhelming for unfamiliar users. OpenVPN's GUI provides a user-friendly platform to easily administrate the software, still requiring, however, a considerable degree of technical expertise. WireGuard, however, is able to combine protocol simplicity, as it enforces a single cipher suite, with straightforward configuration directives. In fact, as seen in Section \ref{ss:wg}, configuring WireGuard peers requires no knowledge of the protocol's specification.
 
-Table \ref{tab:protocomp} summarizes the above analysis.
 
+\subsection{Summary}
+
+This section presents the fundamentals of \acp{vpn} and how they are able to ensure integrity and confidentiality to communication through insecure mediums. Then, some of the most notable \ac{vpn} providers were reviewed and compared, regarding functionalities and overall performance. Table \ref{tab:protocomp} summarises such analysis. The results suggest WireGuard as the most promising \ac{vpn} protocol, due to its performance, ease of management and configuration, security mechanisms and verified cryptography.
 
 \begin{table}[]
 \centering
@@ -461,13 +463,6 @@ Table \ref{tab:protocomp} summarizes the above analysis.
 \caption{VPN protocol's performance and features comparison}
 \label{tab:protocomp}
 \end{table}
-
-
-
-\subsection{Summary}
-
-This section presents the fundamentals of \acp{vpn} and how they are able to ensure integrity and confidentiality to communication through insecure mediums. Then, some of the most notable \ac{vpn} providers were reviewed and compared, regarding functionalities and overall performance. The result of this analysis suggests WireGuard as the most promising \ac{vpn} protocol, due to its ease of management and configuration, security mechanisms and verified cryptography.
-
 
 \section{WireGuard Coordination}
 \label{sec:coordination}
@@ -804,7 +799,7 @@ Bandwidth is a dimension perceived as the maximum amount of information capable 
 
 \subsubsection{Losses and Errors}
 
-Finally, this dimension tackles how much information is not correctly transmitted and is measured by calculating a communication's packet loss, the fraction of packets sent which don't arrive at a destination. Losing packets implies data retransmission, which contributes negatively to the overall network performance.
+Finally, this dimension tackles how much information is not correctly transmitted and is measured by calculating a communication's packet loss, the fraction of packets sent which either don't arrive at a destination or are dropped while in transit. Losing packets implies data retransmission, which contributes negatively to the overall network performance.
 
 \subsection{Metric Gathering}
 \label{ss:metrics}
