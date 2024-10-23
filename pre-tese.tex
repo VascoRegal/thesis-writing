@@ -122,15 +122,17 @@
 %
 
 \TitlePage
-  \HEADER{\BAR\FIG{\begin{minipage}{50mm} % no more than 120mm
-          ``An idiot admires complexity, a genius admires simplicity.''
+  \HEADER{\BAR\FIG{\begin{minipage}{80mm} % no more than 120mm
+          ``O caos é uma ordem por decifrar''
            \begin{flushright}
-            --- Terry A. Davis
+            --- José Saramago
            \end{flushright}
           \end{minipage}}}
          {\ThesisYear}
   \TITLE{Vasco Regal Sousa}
-        {Multiple Client WireGuard Based Private and Secure Overlay Network}
+        {Multiple Client WireGuard Based Private and Secure Overlay Network \\
+        Gestor de Redes Overlay Privadas e Seguras para Múltiplos Clientes
+        }
 \EndTitlePage
 \titlepage\ \endtitlepage % empty page
 
@@ -170,6 +172,23 @@
 
 \TitlePage
   \vspace*{55mm}
+  \TEXT{\textbf{Palavras Chave}}
+        { WireGuard, VPN, rede overlay
+        }
+  \vspace*{10mm}
+  \TEXT{\textbf{Abstract}}
+       {Uma rede overlay é um grupo de nós computacionais que comunicam entre si através de um canal lógico, montado sobre uma outra rede. Os nós numa rede overlay, que são geralmente end systems, correm aplicações capazes de realizar operações mais complexas do que somente encaminhar e rotear tráfego. Assim, uma rede overlay aplica regras de encaminhamento e encapsulamento de dados para criar um protocol de comunicação customizado, correndo sobre as ligações de uma outra rede. Este documento apresenta uma solução para um gestor de redes overlay privadas e seguras baseadas em WireGuard, implementado na rede da Universidade de Aveiro, onde estão presentes regras de firewall altamente restritivas. Esta solução permite que os clientes, nomeadamente os robôs autónomos presents no Intelligent Robotics and Systems Laboratory, estableçam ligações \ac{p2p} entre si, independetemente da sua localização no campus, encapsulando e encaminhando pacotes WireGuard para um servidor de relay via \ac{http}, usando canais de comunicação préviamente criados. Isto não só ajuda os desenvolvedores, permitindo a interação com os robôs usando máquinas pessoais, mas também possibilita o uso dos robôs em qualquer ponto da Universidade de Aveiro.
+       }
+\EndTitlePage
+\titlepage\ \endtitlepage % empty page
+
+
+\TitlePage
+  \vspace*{55mm}
+  \TEXT{\textbf{Keywords}}
+        { WireGuard, VPN, overlay network
+        }
+  \vspace*{10mm}
   \TEXT{\textbf{Abstract}}
        {An overlay network is a group of computational nodes that communicate with each other through a logical channel, built on top of another network. Nodes in an overlay network, which are generally end systems, run Internet applications capable of performing more complex operations besides just forwarding and switching traffic. As such, an overlay network can apply routing rules and data encapsulation to create a custom protocol running on top of the links of another network. This document presents a secure and private overlay network solution based on WireGuard, deployed over University of Aveiro's network, which employs very restrictive firewall policies. This solution allows clients, namely the autonomous robots residing in the Intelligent Robotics and Systems Laboratory research unit, to establish \ac{p2p} communications with each other, regardless of their physical location within the campus, by encapsulating and forwarding encrypted WireGuard traffic to a dedicated relay server as \ac{http} through pre-established channels. This not only aids developers as they can interact directly with the robots through their personal machines, but also makes it possible to deploy solutions capable of communicating through any of the campus' buildings.}
 \EndTitlePage
@@ -226,15 +245,6 @@ This document starts by overviewing overlay and \acp{vpn} concepts and their res
 
 \chapter{Background and State of the Art}
 \label{chapter:sota}
-
-\begin{minipage}{80mm}
-     \centering % no more than 120mm
-     ``O caos é uma ordem por decifrar''
-          \begin{flushright}
-          --- José Saramago
-          \end{flushright}
-     \end{minipage}
-
 
 \section{Overlay Networks}
 \label{sec:on}
