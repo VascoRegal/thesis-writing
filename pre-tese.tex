@@ -175,9 +175,9 @@
   \TEXT{\textbf{Palavras Chave}}
         { WireGuard, VPN, rede overlay
         }
-  \vspace*{10mm}
-  \TEXT{\textbf{Abstract}}
-       {Uma rede overlay é um grupo de nós computacionais que comunicam entre si através de um canal lógico, montado sobre uma outra rede. Os nós numa rede overlay, que são geralmente end systems, correm aplicações capazes de realizar operações mais complexas do que somente encaminhar e rotear tráfego. Assim, uma rede overlay aplica regras de encaminhamento e encapsulamento de dados para criar um protocol de comunicação customizado, correndo sobre as ligações de uma outra rede. Este documento apresenta uma solução para um gestor de redes overlay privadas e seguras baseadas em WireGuard, implementado na rede da Universidade de Aveiro, onde estão presentes regras de firewall altamente restritivas. Esta solução permite que os clientes, nomeadamente os robôs autónomos presents no Intelligent Robotics and Systems Laboratory, estableçam ligações \ac{p2p} entre si, independetemente da sua localização no campus, encapsulando e encaminhando pacotes WireGuard para um servidor de relay via \ac{http}, usando canais de comunicação préviamente criados. Isto não só ajuda os desenvolvedores, permitindo a interação com os robôs usando máquinas pessoais, mas também possibilita o uso dos robôs em qualquer ponto da Universidade de Aveiro.
+  \vspace*{8mm}
+  \TEXT{\textbf{Resumo}}
+       {Uma rede overlay é um grupo de nós computacionais que comunicam entre si através de um canal lógico, montado sobre uma outra rede. Os nós numa rede overlay, que são geralmente end systems, correm aplicações capazes de realizar operações mais complexas do que simplesmente encaminhar e rotear tráfego. Assim, uma rede overlay aplica regras de encaminhamento e encapsulamento de dados para criar um protocolo de comunicação customizado, correndo sobre as ligações de uma outra rede. Este documento apresenta uma solução para um gestor de redes overlay privadas e seguras baseadas em WireGuard, implementado na rede da Universidade de Aveiro, onde estão presentes regras de firewall altamente restritivas. Esta solução permite que os clientes, nomeadamente os robôs autónomos presentes no Intelligent Robotics and Systems Laboratory, estableçam ligações \ac{p2p} entre si, independetemente da sua localização no campus, encapsulando e encaminhando pacotes WireGuard para um servidor de relay via \ac{http}, usando canais de comunicação préviamente criados. Isto não só ajuda os desenvolvedores, permitindo a interação com os robôs usando máquinas pessoais, mas também possibilita o uso dos robôs em qualquer ponto da Universidade de Aveiro.
        }
 \EndTitlePage
 \titlepage\ \endtitlepage % empty page
@@ -188,9 +188,10 @@
   \TEXT{\textbf{Keywords}}
         { WireGuard, VPN, overlay network
         }
-  \vspace*{10mm}
+  \vspace*{8mm}
   \TEXT{\textbf{Abstract}}
-       {An overlay network is a group of computational nodes that communicate with each other through a logical channel, built on top of another network. Nodes in an overlay network, which are generally end systems, run Internet applications capable of performing more complex operations besides just forwarding and switching traffic. As such, an overlay network can apply routing rules and data encapsulation to create a custom protocol running on top of the links of another network. This document presents a secure and private overlay network solution based on WireGuard, deployed over University of Aveiro's network, which employs very restrictive firewall policies. This solution allows clients, namely the autonomous robots residing in the Intelligent Robotics and Systems Laboratory research unit, to establish \ac{p2p} communications with each other, regardless of their physical location within the campus, by encapsulating and forwarding encrypted WireGuard traffic to a dedicated relay server as \ac{http} through pre-established channels. This not only aids developers as they can interact directly with the robots through their personal machines, but also makes it possible to deploy solutions capable of communicating through any of the campus' buildings.}
+       {The \ac{iris} is a research group at the \ac{ua} which develops \ac{ros} based applications where robots communicate with each other through a wireless network. Currently, robots are only able to operate when using the laboratory's internal network, since the university's network employs a set of security mechanisms which forbids direct \ac{p2p} communications from taking place. To enable \ac{p2p} communications in such a scenario, this document presents a self-hosted overlay network manager, based on Tailscale. When using the overlay networks, clients maintain an open \ac{http} connection with a relay server, which is then responsible for delivering encrypted application data encapsulated as \ac{http} to a destination node. Since this encapsulation process implies a degree of communication overhead, the overlay networks' performance is analysed when used in conjunction with \ac{ros} applications, in order to validate the use of the protocol according to \ac{iris}'s projects' requirements. Hence, communicating through the overlays allows the establishment of a \ac{p2p} connection between any two clients, regardless of their physical location in the campus. This not only aids \ac{iris}'s researchers, as they are able to interact directly with the robots through their personal machines, but also makes robot deployments across multiple buildings possible.
+       }
 \EndTitlePage
 \titlepage\ \endtitlepage % empty page
 
@@ -218,11 +219,9 @@
 
 \section{Motivation}
 
-Network security has become a topic of growing interest in any information system, where companies strive to ensure their communications follow principles of integrity and confidentiality while minimising attack vectors that could compromise services and data. With such goals in mind, network topologies are subjected to traffic constraints and security mechanisms to secure their systems.
+Network security has become a topic of growing interest in any information system, where companies strive to ensure their communications follow principles of integrity and confidentiality while minimising attack vectors that could compromise services and data. With such goals in mind, network topologies are subjected to traffic constraints and security mechanisms to secure their systems. Such is the case in the \ac{ua}, where the network, although covering most of the campus' area, enforces several constraining mechanisms that prevent, for example, the establishment of direct \ac{p2p} connections between two clients without additional firewall configurations.
 
-Such is the case in the \ac{ua}, where the network, although covering most of the campus' area, enforces several constraining mechanisms that prevent, for example, the establishment of direct \ac{p2p} connections between two clients without additional firewall configurations.
-
-The \ac{iris} is a research unit operating in \ac{ua}'s premises which develops projects using autonomous mobile robots, capable of communicating through a wireless network. Currently, the robots are confined to the laboratory's internal network, since, as mentioned above, \ac{ua}'s highly restrictive network prevents the robots from communicating directly.
+The \ac{iris} is a research group operating in \ac{ua}'s premises that develops projects using autonomous mobile robots based on \ac{ros}, capable of communicating through a wireless network. Currently, the robots are confined to the laboratory's internal network, since, as mentioned above, \ac{ua}'s highly restrictive network prevents the robots from communicating directly through the \ac{ros} middleware.
 
 Overcoming these limitations would be extremely valuable for \ac{iris}'s developments. In fact, allowing robots to communicate directly in a \ac{p2p} communication would not only enable solutions across multiple buildings but also aid researchers during development, as they would be able to interact with the robots directly through their personal machines.
 
@@ -249,13 +248,13 @@ This document starts by overviewing overlay and \acp{vpn} concepts and their res
 \section{Overlay Networks}
 \label{sec:on}
 
-In the last few decades, the Internet has been subjected to an exponential growth, both in number of users and online devices. To answer this increasing demand and support aspects such as mobility and scalability, Internet applications have diverged from classic distributed systems to more complex network topologies, creating an extremely heterogeneous environment. In such a non-patterned landscape, overlay networks have emerged as a topic of growing interest ~\cite{1610546}, as conducted research on the matter attempts to create networking solutions capable of addressing the adversities imposed by the modern day Internet ~\cite{jannotti2000overcast, waldvogel2003efficient}. This section explores the fundamental principles of overlay networks and how its abstraction layer is able to produce a topology with the potential to bring a logical order to  the chaotic network architecture of the Internet.
+In the last few decades, the Internet has been subjected to an exponential growth, both in number of users and online devices. To answer this increasing demand and support aspects such as mobility and scalability, Internet applications have diverged from classic distributed systems to more complex network topologies, creating an extremely heterogeneous environment. In such a non-patterned landscape, overlay networks have emerged as a topic of growing interest~\cite{1610546}, as conducted research on the matter attempts to create networking solutions capable of addressing the adversities imposed by the modern-day Internet~\cite{jannotti2000overcast, waldvogel2003efficient}. This section explores the fundamental principles of overlay networks and how its abstraction layer is able to produce a topology with the potential to bring a logical order to  the chaotic network architecture of the Internet.
 
 \subsection{Definition and Motivation}
 
-By definition, an overlay network is a logical network implemented on top of the links of another existing physical network ~\cite{livronet}. In other words, nodes (also called peers) in an overlay network, which also exist in the underlay network, implement their own application-defined routing and datagram processing behaviour. Hence, the Internet application running in the nodes is responsible for the creation and management of the logical links that form the overlay network. Figure \ref{fig:overlay} illustrates this concept.
+By definition, an overlay network is a logical network implemented on top of the links of another existing physical network~\cite{livronet}. In other words, nodes (also called peers) in an overlay network, which also exist in the underlay network, implement their own application-defined routing and datagram processing behaviour. Hence, the Internet application running in the nodes is responsible for the creation and management of the logical links that form the overlay network. Figure \ref{fig:overlay} illustrates this concept.
 
-As the nodes in an overlay network are systems running Internet applications, they are generally capable of performing more computational demanding operations than simply forwarding and switching traffic. As such, routing traffic through an overlay node allows any application-defined forwarding and data encapsulation operations to be applied to the datagrams, creating a custom communication protocol running on top of the underlay network.
+As the nodes in an overlay network are systems running Internet applications, they are generally capable of performing more computationally demanding operations than simply forwarding and switching traffic. As such, routing traffic through an overlay node allows any application-defined forwarding and data encapsulation operations to be applied to the datagrams, creating a custom communication protocol running on top of the underlay network.
 
 \begin{figure}[h]
 \centering
@@ -266,7 +265,7 @@ As the nodes in an overlay network are systems running Internet applications, th
 
 \subsection{Security in Overlay Networks}
 
-The Internet is built on public infrastructure users generally have no control over. Public routers, relay nodes, servers and even physical links always carry the risk of traffic eavesdropping and tampering by untrusted entities. Although overlay networks are able to create a logical communication structure, traffic can still be routed through this susceptible infrastructure before reaching its destination node. Therefore, to ensure the confidentiality, privacy and integrity of connections established through an insecure medium, data should be properly encrypted and authenticated.
+The Internet is built on public infrastructure, which users generally have no control over. Public routers, relay nodes, servers and even physical links always carry the risk of traffic eavesdropping and tampering by untrusted entities. Although overlay networks are able to create a logical communication structure, traffic can still be routed through this susceptible infrastructure before reaching its destination node. Therefore, to ensure the confidentiality, privacy and integrity of connections established through an insecure medium, data should be properly encrypted and authenticated.
 
 In fact, if the Internet application running in the nodes of an overlay network has no such security considerations, communication will always be subjected to network attack vectors such as \ac{mitm} and \ac{dos} attacks and traffic snooping.
 
@@ -274,9 +273,9 @@ To add a confidentiality layer to communication, overlay networks employ securit
 
 \subsection{Virtual Private Networks}
 
-Conceptually, a \ac{vpn} is a virtual network that provides functionalities  securing the transmission of data between any two endpoints ~\cite{HARMENING2017843}. \acp{vpn} have been a widely used technology for decades, establishing itself as the backbone to secure communications over the Internet.
+Conceptually, a \ac{vpn} is a virtual network that provides functionalities  securing the transmission of data between any two endpoints~\cite{HARMENING2017843}. \acp{vpn} have been a widely used technology for decades, establishing themselves as the backbone to secure communications over the Internet.
 
-The following sections aim to analyse how \ac{vpn} services have evolved, from its traditional design to more recent paradigms, which are able to tackle complexity and scalability issues. Then, it presents an individual overview of notable \ac{vpn} providers and compares their respective advantages, limitations, trade-offs and suitability for the scope of this solution. This state of the art technological survey aims to pickup on similar works ~\cite{zuqueteseguranca, berger2006analysis}, which examine established protocols such as OpenVPN and IPSec, while additionally reviewing modern protocols, focusing on WireGuard. This exploration serves as the foundation for understanding which protocol is the most suitable to secure communications for the scenario at hand.
+The following sections aim to analyse how \ac{vpn} services have evolved, from their traditional design to more recent paradigms, that are able to tackle complexity and scalability issues. Then, it presents an individual overview of notable \ac{vpn} providers and compares their respective advantages, limitations, trade-offs and suitability for the scope of this solution. This state-of-the-art technological survey aims to pick up on similar works~\cite{zuqueteseguranca, berger2006analysis}, which examine established protocols such as OpenVPN and IPSec, while additionally reviewing modern protocols, focusing on WireGuard. This exploration serves as the foundation for understanding which protocol is the most suitable to secure communications for the scenario at hand.
 
 
 \iffalse
@@ -292,9 +291,9 @@ To avoid the congestion associated with hub-and-spoke architectures, decentraliz
 \subsubsection{VPNs on NAT Networks}
 \label{ss:nat-t}
 
-A \ac{nat} is a networking mechanism responsible for translating \ac{ip} addresses in private networks to public addresses when packets sent from a private network are routed to the public Internet. In the context of \ac{vpn} communications, this process can prove to be a major constraint, not only due to \ac{nat}'s tampering of \ac{ip} packets' fields, namely destination and source addresses, which could potentially compromise its integrity in the eyes of a \ac{vpn} protocol, but also regarding the dynamically changing public \ac{ip} addresses which \ac{nat} decides to translate private addresses to. In other words, without additional tools, a host in a private network has no knowledge regarding which public \ac{ip} it will be assigned.
+The \ac{nat} is a networking mechanism responsible for translating \ac{ip} addresses in private networks to public addresses when packets sent from a private network are routed to the public Internet. In the context of \ac{vpn} communications, this process can prove to be a major constraint, not only due to \ac{nat}'s tampering of \ac{ip} packets' fields, namely destination and source addresses, which could potentially compromise its integrity in the eyes of a \ac{vpn} protocol, but also regarding the dynamically changing public \ac{ip} addresses which \ac{nat} decides to translate private addresses to. In other words, without additional tools, a host in a private network has no knowledge regarding which public \ac{ip} it will be assigned.
 
-In fact, it is very likely that devices connected to the Internet reside in a network behind both \ac{nat} mechanisms and Firewall rules, with no open ports. Also, believing nodes will have a consistent static \ac{ip} is a very naive assumption, especially when considering mobile devices. NAT Traversal is a networking technique that enables the establishing and maintaining (by keeping \ac{nat} holes open) of \ac{p2p} connections between two peers, no matter what's standing between them, making communication possible without the need for firewall configurations or public-facing open ports. There's no one solution to achieve this functionality. In fact, there are various developments effectively implementing a NAT Traversal solution, such as ICE ~\cite{rfc8445} and STUN ~\cite{rfc8489}. Hence, each \ac{vpn} service can have its own way of supporting NAT Traversal. Each case is explored separately.
+It is very likely that devices connected to the Internet reside in a network behind both \ac{nat} mechanisms and firewall rules, with no open ports. Also, believing nodes will have a consistent static \ac{ip} is a naive assumption, especially when considering mobile devices. NAT Traversal is a networking technique that enables the establishing and maintaining (by keeping \ac{nat} holes open) of \ac{p2p} connections between two peers, no matter what is standing between them, making communication possible without the need for additional firewall configurations or public-facing open ports. There are various developments effectively implementing a NAT Traversal solution, such as ICE~\cite{rfc8445} and STUN~\cite{rfc8489}. Hence, each \ac{vpn} service can have its own way of supporting NAT Traversal. Each case is explored separately.
 
 
 \section{VPN Providers}
@@ -303,7 +302,7 @@ In fact, it is very likely that devices connected to the Internet reside in a ne
 
 IPSec refers to an aggregation of layer 3 protocols that work together to create a security extension to the \ac{ip} protocol by adding packet encryption and authentication. Conceptually, IPSec presents two main dimensions: the protocol defining the transmitted packets' format, when security mechanisms are applied to them, and the protocol defining how parties in a communication negotiate encryption parameters.
 
-Communication in an IPSec connection is managed according to \acp{sa}. A \ac{sa} is an unidirectional set of rules and parameters specifying the necessary information for secure communication to take place ~\cite{rfc4301}. Here, unidirectional means a \ac{sa} can only be associated with either inbound or outbound traffic, but never with both. Hence, an IPSec bidirectional association implies the establishment of two \acp{sa}: one for incoming packets and one for outgoing. \acp{sa} specify which security mechanism to use - either \ac{ah} or \ac{esp} - and are identified by a numeric value, the \ac{spi}. Although \ac{sa}s can be manually installed in routers, gateways or machines, it becomes impractical as more clients appear. \ac{ike} ~\cite{rfc7296} is a negotiation protocol that tackles the problems associated with manual \ac{sa} installation. In fact, \ac{ike} allows the negotiation of \ac{sa} pairs between any two machines through the use of asymmetric keys or shared secrets.
+Communication in an IPSec connection is managed according to \acp{sa}. A \ac{sa} is an unidirectional set of rules and parameters specifying the necessary information for secure communication to take place~\cite{rfc4301}. Here, unidirectional means a \ac{sa} can only be associated with either inbound or outbound traffic, but never with both. Hence, an IPSec bidirectional association implies the establishment of two \acp{sa}: one for incoming packets and one for outgoing. \acp{sa} specify which security mechanism to use - either \ac{ah} or \ac{esp} - and are identified by a numeric value, the \ac{spi}. Although \ac{sa}s can be manually installed in routers, gateways or machines, it becomes impractical as more clients appear. \ac{ike}~\cite{rfc7296} is a negotiation protocol that tackles the problems associated with manual \ac{sa} installation. \ac{ike} allows the negotiation of \ac{sa} pairs between any two machines through the use of asymmetric keys or shared secrets.
 
 \subsubsection{Transport and Tunnel modes}
 
@@ -373,7 +372,7 @@ On top of its robust cryptographic specification, WireGuard includes in its desi
 
 In fact, WireGuard presents itself as a silent protocol. In other words, a WireGuard peer is essentially invisible when communication is attempted by an illegitimate party. Packets coming from an unknown source are just dropped, with no leak of information to the sender.
 
-Additionally, a cookie system is implemented in an attempt to mitigate \ac{ddos} attacks. Since, to determine the authenticity of a handshake message, a Curve25519 multiplication must be computed, a CPU intensive operation, a CPU-exhaustion attack vector could be exploited. Cookies are introduced as a response message to handshake initiation. These cookie messages are used as a peer response when under high CPU load, which is then in turn attached to the sender's following messages, allowing the requested handshake to proceed when the overloaded peer has available resources to continue.
+Additionally, a cookie system is implemented in an attempt to mitigate \ac{ddos} attacks. Since verifying the authenticity of a handshake message, requires the computation of a Curve25519 multiplication, a CPU-intensive operation, a CPU-exhaustion attack vector could be exploited. Cookies are introduced as a response message to handshake initiation. These cookie messages are used as a peer response when under high CPU load, which is then in turn attached to the sender's following messages, allowing the requested handshake to proceed when the overloaded peer has available resources to continue.
 
 \subsubsection{Basic WireGuard Configuration}
 
@@ -544,7 +543,7 @@ Nodes in a \ac{ros} application exchange data through messages. A \ac{ros} messa
 
 \subsection{Communication}
 
-Having described how nodes in a \ac{ros} application discover themselves and how data is represented, the following paragraphs overview three distinct communication scenarios. For asynchronous communication, useful for data streams such as information captured by sensors, \ac{ros} supports a topic based publish-subscribe channel. In these communications, nodes can act as either publisher or subscribers. Publisher nodes, after registering their information and topic in the master, are responsible for pushing messages associated with such topic, delivering them to registered subscriber nodes. Subscriber nodes interested in a topic query the master node for the addresses of publishers registered under that topic. Then, to consume the information, a subscriber node establishes a direct connection with a publisher, where the message stream is made available.
+Having described how nodes in a \ac{ros} application discover themselves and how data is represented, the following paragraphs overview three distinct communication scenarios. For asynchronous communication, useful for data streams such as information captured by sensors, \ac{ros} supports a topic based publish-subscribe channel. In these communications, nodes can act as either publisher or subscribers. Publisher nodes, after registering their information and topic in the master, are responsible for pushing messages associated with such topic, delivering them to registered subscriber nodes. Subscriber nodes interested in a topic query the master node for the addresses of publishers registered under that topic. Then, to consume the information, a subscriber node establishes a direct \ac{p2p} connection with a publisher, where the message stream is made available.
 
 In scenarios where a request-response communication is more suitable, \ac{ros} implements a mechanism referred to as services, which operate as a classic client-server model. In fact, a \ac{ros} service implies the existence of a server node, which listens and handles client node requests. As a synchronous communication, clients are able to perform requests to such a node server and receive its result as a response. Both request and response are defined as \ac{ros} messages, previously explored.
 
@@ -638,13 +637,15 @@ With the components required to self-host a complete Tailscale solution defined,
 
 The virtual development environment was designed to create an analogous scenario to the one being tackled, where two clients can't immediately establish \ac{p2p} connections with each other but can both reach a public server. Hence, this environment hosts a narrow scope prototype of a self-hosted Tailscale solution. This prototype requires the deployment of an Headscale coordination server, followed by the configuration, and respective authentication, of two sample clients, using Tailscale's \ac{cli}. With the clients configured with Tailscale addresses, these can be used to run communication tests on \ac{ros} applications, through the encrypted tunnel.
 
+Initial experiments were conducted in this environment, in order to perceive the requirements for self-hosting a complete Tailscale solution.
+
 \subsubsection{Environment Specification}
 
 Such an environment was established using Oracle Virtual Box \footnote{Oracle Virtual Box, \url{https://www.virtualbox.org/}}, a general purpose virtualizer. The environment is configured with three Linux virtual machines running on minimum resources. To achieve a networking scenario analogous to the one faced by \ac{ua}'s clients, the client virtual machines are attached to individual private \ac{nat} Networks and connected via Wi-Fi to an \ac{ap}, while the coordination server virtual machine is attached to a network bridge on the host's Ethernet interface. Figure \ref{fig:sandbox} depicts this topology. This networking configuration creates a situation where both clients have no knowledge of each other nor endpoints to communicate through, but are able to directly reach the coordination server. Obviously, this simulation of the networking conditions can't be entirely accurate, since, as explored in section \ref{sec:uanet}, details regarding \ac{ua}'s network mechanisms are vastly unknown. It is possible, however, to create a similar situation, where clients can't immediately form \ac{p2p} communications with each other but can all communicate with an external, public server. Moreover, as stated in previous sections, Tailscale's protocol efficiently deals with most network constraints preventing direct communication. In other words, it is only known clients can't communicate, the reasons behind why they can't are abstracted by Tailscale.
 
 \begin{figure}[h]
 \centering
-\includegraphics[width=0.5\textwidth]{dev.png}
+\includegraphics[width=0.7\textwidth]{dev.png}
 \caption{Virtual Development Environment Architecture}
 \label{fig:sandbox}
 \end{figure}
@@ -769,6 +770,7 @@ Using self-signed certificates requires additional client certificate trust conf
 Regarding client configurations, Headscale's certificate needs only to be added to the client machine's trusted list. On Debian distributions, this required moving the certificate to the \emph{/usr/local/share/ca-certificates} directory and updating the list with the command \textbf{update-ca-certificates}. With the coordination's server certificate added to the trust chain, a peer is able to use the protocol by running the official Tailscale client software.
 
 \subsection{Automation}
+\label{sec:auto}
 
 This chapter details the development of automation tools to speed up deployment and configuration processes. Two main goals were achieved, related to automatic deployments of the control server and clients. First, automating the deployment of a configured Headscale instance. This implies automating software installation, configuration applying and certificate management. Regarding clients, deployments require Tailscale client installation, adding Headscale's certificate to the trust list and, finally, authenticate in the control server.
 
@@ -913,24 +915,9 @@ Similarly, \textbf{ \( \overline{\text{RTT}}_I \)} is the average \ac{rtt} times
 
 Corroborating the initial performance degradation assumptions related to the relayed tunnel's \ac{http} encapsulation, these two performance loss indicators give us a quantification of the solution's overhead.
 
-\iffalse
-\begin{table}[]
-\centering
-\begin{tabular}{c|c|c|}
-\cline{2-3}
-                                                                                                  & \textbf{\begin{tabular}[c]{@{}c@{}}Average\\ TCP Throughput\\ (Mbit/s)\end{tabular}} & \textbf{\begin{tabular}[c]{@{}c@{}}RTT\\  mean\\ (ms)\end{tabular}} \\ \hline
-\multicolumn{1}{|c|}{\textbf{Internal Connection}}                                                & 45                                                                                   & 10.1                                                                \\ \hline
-\multicolumn{1}{|c|}{\textbf{\begin{tabular}[c]{@{}c@{}}Tailscale Relayed\\ Tunnel\end{tabular}}} & 32                                                                                   & 19                                                                  \\ \hline
-\multicolumn{1}{|c|}{\textbf{Loss (\%)}}                                                          & 21.5                                                                                 & 35.1                                                                \\ \hline
-\end{tabular}
-\caption{Internal and Tailscale connections' performance comparison}
-\label{tab:loss}
-\end{table}
-\fi
-
 \begin{figure}[h]
 \centering
-  \includegraphics[width=0.9\textwidth]{overhead.png}
+  \includegraphics[width=\textwidth]{overhead.png}
   \caption{Tailscale's toll on throughput, tested on internal and Tailscale connections inside IRIS-Lab}
   \label{fig:overhead}
 \end{figure}
@@ -969,7 +956,7 @@ Figure \ref{fig:cipher} presents both captures side by side in Wireshark. By ana
 
 \begin{figure}[h]
 \centering
-  \includegraphics[width=0.9\textwidth]{cipher.png}
+  \includegraphics[width=\textwidth]{cipher.png}
   \caption{TCP Streams from external capture (left) and destination node capture (right)}
   \label{fig:cipher}
 \end{figure}
@@ -1076,7 +1063,7 @@ Regarding the solution's suitability for \ac{iris}'s use cases, two \ac{ros} app
 
 Concluding, this document presents the details for the implementation of a secure overlay network manager, hosted entirely in a private environment.
 
-After a systematic review of general networking concepts and potential tools and services, WireGuard appeared as the most suitable protocol for encrypted communication.
+After a review of general networking concepts and potential tools and services, WireGuard appeared as the most suitable protocol for encrypted communication.
 
 Although creating stand alone WireGuard overlay networks is possible, it requires managing and configuring individual peers, a process raising scalability and ease of administration issues.
 
@@ -1096,7 +1083,7 @@ The protocol's suitability for \ac{iris}'s applications was also studied. As exp
 
 Even though the developments presented in this document meet the goals as expected, serveral aspects of this solution could be improved or should be more thoroughly analysed.
 
-First, regarding deployment automation, although the scripts presented in Chapter \ref{ch:auto} provide a configurable procedure to deploy both an Headscale server and Tailscale clients, this logic could easily be ported to more adequate \ac{iac} frameworks. In fact, the steps taken in said scripts are easily implemented as, for example, Ansible \footnote{Ansible, https://www.ansible.com/} playbooks. This would allow a team of robots to be defined as an Ansible inventory, creating a true one-touch deployment, not requiring the scripts to be run manually in each individual peer.
+First, regarding deployment automation, although the scripts presented in Section \ref{sec:auto} provide a configurable procedure to deploy both an Headscale server and Tailscale clients, this logic could easily be ported to more adequate \ac{iac} frameworks. In fact, the steps taken in said scripts are easily implemented as, for example, Ansible \footnote{Ansible, https://www.ansible.com/} playbooks. This would allow a team of robots to be defined as an Ansible inventory, creating a true one-touch deployment, not requiring the scripts to be run manually in each individual peer.
 
 An \ac{acl} is a Tailscale functionality capable of adding an extra security layer to overlay networks by defining policies allowing or denying traffic between nodes. These policies can be applied to Tailscale users, tags, or client groups. Ideally, when deploying a team of robots, these should be grouped and traffic restricted to that specific group, creating an additional logical segmentation to the network, furthering the confidentiality and privacy of the solution.
 
