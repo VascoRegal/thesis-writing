@@ -107,6 +107,7 @@
 \acrodef{icmp}[ICMP]{Internet Control Message Protocol}
 \acrodef{iac}[IaC]{Infrastructure as Code}
 \acrodef{xmlrpc}[XMLRPC]{XML-Remote Procedure Call}
+\acrodef{ua-pt}[UA]{Universidade de Aveiro}
 
 \raggedbottom
 
@@ -162,10 +163,9 @@
 \TitlePage
   \vspace*{55mm}
   \TEXT{\textbf{agradecimentos~/\newline acknowledgements}}
-       {\'Agradecimento especial aos meus gatos}
+       {}
   \TEXT{}
-       {Desejo tamb\'em pedir desculpa a todos que tiveram de suportar o meu desinteresse pelas
-        tarefas mundanas do dia-a-dia}
+       {}
 \EndTitlePage
 \titlepage\ \endtitlepage % empty page
 
@@ -173,11 +173,11 @@
 \TitlePage
   \vspace*{55mm}
   \TEXT{\textbf{Palavras Chave}}
-        { WireGuard, VPN, rede overlay
+        {Rede Overlay, VPN, WireGuard, ROS
         }
   \vspace*{8mm}
   \TEXT{\textbf{Resumo}}
-       {Uma rede overlay é um grupo de nós computacionais que comunicam entre si através de um canal lógico, montado sobre uma outra rede. Os nós numa rede overlay, que são geralmente end systems, correm aplicações capazes de realizar operações mais complexas do que simplesmente encaminhar e rotear tráfego. Assim, uma rede overlay aplica regras de encaminhamento e encapsulamento de dados para criar um protocolo de comunicação customizado, correndo sobre as ligações de uma outra rede. Este documento apresenta uma solução para um gestor de redes overlay privadas e seguras baseadas em WireGuard, implementado na rede da Universidade de Aveiro, onde estão presentes regras de firewall altamente restritivas. Esta solução permite que os clientes, nomeadamente os robôs autónomos presentes no Intelligent Robotics and Systems Laboratory, estableçam ligações \ac{p2p} entre si, independetemente da sua localização no campus, encapsulando e encaminhando pacotes WireGuard para um servidor de relay via \ac{http}, usando canais de comunicação préviamente criados. Isto não só ajuda os desenvolvedores, permitindo a interação com os robôs usando máquinas pessoais, mas também possibilita o uso dos robôs em qualquer ponto da Universidade de Aveiro.
+       {O \ac{iris} é um grupo de investigação da \ac{ua-pt} onde são desenvolvidos projetos baseados em \ac{ros} onde conjuntos de robôs comunicam entre si através de redes sem fios. Atualmente, os robôs só conseguem comunicar quando conectados à rede interna do laboratório, visto que a rede da universidade aplica um conjunto de mecanismos de segurança que não permitem que ligações \ac{p2p} sejam diretamente estabelecidas entre dois clientes. Para permitir este tipo de ligações na rede da \ac{ua-pt}, este documento apresenta um gestor de redes overlay baseado em Tailscale, hospedado na infraestrutura da universidade. Ao usar estas redes overlay, os clientes criam e mantêm uma ligação \ac{http} com um servidor de relay, que é responsável por receber pacotes encapsulados como \ac{http} e reencaminhar, pelos canais préviamente abertos, aos clientes destino. Já que este encapsulamento introduz um overhead nas comunicações, a performance das redes overlay é também analisada, quando usadas juntamente com ambientes \ac{ros}. Assim, comunicação feita pelas redes overlay permite o estabelecimento de uma ligação \ac{p2p} entre qualquer dois clientes, independetemente da sua localização física dentro do campus. Este processo não só ajuda os investigadores do \ac{iris}, já que estes passam a conseguir interagir com os robôs através das suas máquinas pessoais, mas também permite o uso dos robôs em vários edifícios.
        }
 \EndTitlePage
 \titlepage\ \endtitlepage % empty page
@@ -186,11 +186,11 @@
 \TitlePage
   \vspace*{55mm}
   \TEXT{\textbf{Keywords}}
-        { WireGuard, VPN, overlay network
+        {Overlay Network, VPN, WireGuard, ROS
         }
   \vspace*{8mm}
   \TEXT{\textbf{Abstract}}
-       {The \ac{iris} is a research group at the \ac{ua} which develops \ac{ros} based applications where robots communicate with each other through a wireless network. Currently, robots are only able to operate when using the laboratory's internal network, since the university's network employs a set of security mechanisms which forbids direct \ac{p2p} communications from taking place. To enable \ac{p2p} communications in such a scenario, this document presents a self-hosted overlay network manager, based on Tailscale. When using the overlay networks, clients maintain an open \ac{http} connection with a relay server, which is then responsible for delivering encrypted application data encapsulated as \ac{http} to a destination node. Since this encapsulation process implies a degree of communication overhead, the overlay networks' performance is analysed when used in conjunction with \ac{ros} applications, in order to validate the use of the protocol according to \ac{iris}'s projects' requirements. Hence, communicating through the overlays allows the establishment of a \ac{p2p} connection between any two clients, regardless of their physical location in the campus. This not only aids \ac{iris}'s researchers, as they are able to interact directly with the robots through their personal machines, but also makes robot deployments across multiple buildings possible.
+       {The \ac{iris} is a research group at the \ac{ua} which develops \ac{ros} based applications where robots communicate with each other through a wireless network. Currently, robots are only able to operate when using the laboratory's internal network, since the university's network employs a set of security mechanisms which forbids direct \ac{p2p} communications from taking place. To enable \ac{p2p} communications in such a scenario, this document presents a self-hosted overlay network manager, based on Tailscale. When using the overlay networks, clients maintain an open \ac{http} connection with a relay server, which is then responsible for delivering encrypted application data encapsulated as \ac{http} to the destination nodes, via the pre-established channels. Since this encapsulation process implies a degree of communication overhead, the overlay networks' performance is analysed when used in conjunction with \ac{ros} environments. Hence, communicating through the overlays allows the establishment of a \ac{p2p} connection between any two clients, regardless of their physical location in the campus. This not only aids \ac{iris}'s researchers, as they are able to interact directly with the robots through their personal machines, but also makes robot deployments across multiple buildings possible.
        }
 \EndTitlePage
 \titlepage\ \endtitlepage % empty page
@@ -856,15 +856,16 @@ The metrics collected from each building are presented in Table \ref{tab:perfres
 
 \begin{table}[h!]
 \centering
-\begin{tabular}{|c|c|c|c|}
+\begin{tabular}{|c|c|c|c|c|c|}
 \hline
-\multirow{Building} & \multirow{\begin{tabular}[c]{@{}c@{}}Round-Trip Time \\ (ms)\end{tabular}} & \multirow{\begin{tabular}[c]{@{}c@{}}Average TCP Throughput \\ (Mbit/s)\end{tabular}} & \multirow{\begin{tabular}[c]{@{}c@{}c@{}}Average \\ Network Jitter\\ (ms)\end{tabular}} \\ \hline
-DMAT & 22.37 \pm 36.32 & 45.874 & 0.859  \\ \hline
-DEGEIT & 19.23 \pm 33.88 & 49.615 & 1.119  \\ \hline
-CP & 19.43 \pm 36.15 & 43.061 & 0.834  \\ \hline
-BIB & 12.88 \pm 5.46 & 46.849 & 0.764  \\ \hline
-DETI & 20.01 \pm 54.01 & 31.744 & 11.854  \\ \hline
-EXPO & 17.06 \pm 29.09 & 33.685 & 2.843  \\ \hline
+\multirow{Building} & \multicolumn{3}{c|}{\begin{tabular}[c]{@{}c@{}}Round-Trip Time \\ (ms)\end{tabular}} & \multirow{\begin{tabular}[c]{@{}c@{}}Average TCP Throughput \\ (Mbit/s)\end{tabular}} & \multirow{\begin{tabular}[c]{@{}c@{}c@{}}Average \\ Network Jitter\\ (ms)\end{tabular}} \\ \cline{2-4}
+                            & Min & Mean & Max &                       &                         \\ \hline
+DMAT & 8.24 & 22.37 & 240.9 & 45.874 & 0.859  \\ \hline
+DEGEIT & 7.85 & 19.23 & 244.05 & 49.615 & 1.119  \\ \hline
+CP & 7.63 & 19.43 & 239.96 & 43.061 & 0.834  \\ \hline
+BIB & 7.94 & 12.88 & 45.17 & 46.849 & 0.764  \\ \hline
+DETI & 8.41 & 20.01 & 265.88 & 31.744 & 11.854  \\ \hline
+EXPO & 7.63 & 17.06 & 219.88 & 33.685 & 2.843  \\ \hline
 \end{tabular}
 \caption{Solution's network performance results from various campus' buildings.}
 \label{tab:perfres}
