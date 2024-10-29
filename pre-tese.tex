@@ -8,7 +8,7 @@
 \usepackage[utf8]{inputenc}
 \usepackage[DETI,newLogo]{uaThesis}
 
-\def\ThesisYear{2023}
+\def\ThesisYear{2024}
 
 % optional packages
 \usepackage[english]{babel}
@@ -51,7 +51,6 @@
 \def\Header#1#2{\setbox1=\hbox{#1}\setbox2=\hbox{#2}%
            \ifdim\wd1>\wd2\dimen0=\wd1\else\dimen0=\wd2\fi%
            \AddVMargin{\parbox{\dimen0}{\centering #1\\#2}}} % put #1 on top #2
-
 
 \makeglossaries
 
@@ -123,17 +122,45 @@
 %
 
 \TitlePage
-  \HEADER{\BAR\FIG{\begin{minipage}{80mm} % no more than 120mm
-          ``O caos é uma ordem por decifrar''
-           \begin{flushright}
-            --- José Saramago
-           \end{flushright}
-          \end{minipage}}}
-         {\ThesisYear}
-  \TITLE{Vasco Regal Sousa}
-        {Secure Overlay Network For Peer-To-Peer Robotic Communications\\
-        Redes Overlay Privadas Para Comunicações Robóticas Ponto a Ponto
+  \HEADER{\BAR\FIG{
+          }}
+         {2024}
+  \TITLE{Vasco Jorge Regal Sousa}
+        {Secure Overlay Networks For Peer-To-Peer Robotic Communications \newline
         }
+  \TITLE{}
+        {Redes Overlay Seguras Para Comunicações Robóticas Ponto a Ponto
+        }
+\EndTitlePage
+
+
+\TitlePage
+  \HEADER{\FIG{}}
+         {2024}
+  \TITLE{Vasco Jorge Regal Sousa}
+        {Redes Overlay Seguras Para Comunicações Robóticas Ponto-a-Ponto
+        \newline
+        }
+  \TITLE{}
+        {Secure Overlay Networks For Peer-To-Peer Robotic Communications
+        }
+
+    \vspace*{25mm}
+  \TEXT{}{%
+\noindent%
+Disserta\c c\~ao%
+~apresentada \`a Universidade de Aveiro para cumprimento dos requisitos necess\'arios \`a
+\ifdefined \ciDocumentTypeThesisProposal%
+conclusão da unidade curricular Proposta de Tese, condi\c c\~ao necess\'aria para
+\fi%
+obten\c c\~ao do grau de Mestre
+em {Engenharia Informática}
+, realizada sob a orienta\c c\~ao cient\'ifica do Doutor {Eurico Farinha Pedrosa}, Professor associado do Departamento de Eletrónica, Telecomunicações e Informática da Universidade de Aveiro e do Doutor André Ventura da Cruz Marnoto Zúquete, Professor catedrático do Departamento de Eletrónica, Telecomunicações e Informática da Universidade de Aveiro}
+    \vspace{95mm}
+
+
+{\TEXT{}{\begin{minipage}[t]{52.5mm}\textsf{Apoio financeiro da FCT e do FSE no âmbito do III Quadro Comunitário de Apoio.}\end{minipage}\hspace*{5mm}\begin{minipage}[t]{52.5mm}\textsf{}\end{minipage}}}
+
 \EndTitlePage
 \titlepage\ \endtitlepage % empty page
 
@@ -163,9 +190,9 @@
 \TitlePage
   \vspace*{55mm}
   \TEXT{\textbf{Palavras Chave}}
-        {Rede Overlay, VPN, WireGuard, ROS
+        {redes overlay, redes, VPN, Tailscale, robótica, cibersegurança
         }
-  \vspace*{5mm}
+  \vspace*{10mm}
   \TEXT{\textbf{Resumo}}
        {O \ac{iris} é um grupo de investigação da \ac{ua-pt} onde são desenvolvidos projetos baseados em \ac{ros} onde conjuntos de robôs comunicam entre si através de redes sem fios. Atualmente, os robôs só conseguem comunicar quando conectados à rede interna do laboratório, visto que a rede da universidade aplica um conjunto de mecanismos de segurança que não permitem que ligações \ac{p2p} sejam diretamente estabelecidas entre dois clientes. Para permitir este tipo de ligações na rede da \ac{ua-pt}, este documento apresenta um gestor de redes overlay baseado em Tailscale, hospedado na infraestrutura da universidade. Ao usar estas redes overlay, os clientes criam e mantêm uma ligação \ac{http} com um servidor de relay, que é responsável por receber pacotes encapsulados como \ac{http} e reencaminhar, pelos canais préviamente abertos, aos clientes destino. Já que este encapsulamento introduz um overhead nas comunicações, a performance das redes overlay é também analisada, quando usadas juntamente com ambientes \ac{ros}. Assim, comunicação feita pelas redes overlay permite o estabelecimento de uma ligação \ac{p2p} entre qualquer dois clientes, independetemente da sua localização física dentro do campus. Este processo não só ajuda os investigadores do \ac{iris}, já que estes passam a conseguir interagir com os robôs através das suas máquinas pessoais, mas também permite o uso dos robôs em vários edifícios.
        }
@@ -176,9 +203,9 @@
 \TitlePage
   \vspace*{55mm}
   \TEXT{\textbf{Keywords}}
-        {Overlay Network, VPN, WireGuard, ROS
+        {overlay networks, networking, VPN, Tailscale, robotics, cybersecurity
         }
-  \vspace*{5mm}
+  \vspace*{10mm}
   \TEXT{\textbf{Abstract}}
        {The \ac{iris} is a research group at the \ac{ua} which develops \ac{ros} based applications where robots communicate with each other through a wireless network. Currently, robots are only able to operate when using the laboratory's internal network, since the university's network employs a set of security mechanisms which forbids direct \ac{p2p} communications from taking place. To enable \ac{p2p} communications in such a scenario, this document presents a self-hosted overlay network manager, based on Tailscale. When using the overlay networks, clients maintain an open \ac{http} connection with a relay server, which is then responsible for delivering encrypted application data encapsulated as \ac{http} to the destination nodes, via the pre-established channels. Since this encapsulation process implies a degree of communication overhead, the overlay networks' performance is analysed when used in conjunction with \ac{ros} environments. Hence, communicating through the overlays allows the establishment of a \ac{p2p} connection between any two clients, regardless of their physical location in the campus. This not only aids \ac{iris}'s researchers, as they are able to interact directly with the robots through their personal machines, but also makes robot deployments across multiple buildings possible.
        }
@@ -189,7 +216,7 @@
 \TitlePage
   \vspace*{55mm}
   \TEXT{\textbf{reconhecimento do uso de ferramentas IA /recognizing the use of AI tools}}
-       {I hereby acknowledge the use of OpenAI's ChatGPT-3.5 (https://chat.openai.com/) to both support the research done in the Background chapter, namely IPSec, OpenVPN and Tailscale, and general guidance on working with the matplotlib library, used for the plots in the Results chapter.
+       {I hereby acknowledge the use of OpenAI's ChatGPT-3.5 (https://chat.openai.com/) to both support the research done in the Background chapter, namely IPSec, OpenVPN and Tailscale, and general troubleshooting and debugging for the deployment on the Virtual Development Environment.
        }
 \EndTitlePage
 \titlepage\ \endtitlepage % empty page
@@ -862,7 +889,7 @@ DMAT & 8.24 & 22.37 & 240.9 & 45.874 & 0.859  \\ \hline
 DEGEIT & 7.85 & 19.23 & 244.05 & 49.615 & 1.119  \\ \hline
 CP & 7.63 & 19.43 & 239.96 & 43.061 & 0.834  \\ \hline
 BIB & 7.94 & 12.88 & 45.17 & 46.849 & 0.764  \\ \hline
-DETI & 8.41 & 17.2 & 225.88 & 44.744 & 1.04  \\ \hline
+DETI & 8.41 & 17.20 & 225.88 & 44.744 & 1.040  \\ \hline
 EXPO & 7.63 & 17.06 & 219.88 & 33.685 & 2.843  \\ \hline
 \end{tabular}
 \caption{Solution's network performance results from various campus' buildings.}
